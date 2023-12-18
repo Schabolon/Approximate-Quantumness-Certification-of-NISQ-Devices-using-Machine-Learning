@@ -1,7 +1,8 @@
 import pickle
+import os
 from qiskit import QuantumCircuit
 from qiskit import transpile
-from qiskit_aer import QasmSimulator
+from qiskit_aer import AerSimulator
 from qiskit_aer.backends.qasm_simulator import AerBackend
 
 
@@ -29,7 +30,7 @@ def walker(step):
 
     return circ
 
-def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: AerBackend, number_of_runs: int, filename: str):
+def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: AerBackend, simulator_method: str, number_of_runs: int):
     print("Simulating circuit ...")
     print("Using {}.".format(simulator.__class__.__name__))
 
@@ -40,8 +41,11 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
         result = simulator.run(circs_with_simulator, memory=True, shots=8000).result()
 
         dict = result.to_dict()
-        #TODO better saving
-        pickle.dump(dict, open("../data/simulated/walker/{}_{}.p".format(filename, i), 'wb'))
+
+        basePath = "../data/simulated/"
+        simulator_name = simulator.__class__.__name__.lower()
+        filename = os.path.join(basePath, "{}_{}-{:06d}.p".format(simulator_name, simulator_method, i))
+        pickle.dump(dict, open(filename, 'wb'))
 
     print("Finished simulating.")
 
@@ -52,8 +56,8 @@ if __name__ == "__main__":
         circ = walker(step)
         circs.append(circ)
 
-    print("Using QuasmSimulator with Density Matrix.")
-    simulator = QasmSimulator(method='density_matrix')
+    print("Using AerSimulator with Density Matrix.")
+    simulator = AerSimulator(method='density_matrix')
 
-    save_quantum_circuit_simulation(circs, simulator, 250, "quasm_simulator_density_matrix")
+    save_quantum_circuit_simulation(circs, simulator, "density_matrix", 250)
 
