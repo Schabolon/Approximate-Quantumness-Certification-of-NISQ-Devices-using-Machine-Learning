@@ -41,7 +41,7 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
 
         dict = result.to_dict()
         #TODO better saving
-        pickle.dump(dict, open("data/simulated/walker/{}_{}.p".format(filename, i), 'wb'))
+        pickle.dump(dict, open("../data/simulated/walker/{}_{}.p".format(filename, i), 'wb'))
 
     print("Finished simulating.")
 
