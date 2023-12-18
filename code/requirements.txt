@@ -14,3 +14,4 @@ six==1.16.0
 stevedore==5.1.0
 symengine==0.11.0
 sympy==1.12
+tensorflow~=2.15.0.post1
