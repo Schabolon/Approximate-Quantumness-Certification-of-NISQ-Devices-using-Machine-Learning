@@ -6,7 +6,7 @@ import tensorflow as tf
 if __name__ == "__main__":
     data_pairs = []
     # Add quantum computer runs
-    machines = ["ibmq_athens"]
+    machines = ['ibmq_athens', 'ibmq_athens-splitA', 'ibmq_athens-splitB', 'ibmq_athens-split10A', 'ibmq_athens-split10B', 'ibmq_athens-split10C', 'ibmq_athens-split10D', 'ibmq_athens-split10E', 'ibmq_athens-split10F', 'ibmq_athens-split10G', 'ibmq_athens-split10H', 'ibmq_athens-split10I', 'ibmq_athens-split10J', 'ibmq_santiago', 'ibmq_casablanca', 'ibmq_casablanca-bis', 'ibmq_5_yorktown', 'ibmq_bogota', 'ibmq_lima', 'ibmq_quito']
     for machine in machines:
         for filename in sorted(glob.glob(os.path.join("../data/quantum_computer/walker", '{}-'.format(machine) + ('[0-9]' * 6) + '.p'))):
             results = pickle.load(open(filename, 'rb'))
