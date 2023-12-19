@@ -56,7 +56,13 @@ if __name__ == "__main__":
         circuit = walker(step)
         circuits.append(circuit)
 
-    print("Using AerSimulator with Density Matrix.")
-    simulator = Aer.get_backend('aer_simulator_density_matrix')
+    simulator_with_method_name = [(Aer.get_backend('aer_simulator_density_matrix'), "density_matrix"),
+                                  (Aer.get_backend('aer_simulator_stabilizer'), "stabilizer"),
+                                  (Aer.get_backend('aer_simulator_statevector'), "statevector"),
+                                  (Aer.get_backend('aer_simulator_matrix_product_state'), "matrix_product_state"),
+                                  (Aer.get_backend('aer_simulator_extended_stabilizer'), 'extended_stabilizer'),
+                                  (Aer.get_backend('aer_simulator_unitary'), 'unitary'),
+                                  (Aer.get_backend('aer_simulator_superop'), 'superop')]
 
-    save_quantum_circuit_simulation(circuits, simulator, "density_matrix", 250, "walker")
+    for simulator, method_name in simulator_with_method_name:
+        save_quantum_circuit_simulation(circuits, simulator, method_name, 250, "walker")
