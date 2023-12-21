@@ -2,6 +2,7 @@ import pickle
 import os
 from qiskit import QuantumCircuit
 from qiskit import transpile
+from qiskit_aer import Aer
 from qiskit_aer.backends.qasm_simulator import AerBackend
 
 from quantum_circuits import walker
@@ -32,10 +33,10 @@ if __name__ == "__main__":
     # `(Aer.get_backend('aer_simulator_stabilizer'), "stabilizer")` results in an error.
     # `(Aer.get_backend('aer_simulator_unitary'), 'unitary')`: seems like it can't measure.
     # `(Aer.get_backend('aer_simulator_superop'), 'superop')`: seems like it can't measure.
-    simulator_with_method_name = [#(Aer.get_backend('aer_simulator_density_matrix'), "density_matrix"),
-                                  #(Aer.get_backend('aer_simulator_statevector'), "statevector"),
-                                  #(Aer.get_backend('aer_simulator_matrix_product_state'), "matrix_product_state"),
-                                  # takes very long: (Aer.get_backend('aer_simulator_extended_stabilizer'), 'extended_stabilizer'),
+    simulator_with_method_name = [(Aer.get_backend('aer_simulator_density_matrix'), "density_matrix"),
+                                  (Aer.get_backend('aer_simulator_statevector'), "statevector"),
+                                  (Aer.get_backend('aer_simulator_matrix_product_state'), "matrix_product_state"),
+                                   #takes very long: (Aer.get_backend('aer_simulator_extended_stabilizer'), 'extended_stabilizer'),
                                     ]
 
     for simulator, method_name in simulator_with_method_name:
