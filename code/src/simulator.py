@@ -2,39 +2,15 @@ import pickle
 import os
 from qiskit import QuantumCircuit
 from qiskit import transpile
-from qiskit_aer import Aer
 from qiskit_aer.backends.qasm_simulator import AerBackend
 
-
-def walker(steps):
-    circ = QuantumCircuit(4, 4)
-    for step in range(steps):
-        if step % 3 == 0:
-            circ.h(0)
-            circ.h(1)
-            circ.cx(0, 2)
-
-            circ.barrier(0, 1, 2, 3)
-        elif step % 3 == 1:
-            circ.cx(1, 3)
-            circ.x(0)
-
-            circ.barrier(0, 1, 2, 3)
-        else:
-            circ.x(1)
-            circ.ccx(0, 1, 2)
-
-            circ.barrier(0, 1, 2, 3)
-    circ.measure(2, 0)
-    circ.measure(3, 1)
-
-    return circ
+from quantum_circuits import walker
 
 
 def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: AerBackend, simulator_method: str,
                                     number_of_runs: int, circuit_name: str):
     print("Simulating circuit ...")
-    print("Using {}.".format(simulator.__class__.__name__))
+    print("Using {} with {}".format(simulator.__class__.__name__, simulator_method))
 
     for i in range(1, number_of_runs + 1):
         print("Simulating circuit run {}.".format(i))
@@ -51,18 +27,16 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
 
 
 if __name__ == "__main__":
-    circuits = []
-    for step in range(9):
-        circuit = walker(step)
-        circuits.append(circuit)
+    circuits = walker.get_default_circuits()
 
-    simulator_with_method_name = [(Aer.get_backend('aer_simulator_density_matrix'), "density_matrix"),
-                                  (Aer.get_backend('aer_simulator_stabilizer'), "stabilizer"),
-                                  (Aer.get_backend('aer_simulator_statevector'), "statevector"),
-                                  (Aer.get_backend('aer_simulator_matrix_product_state'), "matrix_product_state"),
-                                  (Aer.get_backend('aer_simulator_extended_stabilizer'), 'extended_stabilizer'),
-                                  (Aer.get_backend('aer_simulator_unitary'), 'unitary'),
-                                  (Aer.get_backend('aer_simulator_superop'), 'superop')]
+    # `(Aer.get_backend('aer_simulator_stabilizer'), "stabilizer")` results in an error.
+    # `(Aer.get_backend('aer_simulator_unitary'), 'unitary')`: seems like it can't measure.
+    # `(Aer.get_backend('aer_simulator_superop'), 'superop')`: seems like it can't measure.
+    simulator_with_method_name = [#(Aer.get_backend('aer_simulator_density_matrix'), "density_matrix"),
+                                  #(Aer.get_backend('aer_simulator_statevector'), "statevector"),
+                                  #(Aer.get_backend('aer_simulator_matrix_product_state'), "matrix_product_state"),
+                                  # takes very long: (Aer.get_backend('aer_simulator_extended_stabilizer'), 'extended_stabilizer'),
+                                    ]
 
     for simulator, method_name in simulator_with_method_name:
         save_quantum_circuit_simulation(circuits, simulator, method_name, 250, "walker")
