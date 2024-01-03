@@ -28,15 +28,15 @@ test_dataset = dataset.skip(train_size)
 
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(128, input_shape=(8000,), activation='relu'),
-    tf.keras.layers.Dense(2, activation='softmax')
+    tf.keras.layers.Dense(2)
 ])
 
 model.compile(optimizer='adam',
               loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
-model.fit(train_dataset.batch(32), epochs=10)
+model.fit(train_dataset.batch(32), epochs=10, verbose=1)
 
-test_loss, test_acc = model.evaluate(test_dataset.batch(32), verbose=2)
+test_loss, test_acc = model.evaluate(test_dataset.batch(32), verbose=1)
 
 print('\nTest accuracy:', test_acc)
