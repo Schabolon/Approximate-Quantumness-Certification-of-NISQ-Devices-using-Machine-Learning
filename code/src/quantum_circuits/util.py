@@ -3,7 +3,10 @@ Provides utility functions for quantum circuits.
 """
 from matplotlib import pyplot as plt
 from qiskit import QuantumCircuit
-from quantum_circuits import walker, ramsey, walkerSimple, walkerSingleMeasures
+from quantum_circuits.ramsey import Ramsey
+from quantum_circuits.walker import Walker
+from quantum_circuits.walker_simple import WalkerSimple
+from quantum_circuits.walker_single_measures import WalkerSingleMeasures
 
 
 def save_circuits_to_image(circs: list[QuantumCircuit], circuit_name: str):
@@ -13,23 +16,19 @@ def save_circuits_to_image(circs: list[QuantumCircuit], circuit_name: str):
         plt.close()
 
 
-def generate_images_for_all_circuits():
-    save_circuits_to_image(walker.get_default_circuits(), "walker")
-    save_circuits_to_image(walkerSimple.get_default_circuits(), "walker-simple")
-    save_circuits_to_image(walkerSingleMeasures.get_default_circuits(), "walker-single-measures")
-    save_circuits_to_image(ramsey.get_default_circuits(), "ramsey")
+def save_images_for_all_circuits():
+    circuits = [Walker(), WalkerSimple(), WalkerSingleMeasures(), Ramsey()]
+    for circuit in circuits:
+        save_circuits_to_image(circuit.get_default_circuits(), circuit.get_name())
+
+
+def display_all_circuits_as_text():
+    circuits = [Walker(), WalkerSimple(), WalkerSingleMeasures(), Ramsey()]
+    for circuit in circuits:
+        print(f"{circuit.get_name()} Circuit:")
+        print(circuit.get_default_circuits()[-1])
+        print("")
 
 
 if __name__ == "__main__":
-    # Display circuits as text
-    print("Walker Circuit:")
-    #print(walker.get_default_circuits()[-1])
-    print("")
-    print("Walker Simple Circuit:")
-    print(walkerSimple.get_default_circuits()[-1])
-    print("")
-    print("Walker Single Measures Circuit:")
-    print(walkerSingleMeasures.get_default_circuits()[-1])
-    print("")
-    print("Ramsey Circuit:")
-    print(ramsey.get_default_circuits()[-1])
+    display_all_circuits_as_text()

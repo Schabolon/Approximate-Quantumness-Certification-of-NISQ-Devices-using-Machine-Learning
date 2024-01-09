@@ -4,10 +4,13 @@ from qiskit import QuantumCircuit
 from qiskit import transpile
 from qiskit_aer import Aer
 from qiskit_aer.backends.qasm_simulator import AerBackend
+from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 
 from quantum_circuits import walker
+from quantum_circuits.walker import Walker
 
 
+# TODO check if files already exist (ask if they should be re-generated).
 def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: AerBackend, simulator_method: str,
                                     number_of_runs: int, circuit_name: str):
     print("Simulating circuit ...")
@@ -30,7 +33,7 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
 
 
 if __name__ == "__main__":
-    circuits = walker.get_default_circuits()
+    circuit: ImplementedQuantumCircuit = Walker()
 
     # `(Aer.get_backend('aer_simulator_stabilizer'), "stabilizer")` results in an error.
     # `(Aer.get_backend('aer_simulator_unitary'), 'unitary')`: seems like it can't measure.
@@ -46,4 +49,4 @@ if __name__ == "__main__":
                                   ]
 
     for simulator, method_name in simulator_with_method_name:
-        save_quantum_circuit_simulation(circuits, simulator, method_name, 250, "walker")
+        save_quantum_circuit_simulation(circuit.get_default_circuits(), simulator, method_name, 250, circuit.get_name())
