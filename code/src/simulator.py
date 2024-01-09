@@ -9,16 +9,17 @@ from qiskit_aer.backends.qasm_simulator import AerBackend
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 from quantum_circuits.walker import Walker
 from quantum_circuits.walker_simple import WalkerSimple
+from quantum_circuits.walker_single_measures import WalkerSingleMeasures
 
 
 # TODO check if files already exist (ask if they should be re-generated).
 def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: AerBackend, simulator_method: str,
                                     number_of_runs: int, circuit_name: str):
     print("Simulating circuit ...")
-    print("Using {} with {}".format(simulator.__class__.__name__, simulator_method))
+    print(f"Using {simulator.__class__.__name__} with {simulator_method}")
 
     for i in range(1, number_of_runs + 1):
-        print("Simulating circuit run {}.".format(i))
+        print(f"Simulating circuit run {i}.")
         # `transpile` transpiles the circuit into supported gates.
         # TODO is transpilation ok? (does it alter the gates)
         circs_with_simulator = transpile(circuits, simulator)
@@ -29,7 +30,7 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
         if not os.path.exists(base_path):
             os.makedirs(base_path)
         simulator_name = simulator.__class__.__name__.lower()
-        filename = os.path.join(base_path, "{}_{}-{:06d}.p".format(simulator_name, simulator_method, i))
+        filename = os.path.join(base_path, f"{simulator_name}_{simulator_method}-{i:06d}.p")
         pickle.dump(result.to_dict(), open(filename, 'wb'))
 
     print("Finished simulating.")
