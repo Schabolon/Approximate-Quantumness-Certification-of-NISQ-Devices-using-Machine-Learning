@@ -39,4 +39,4 @@ if __name__ == "__main__":
 
     dataset = dataset.shuffle(buffer_size=len(features))
 
-    dataset.save("../data/mixed_datasets/walker_dataset")
+    dataset.save("../data/datasets/mixed_datasets/walker_dataset")
