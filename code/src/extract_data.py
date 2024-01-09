@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     # Add simulated runs
     print("Processing simulated data ...")
-    names = ["aersimulator_density_matrix", "aersimulator_matrix_product_state", "aersimulator_statevector"]
+    names = ["aersimulator_density_matrix", "aersimulator_matrix_product_state", "aersimulator_statevector", "qasmsimulator_default", "aersimulator_default", "statevectorsimulator_default"]
     for name in names:
         for filename in sorted(
                 glob.glob(os.path.join("../data/simulated/walker", '{}-'.format(name) + ('[0-9]' * 6) + '.p'))):

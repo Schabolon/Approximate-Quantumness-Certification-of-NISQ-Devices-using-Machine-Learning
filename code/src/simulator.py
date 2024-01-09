@@ -15,6 +15,8 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
 
     for i in range(1, number_of_runs + 1):
         print("Simulating circuit run {}.".format(i))
+        # `transpile` transpiles the circuit into supported gates.
+        # TODO is transpilation ok? (does it alter the gates)
         circs_with_simulator = transpile(circuits, simulator)
 
         result = simulator.run(circs_with_simulator, memory=True, shots=8000).result()
@@ -33,11 +35,15 @@ if __name__ == "__main__":
     # `(Aer.get_backend('aer_simulator_stabilizer'), "stabilizer")` results in an error.
     # `(Aer.get_backend('aer_simulator_unitary'), 'unitary')`: seems like it can't measure.
     # `(Aer.get_backend('aer_simulator_superop'), 'superop')`: seems like it can't measure.
-    simulator_with_method_name = [(Aer.get_backend('aer_simulator_density_matrix'), "density_matrix"),
+    # `(Aer.get_backend('unitary_simulator'), "default")`: results in " contains invalid instructions {"instructions": {save_unitary}} for "statevector" method."
+    simulator_with_method_name = [(Aer.get_backend('aer_simulator'), "default"),
+                                  (Aer.get_backend('aer_simulator_density_matrix'), "density_matrix"),
                                   (Aer.get_backend('aer_simulator_statevector'), "statevector"),
                                   (Aer.get_backend('aer_simulator_matrix_product_state'), "matrix_product_state"),
-                                   #takes very long: (Aer.get_backend('aer_simulator_extended_stabilizer'), 'extended_stabilizer'),
-                                    ]
+                                  (Aer.get_backend('qasm_simulator'), "default"),
+                                  (Aer.get_backend('statevector_simulator'), "default"),
+                                  # takes very long: (Aer.get_backend('aer_simulator_extended_stabilizer'), 'extended_stabilizer'),
+                                  ]
 
     for simulator, method_name in simulator_with_method_name:
         save_quantum_circuit_simulation(circuits, simulator, method_name, 250, "walker")
