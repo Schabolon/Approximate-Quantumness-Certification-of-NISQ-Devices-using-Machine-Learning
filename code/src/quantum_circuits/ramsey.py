@@ -4,12 +4,13 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 
 class Ramsey(ImplementedQuantumCircuit):
 
-    def get_default_circuits(self):
+    @staticmethod
+    def get_default_circuits():
         first_step = 1
         steps = 10
         circs = []
         for step in range(first_step, first_step + steps):
-            circs.append(self.__ramsey(step))
+            circs.append(Ramsey.__ramsey(step))
 
         return circs
 

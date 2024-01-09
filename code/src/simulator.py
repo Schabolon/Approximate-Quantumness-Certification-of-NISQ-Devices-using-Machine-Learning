@@ -1,13 +1,14 @@
 import pickle
 import os
+from typing import Type
+
 from qiskit import QuantumCircuit
 from qiskit import transpile
 from qiskit_aer import Aer
 from qiskit_aer.backends.qasm_simulator import AerBackend
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
-
-from quantum_circuits import walker
 from quantum_circuits.walker import Walker
+from quantum_circuits.walker_simple import WalkerSimple
 
 
 # TODO check if files already exist (ask if they should be re-generated).
@@ -25,6 +26,8 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
         result = simulator.run(circs_with_simulator, memory=True, shots=8000).result()
 
         base_path = os.path.join("../data/simulated", circuit_name)
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
         simulator_name = simulator.__class__.__name__.lower()
         filename = os.path.join(base_path, "{}_{}-{:06d}.p".format(simulator_name, simulator_method, i))
         pickle.dump(result.to_dict(), open(filename, 'wb'))
@@ -33,7 +36,7 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
 
 
 if __name__ == "__main__":
-    circuit: ImplementedQuantumCircuit = Walker()
+    circuit: Type[ImplementedQuantumCircuit] = WalkerSimple
 
     # `(Aer.get_backend('aer_simulator_stabilizer'), "stabilizer")` results in an error.
     # `(Aer.get_backend('aer_simulator_unitary'), 'unitary')`: seems like it can't measure.

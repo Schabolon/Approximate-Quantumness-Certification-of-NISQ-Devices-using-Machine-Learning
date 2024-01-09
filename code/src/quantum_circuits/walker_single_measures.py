@@ -4,12 +4,13 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 
 class WalkerSingleMeasures(ImplementedQuantumCircuit):
 
-    def get_default_circuits(self):
+    @staticmethod
+    def get_default_circuits():
         first_step = 5  # TODO: flexibel? (als Funktions-Variable angeben?)
         steps = 1
         circs = []
         for step in range(first_step, first_step + steps):
-            circs.append(self.__walker_single_measures(step))
+            circs.append(WalkerSingleMeasures.__walker_single_measures(step))
 
         return circs
 

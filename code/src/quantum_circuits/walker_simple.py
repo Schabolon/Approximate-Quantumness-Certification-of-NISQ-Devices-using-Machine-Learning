@@ -4,12 +4,13 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 
 class WalkerSimple(ImplementedQuantumCircuit):
 
-    def get_default_circuits(self) -> list[QuantumCircuit]:
+    @staticmethod
+    def get_default_circuits() -> list[QuantumCircuit]:
         first_step = 1
         steps = 10
         circs = []
         for step in range(first_step, first_step + steps):
-            circs.append(self.__walker_simple(step))
+            circs.append(WalkerSimple.__walker_simple(step))
 
         return circs
 

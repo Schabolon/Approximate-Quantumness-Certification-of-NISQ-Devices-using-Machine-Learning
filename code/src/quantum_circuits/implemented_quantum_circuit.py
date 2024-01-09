@@ -4,8 +4,9 @@ from qiskit import QuantumCircuit
 
 class ImplementedQuantumCircuit(ABC):
 
+    @staticmethod
     @abstractmethod
-    def get_default_circuits(self) -> list[QuantumCircuit]:
+    def get_default_circuits() -> list[QuantumCircuit]:
         pass
 
     @staticmethod
