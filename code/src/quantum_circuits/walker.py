@@ -5,18 +5,11 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 
 class Walker(ImplementedQuantumCircuit):
 
-    @staticmethod
-    def get_default_circuits() -> list[QuantumCircuit]:
-        first_step = 1
-        steps = 9
-        circs = []
-        for step in range(first_step, first_step + steps):
-            circs.append(Walker.__walker_circuit(step))
-
-        return circs
+    def __init__(self, first_step: int = 1, steps: int = 9):
+        super().__init__(first_step, steps)
 
     @staticmethod
-    def __walker_circuit(step: int):
+    def get_circuit_at(step: int):
         """
         The circuit with 9 steps: (each step is separated by lines with ░)
              ┌───┐      ░ ┌───┐ ░            ░ ┌───┐      ░ ┌───┐ ░            ░ ┌───┐      ░ ┌───┐ ░            ░
@@ -59,4 +52,3 @@ class Walker(ImplementedQuantumCircuit):
     @staticmethod
     def get_name() -> str:
         return "walker"
-

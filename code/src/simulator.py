@@ -37,7 +37,7 @@ def save_quantum_circuit_simulation(circuits: list[QuantumCircuit], simulator: A
 
 
 if __name__ == "__main__":
-    circuit: Type[ImplementedQuantumCircuit] = WalkerSimple
+    circuit: ImplementedQuantumCircuit = WalkerSimple()
 
     # `(Aer.get_backend('aer_simulator_stabilizer'), "stabilizer")` results in an error.
     # `(Aer.get_backend('aer_simulator_unitary'), 'unitary')`: seems like it can't measure.
@@ -53,4 +53,4 @@ if __name__ == "__main__":
                                   ]
 
     for simulator, method_name in simulator_with_method_name:
-        save_quantum_circuit_simulation(circuit.get_default_circuits(), simulator, method_name, 250, circuit.get_name())
+        save_quantum_circuit_simulation(circuit.get_circuits(), simulator, method_name, 250, circuit.get_name())

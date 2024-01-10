@@ -4,18 +4,12 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 
 class WalkerSingleMeasures(ImplementedQuantumCircuit):
 
-    @staticmethod
-    def get_default_circuits():
-        first_step = 5  # TODO: flexibel? (als Funktions-Variable angeben?)
-        steps = 1
-        circs = []
-        for step in range(first_step, first_step + steps):
-            circs.append(WalkerSingleMeasures.__walker_single_measures(step))
-
-        return circs
+    # TODO what value has been used for `steps`.
+    def __init__(self, first_step: int = 5, steps: int = 1):
+        super().__init__(first_step, steps)
 
     @staticmethod
-    def __walker_single_measures(step: int):
+    def get_circuit_at(step: int):
         """
         Circuit taken from https://github.com/trianam/learningQuantumNoiseFingerprint/blob/main/createCircuit.py
         """

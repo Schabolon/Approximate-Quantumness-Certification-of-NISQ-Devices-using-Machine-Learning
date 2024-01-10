@@ -19,14 +19,14 @@ def save_circuits_to_image(circs: list[QuantumCircuit], circuit_name: str):
 def save_images_for_all_circuits():
     circuits = [Walker(), WalkerSimple(), WalkerSingleMeasures(), Ramsey()]
     for circuit in circuits:
-        save_circuits_to_image(circuit.get_default_circuits(), circuit.get_name())
+        save_circuits_to_image(circuit.get_circuits(), circuit.get_name())
 
 
 def display_all_circuits_as_text():
     circuits = [Walker(), WalkerSimple(), WalkerSingleMeasures(), Ramsey()]
     for circuit in circuits:
         print(f"{circuit.get_name()} Circuit:")
-        print(circuit.get_default_circuits()[-1])
+        print(circuit.get_circuits()[-1])
         print("")
 
 
