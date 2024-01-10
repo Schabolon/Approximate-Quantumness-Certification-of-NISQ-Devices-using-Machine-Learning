@@ -13,15 +13,8 @@ Machine Learning Model:
 import tensorflow as tf
 import csv
 
-quantum_computer_machines = ['ibmq_athens', 'ibmq_athens-splitA', 'ibmq_athens-splitB', 'ibmq_athens-split10A',
-                             'ibmq_athens-split10B', 'ibmq_athens-split10C', 'ibmq_athens-split10D',
-                             'ibmq_athens-split10E', 'ibmq_athens-split10F', 'ibmq_athens-split10G',
-                             'ibmq_athens-split10H', 'ibmq_athens-split10I', 'ibmq_athens-split10J',
-                             'ibmq_santiago', 'ibmq_casablanca', 'ibmq_casablanca-bis', 'ibmq_5_yorktown',
-                             'ibmq_bogota', 'ibmq_lima', 'ibmq_quito']
+import config
 
-simulator_names = ["aersimulator_density_matrix", "aersimulator_matrix_product_state", "aersimulator_statevector",
-                   "qasmsimulator_default", "aersimulator_default", "statevectorsimulator_default"]
 
 # Trainingsdata: (label, data). Split into train and test.
 # dataset = tf.data.Dataset.load("../data/mixed_datasets/walker_dataset")
@@ -63,14 +56,14 @@ if __name__ == "__main__":
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         first_row = ['ibm quantum computer / simulator']
-        first_row.extend(simulator_names)
+        first_row.extend(config.get_all_simulator_names())
         csv_writer.writerow(first_row)
 
-        for machine in quantum_computer_machines:
+        for quantum_computer_name in config.quantum_computer_names:
             results = []
-            for simulator in simulator_names:
-                dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{machine}_vs_{simulator}_dataset")
+            for simulator_name in config.get_all_simulator_names():
+                dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{quantum_computer_name}_vs_{simulator_name}_dataset")
                 (test_loss, test_acc) = train_model(dataset)
                 results.append(test_acc)
-            results.insert(0, machine)
+            results.insert(0, quantum_computer_name)
             csv_writer.writerow(results)

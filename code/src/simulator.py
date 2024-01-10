@@ -3,9 +3,7 @@ import os
 import config
 
 from qiskit_aer import AerSimulator
-from qiskit import QuantumCircuit
 from qiskit import transpile
-
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 
 
@@ -13,7 +11,7 @@ def save_quantum_circuit_simulation(implemented_circuit: ImplementedQuantumCircu
                                     number_of_runs: int):
     print("Simulating circuit ...")
     simulator_name = config.get_simulator_name(simulator)
-    print(f"Using {simulator_name}")
+    print(f"Using {simulator_name} on circuit {implemented_circuit.get_name()}")
 
     base_path = os.path.join("../data/simulated", implemented_circuit.get_name())
     if not os.path.exists(base_path):

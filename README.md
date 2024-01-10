@@ -32,3 +32,6 @@ Install required packages: `pip install -r requirements.txt`
 
 ## Roadmap
 - [ ] (Optional) Try out model with time dependence. (should allow a flexible amount of shots to be used.)
+- [ ] Try to train ML Model on QC dataONLY (replicate paper findings with own Neuronal Net)
+- [ ] Create datasets which extract probabilities
+- [ ] Split datasets into parts (each circuit part should be evaluated on it's own + all together)

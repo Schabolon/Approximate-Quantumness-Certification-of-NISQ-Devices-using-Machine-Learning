@@ -8,6 +8,7 @@ from enum import Enum
 import config
 from quantum_circuits.walker import Walker
 
+
 class ResultType(Enum):
     """
     The two possible data sources.
@@ -79,4 +80,4 @@ if __name__ == "__main__":
     for machine in config.quantum_computer_names:
         for simulator in config.get_all_simulator_names():
             create_vs_dataset(machine, simulator, Walker.get_name())
-    #create_mixed_dataset(Walker.get_name())
+    # create_mixed_dataset(Walker.get_name())
