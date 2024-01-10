@@ -29,7 +29,7 @@ def save_quantum_circuit_simulation(implemented_circuit: ImplementedQuantumCircu
         print(f"Simulating circuit run {i}/{number_of_runs}.")
         # transpiles the circuit into supported gates.
         # TODO is transpilation ok? (does it alter the gates)
-        circs_with_simulator = transpile(circuits, simulator)
+        circs_with_simulator = transpile(implemented_circuit.get_circuits(), simulator)
 
         result = simulator.run(circs_with_simulator, memory=True, shots=8000).result()
 
