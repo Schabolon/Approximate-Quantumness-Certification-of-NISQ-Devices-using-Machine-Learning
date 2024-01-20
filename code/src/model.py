@@ -11,9 +11,8 @@ Machine Learning Model:
 """
 
 import tensorflow as tf
-import csv
 
-import config
+from data_sources import quantum_computers
 
 
 # Trainingsdata: (label, data). Split into train and test.
@@ -27,22 +26,52 @@ def train_model(dataset):
 
     # Calculate the number of elements for training and testing
     train_size = int(0.8 * num_elements)
-    test_size = num_elements - train_size
 
     # Create training and testing datasets
     train_dataset = dataset.take(train_size)
     test_dataset = dataset.skip(train_size)
 
+    # TODO try to use a CNN (maybe filter recognize time dependence?)
+    # TODO try out https://www.tensorflow.org/tutorials/keras/keras_tuner
+    # Hyper parameter tuning -> changing the model (number of neurons, activation function, optimizier, ...)
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(128, input_shape=(8000,), activation='relu'),
-        tf.keras.layers.Dense(2)
+        tf.keras.layers.Dense(1000, input_shape=(8000,), activation='sigmoid'),
+        tf.keras.layers.Dense(500, activation='sigmoid'),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(1, activation='softmax') # use 'softmax' for output activation, squishes the values between 0 and 1.
     ])
 
     model.compile(optimizer='adam',
-                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                  loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
                   metrics=['accuracy'])
 
-    model.fit(train_dataset.batch(32), epochs=10, verbose=1)
+    history = model.fit(train_dataset.batch(32), epochs=10, verbose=1)
+    """
+    acc = history.history['accuracy']
+    val_acc = history.history['val_accuracy']
+
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+
+    plt.figure(figsize=(8, 8))
+    plt.subplot(2, 1, 1)
+    plt.plot(acc, label='Training Accuracy')
+    plt.plot(val_acc, label='Validation Accuracy')
+    plt.legend(loc='lower right')
+    plt.ylabel('Accuracy')
+    plt.ylim([min(plt.ylim()), 1])
+    plt.title('Training and Validation Accuracy')
+
+    plt.subplot(2, 1, 2)
+    plt.plot(loss, label='Training Loss')
+    plt.plot(val_loss, label='Validation Loss')
+    plt.legend(loc='upper right')
+    plt.ylabel('Cross Entropy')
+    plt.ylim([0, 1.0])
+    plt.title('Training and Validation Loss')
+    plt.xlabel('epoch')
+    plt.show()
+    """
 
     test_loss, test_acc = model.evaluate(test_dataset.batch(32), verbose=1)
 
@@ -52,17 +81,22 @@ def train_model(dataset):
 
 
 if __name__ == "__main__":
-    with (open('../results.csv', 'w', newline='') as csvfile):
+    dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{quantum_computers.quantum_computer_names[0]}"
+                                   f"_vs_{quantum_computers.quantum_computer_names[1]}_dataset")
+    (test_loss, test_acc) = train_model(dataset)
+    exit(0)
+
+    with (open('../results_quantum_vs_quantum.csv', 'w', newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        first_row = ['ibm quantum computer / simulator']
-        first_row.extend(config.get_all_simulator_names())
+        first_row = ['ibm quantum computer / ibm quantum computer']
+        first_row.extend(config.quantum_computer_names_no_split)
         csv_writer.writerow(first_row)
 
-        for quantum_computer_name in config.quantum_computer_names:
+        for quantum_computer_name in config.quantum_computer_names_no_split:
             results = []
-            for simulator_name in config.get_all_simulator_names():
-                dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{quantum_computer_name}_vs_{simulator_name}_dataset")
+            for name2 in config.quantum_computer_names_no_split:
+                dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{quantum_computer_name}_vs_{name2}_dataset")
                 (test_loss, test_acc) = train_model(dataset)
                 results.append(test_acc)
             results.insert(0, quantum_computer_name)
