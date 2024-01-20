@@ -43,10 +43,10 @@ if __name__ == "__main__":
     test_features = np.array(test_features).tolist()
     test_labels = np.array(test_labels).tolist()
     for algNum, (algName, algFun) in enumerate([
-        #["Linear SVM (LinearSVC)", svm.LinearSVC()],
-        #["Linear SVM", svm.SVC(kernel='linear', decision_function_shape='ovr')],
-        #["Poly d.2 SVM", svm.SVC(kernel='poly', degree=2, decision_function_shape='ovr')],
-        #["Poly d.3 SVM", svm.SVC(kernel='poly', degree=3, decision_function_shape='ovr')],
+        ["Linear SVM (LinearSVC)", svm.LinearSVC()],
+        ["Linear SVM", svm.SVC(kernel='linear', decision_function_shape='ovr')],
+        ["Poly d.2 SVM", svm.SVC(kernel='poly', degree=2, decision_function_shape='ovr')],
+        ["Poly d.3 SVM", svm.SVC(kernel='poly', degree=3, decision_function_shape='ovr')],
         ["Poly d.4 SVM", svm.SVC(kernel='poly', degree=4, decision_function_shape='ovr')],
         ["RBF SVM", svm.SVC(kernel='rbf', decision_function_shape='ovr')],
     ]):
