@@ -1,5 +1,7 @@
 Approximate-Quantumness-Certification-of-NISQ-Devices-using-Machine-Learning.pdf
 code/data/datasets/
+code/data/extracted_executions/
+code/data/probabilities/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
