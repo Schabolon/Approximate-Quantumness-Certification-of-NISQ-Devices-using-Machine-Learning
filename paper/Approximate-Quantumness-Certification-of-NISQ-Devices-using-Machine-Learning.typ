@@ -1,5 +1,6 @@
+#set heading(numbering: "1.1.")
 
-= 1. Introduction
+= Introduction
 - Herleitung des Themas anhand von "Betrug" im Cloud-Computing: Nutzer muss dem Cloud-Anbieter vertrauen -> Möglichkeit für den Endnutzer um festzustellen, ob tatsächlich ein QC für die Berechnung verwendet wurde.
 
 Content:
@@ -8,11 +9,11 @@ Content:
 3. Short description of remaining chapters.
 
 
-= 2. Terms and Definitions
+= Terms and Definitions
 Very short, reference other works whenever possible.
 
 
-= 3. Approach
+= Approach
 Main algorithm/approach of this thesis.
 
 - Trainingsdaten: Verwendet da kein eigener Zugriff auf QC möglich.
@@ -20,19 +21,19 @@ Main algorithm/approach of this thesis.
   - Aufbau des Quantencircuits
 - Wie wurden die am Daten der am Computer simulierten Quantumcircuits erstellt? 
 
-= 4. Evaluation
+= Evaluation
 Describes why this thesis really solves the problem it claims to solve. (contains results and measurements) 
 
-= 5. Related Work
+= Related Work
 //TODO should this section be up front between "Terms and Definitions" and "Approach"?
 List of relevant work, how is the other work relevant + comparison with own work (short summary).
 
 - Learning the noise fingerprint of quantum devices @martinaLearningNoiseFingerprint2022
 
-= 6. Future Work
+= Future Work
 Short, what would I improve if I had infinitely more time?
 
-= 7. Conclusion
+= Conclusion
 Summary
 
 #bibliography("Sources.bib")
