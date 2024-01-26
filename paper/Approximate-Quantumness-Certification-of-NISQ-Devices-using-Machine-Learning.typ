@@ -27,8 +27,12 @@ Describes why this thesis really solves the problem it claims to solve. (contain
 //TODO should this section be up front between "Terms and Definitions" and "Approach"?
 List of relevant work, how is the other work relevant + comparison with own work (short summary).
 
+- Learning the noise fingerprint of quantum devices @martinaLearningNoiseFingerprint2022
+
 = 6. Future Work
 Short, what would I improve if I had infinitely more time?
 
 = 7. Conclusion
 Summary
+
+#bibliography("Sources.bib")
