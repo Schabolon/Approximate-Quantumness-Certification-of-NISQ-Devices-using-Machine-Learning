@@ -1,0 +1,79 @@
+data_from_simulator = {
+  'backend_name': 'aer_simulator',
+  'backend_version': '0.13.1',
+  'date': '2024-01-10T14:11:10.765462',
+  'header': None,
+  'qobj_id': '',
+  'job_id': 'eb711f7a-173c-46b8-bb13-33297774b048',
+  'status': 'COMPLETED',
+  'success': True,
+  'results': [{
+    'shots': 8000,
+    'success': True,
+    'data': {
+      'counts': {'0x0': 3983, '0x1': 4017},
+      'memory': [
+        '0x1', '0x1', '0x1', '0x0', '0x0' # ...
+        # List of each result from the 8000 shots.
+      ]
+      },
+    'meas_level': <MeasLevel.CLASSIFIED: 2>,
+    'header': {
+      'creg_sizes': [['c', 4]],
+      'global_phase': 0.0,
+      'memory_slots': 4,
+      'n_qubits': 4,
+      'name': 'circuit-162',
+      'qreg_sizes': [['q', 4]],
+      'metadata': {}
+    },
+    'status': 'DONE',
+    'seed_simulator': 1080189356,
+    'metadata': {
+      'time_taken': 0.006879375,
+      'num_bind_params': 1,
+      'parallel_state_update': 16,
+      'parallel_shots': 1,
+      'required_memory_mb': 0,
+      'input_qubit_map': [[3, 2], [2, 1], [0, 0]],
+      'method': 'stabilizer',
+      'device': 'CPU',
+      'num_qubits': 3,
+      'sample_measure_time': 0.00234532,
+      'active_input_qubits': [0, 2, 3],
+      'num_clbits': 4,
+      'remapped_qubits': True,
+      'runtime_parameter_bind': False,
+      'max_memory_mb': 15697,
+      'noise': 'ideal',
+      'measure_sampling': True,
+      'batched_shots_optimization': False,
+      'fusion': {'enabled': False}
+    },
+    'time_taken': 0.006879375
+  },
+  {
+    'shots': 8000,
+    'success': True,
+    'data': {
+      'counts': {'0x3': 2009, '0x1': 1989, '0x0': 1938, '0x2': 2064}, 
+      'memory': [
+        '0x2', '0x2', '0x0', '0x3' # ...
+        # List of each result from the 8000 shots.
+        ]
+    },
+    # Here go all circuit-runs.
+    # In this example the walker circuit was processed with step 1 to 9.
+    # Therefore are here 7 'data' + 'memory' + (other data fields) missing (for clarity).
+  }],
+
+  'metadata': {
+    'time_taken_parameter_binding': 2.7429e-05,
+    'time_taken_execute': 0.047625993,
+    'omp_enabled': True,
+    'max_gpu_memory_mb': 0,
+    'max_memory_mb': 15697,
+    'parallel_experiments': 1
+  },
+  'time_taken': 0.052636146545410156
+  }

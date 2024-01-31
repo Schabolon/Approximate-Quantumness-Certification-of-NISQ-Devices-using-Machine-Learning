@@ -1,0 +1,66 @@
+classDiagram
+    Dataset "1" <-- "*" CircuitRuns 
+
+    CircuitRuns "1" <-- "1" ImplementedQuantumCircuit
+    CircuitRuns "1" <-- "1" QuantumBackends 
+
+    ImplementedQuantumCircuit <|-- Walker
+    ImplementedQuantumCircuit <|-- Ramsey
+    ImplementedQuantumCircuit <|-- WalkerSimple
+
+    QuantumBackends -- QuantumBackend
+    QuantumBackends "1" <-- "1" QuantumBackendType
+
+    class Dataset {
+        -List[CircuitRuns] run_data
+        +generate_tensorflow_dataset()
+    }
+
+    class CircuitRuns {
+        -ImplementedQuantumCircuit circuit
+        -QuantumBackends backend
+
+        -extract_execution_memory()
+        -calculate_probabilities()
+
+    }
+
+    class ImplementedQuantumCircuit {
+        <<abstract>>
+        -int first_step
+        -int steps
+        -String name
+        +get_circuits()
+        +get_name()
+        +get_circuit_at(int step)
+    }
+
+    class QuantumBackends {
+        <<enumeration>>
+        AER_SIMULATOR = QuantumBackend("aer_simulator", QuantumBackendType.SIMULATOR)
+    }
+
+    class QuantumBackend {
+        -QuantumBackendType backend_type
+        -String name
+        +get_name()
+        +get_backend_type()
+    }
+
+    class QuantumBackendType {
+        <<enumeration>>
+        QUANTUM_COMPUTER
+        SIMULATOR
+    }
+
+    class Walker {
+        +get_circuit_at(int step)
+    }
+
+    class WalkerSimple {
+        +get_circuit_at(int step)
+    }
+
+    class Ramsey {
+        +get_circuit_at(int step)
+    }
