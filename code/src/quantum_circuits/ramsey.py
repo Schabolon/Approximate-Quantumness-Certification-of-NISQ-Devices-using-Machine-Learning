@@ -5,7 +5,7 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 class Ramsey(ImplementedQuantumCircuit):
 
     def __init__(self, first_step: int = 1, steps: int = 10):
-        super().__init__(first_step, steps)
+        super().__init__(first_step, steps, "ramsey")
 
     @staticmethod
     def get_circuit_at(step: int):
@@ -31,7 +31,3 @@ class Ramsey(ImplementedQuantumCircuit):
 
         circ.measure(0, 0)
         return circ
-
-    @staticmethod
-    def get_name() -> str:
-        return "ramsey"

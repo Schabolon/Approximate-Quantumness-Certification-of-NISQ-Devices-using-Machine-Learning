@@ -6,7 +6,7 @@ class WalkerSingleMeasures(ImplementedQuantumCircuit):
 
     # TODO what value has been used for `steps`.
     def __init__(self, first_step: int = 5, steps: int = 1):
-        super().__init__(first_step, steps)
+        super().__init__(first_step, steps, "walkerSingleMeasures")
 
     @staticmethod
     def get_circuit_at(step: int):
@@ -33,7 +33,3 @@ class WalkerSingleMeasures(ImplementedQuantumCircuit):
             circ.barrier(range(num_cubits))
 
         return circ
-
-    @staticmethod
-    def get_name() -> str:
-        return "walkerSingleMeasures"

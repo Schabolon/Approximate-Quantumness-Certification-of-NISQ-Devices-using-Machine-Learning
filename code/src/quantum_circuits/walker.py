@@ -6,7 +6,7 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 class Walker(ImplementedQuantumCircuit):
 
     def __init__(self, first_step: int = 1, steps: int = 9):
-        super().__init__(first_step, steps)
+        super().__init__(first_step, steps, "walker")
 
     @staticmethod
     def get_circuit_at(step: int):
@@ -48,7 +48,3 @@ class Walker(ImplementedQuantumCircuit):
         circ.measure(3, 1)
 
         return circ
-
-    @staticmethod
-    def get_name() -> str:
-        return "walker"

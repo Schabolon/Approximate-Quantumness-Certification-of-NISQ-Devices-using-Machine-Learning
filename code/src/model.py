@@ -12,9 +12,6 @@ Machine Learning Model:
 
 import tensorflow as tf
 
-from data_sources import quantum_computers
-
-
 # Trainingsdata: (label, data). Split into train and test.
 # dataset = tf.data.Dataset.load("../data/mixed_datasets/walker_dataset")
 # dataset = tf.data.Dataset.load("../data/datasets/vs_datasets/walker_ibmq_athens_vs_aersimulator_density_matrix_dataset")
@@ -32,20 +29,20 @@ def train_model(dataset):
     test_dataset = dataset.skip(train_size)
 
     # TODO try to use a CNN (maybe filter recognize time dependence?)
-    # TODO try out https://www.tensorflow.org/tutorials/keras/keras_tuner
     # Hyper parameter tuning -> changing the model (number of neurons, activation function, optimizier, ...)
     model = tf.keras.Sequential([
         tf.keras.layers.Dense(1000, input_shape=(8000,), activation='sigmoid'),
+        tf.keras.layers.Dense(1000, activation='sigmoid'),
         tf.keras.layers.Dense(500, activation='sigmoid'),
         tf.keras.layers.Dense(128, activation='relu'),
-        tf.keras.layers.Dense(1, activation='softmax') # use 'softmax' for output activation, squishes the values between 0 and 1.
+        tf.keras.layers.Dense(1, activation='sigmoid') # use 'sigmoid' for output activation, squishes the values between 0 and 1.
     ])
 
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
                   metrics=['accuracy'])
 
-    history = model.fit(train_dataset.batch(32), epochs=10, verbose=1)
+    history = model.fit(train_dataset.batch(32), epochs=5, verbose=1)
     """
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
@@ -81,7 +78,7 @@ def train_model(dataset):
 
 
 if __name__ == "__main__":
-    dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{quantum_computers.quantum_computer_names[0]}"
+    dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{simulators.get_all_simulator_names()[0]}"
                                    f"_vs_{quantum_computers.quantum_computer_names[1]}_dataset")
     (test_loss, test_acc) = train_model(dataset)
     exit(0)
