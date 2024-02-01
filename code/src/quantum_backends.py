@@ -58,7 +58,7 @@ class QuantumBackends(QuantumBackend, Enum):
 
     @staticmethod
     def get_simulator_backends():
-        return [b for b in QuantumBackends if b.backend_type == QuantumBackendType.QUANTUM_COMPUTER]
+        return [b for b in QuantumBackends if b.backend_type == QuantumBackendType.SIMULATOR]
 
     def __str__(self):
         return self.backend_name
