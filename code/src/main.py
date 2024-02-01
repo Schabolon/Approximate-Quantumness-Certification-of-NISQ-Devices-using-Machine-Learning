@@ -2,7 +2,7 @@ import logging
 
 from circuit_runs import CircuitRuns
 from dataset import CustomDataset
-from model import svm, neural_net, neural_net_tuner, cnn
+from model import svm, neural_net, neural_net_tuner, cnn, lstm
 from quantum_backends import QuantumBackends
 from quantum_circuits.walker import Walker
 
@@ -33,4 +33,6 @@ if __name__ == '__main__':
     # CNN
     cnn_acc = cnn.evaluate_model(custom_dataset)
 
-    # TODO LSTM
+    # LSTM
+    # todo WIP
+    #lstm_acc = lstm.evaluate_model(custom_dataset)
