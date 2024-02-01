@@ -27,6 +27,6 @@ def evaluate_neural_net(custom_dataset: CustomDataset):
 
     test_loss, test_acc = model.evaluate(test_dataset.batch(32), verbose=1)
 
-    logging.debug('Neural Net test accuracy:', test_acc)
+    logging.debug(f"Neural Net test accuracy: {test_acc}")
 
     return test_acc
