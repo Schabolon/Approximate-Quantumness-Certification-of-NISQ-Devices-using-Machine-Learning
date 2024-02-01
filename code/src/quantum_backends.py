@@ -15,7 +15,7 @@ class QuantumBackend:
 class QuantumBackends(QuantumBackend, Enum):
     # Quantum Computers
     IBMQ_ATHENS = "ibmq_athens", QuantumBackendType.QUANTUM_COMPUTER
-    IMBQ_SANTIAGO = "imbq_santiago", QuantumBackendType.QUANTUM_COMPUTER
+    IMBQ_SANTIAGO = "ibmq_santiago", QuantumBackendType.QUANTUM_COMPUTER
     IBMQ_CASABLANCA = "ibmq_casablanca", QuantumBackendType.QUANTUM_COMPUTER
     IBMQ_CASABLANCA_BIS = "ibmq_casablanca-bis", QuantumBackendType.QUANTUM_COMPUTER
     IBMQ_5_YORKTOWN = "ibmq_5_yorktown", QuantumBackendType.QUANTUM_COMPUTER
@@ -47,3 +47,18 @@ class QuantumBackends(QuantumBackend, Enum):
     # `Aer.get_backend('aer_simulator_unitary')`: seems like it can't measure.
     # `Aer.get_backend('aer_simulator_superop')`: seems like it can't measure.
     # `Aer.get_backend('aer_simulator_extended_stabilizer')`: takes very long.
+
+    @staticmethod
+    def get_all_backends():
+        return [b for b in QuantumBackends]
+
+    @staticmethod
+    def get_quantum_computer_backends():
+        return [b for b in QuantumBackends if b.backend_type == QuantumBackendType.QUANTUM_COMPUTER]
+
+    @staticmethod
+    def get_simulator_backends():
+        return [b for b in QuantumBackends if b.backend_type == QuantumBackendType.QUANTUM_COMPUTER]
+
+    def __str__(self):
+        return self.backend_name

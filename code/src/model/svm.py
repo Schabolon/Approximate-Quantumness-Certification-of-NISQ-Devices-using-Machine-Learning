@@ -1,4 +1,5 @@
 import logging
+from typing import Tuple
 
 import numpy as np
 from sklearn import svm
@@ -6,7 +7,7 @@ from sklearn import svm
 from dataset import CustomDataset
 
 
-def __train(clf, train_features, train_labels, test_features, test_labels) -> float:
+def __train(clf, train_features, train_labels, test_features, test_labels) -> tuple[float, float]:
     logging.info("Training SVM...")
     clf.fit(train_features, train_labels)
     logging.info("Finished training SVM.")

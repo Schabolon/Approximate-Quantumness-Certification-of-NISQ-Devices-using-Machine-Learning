@@ -86,6 +86,11 @@ class CustomDataset:
         # TODO add normalization for features?
         return dataset
 
+    def already_exists(self):
+        dataset_name = self.get_name()
+        file_path = os.path.join("../data/datasets", dataset_name)
+        return os.path.exists(file_path)
+
     @staticmethod
     def get_memory_data(circuit_run: CircuitRuns):
         results = []
