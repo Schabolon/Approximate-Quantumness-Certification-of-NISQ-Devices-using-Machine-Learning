@@ -3,9 +3,10 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
+from dataset import CustomDataset
 
-# Hyper parameter tuning -> changing the model (number of neurons, activation function, optimizier, ...)
-def model_builder(hp):
+
+def __model_builder(hp):
     model = keras.Sequential()
 
     # first layer
@@ -32,7 +33,7 @@ def model_builder(hp):
     model.add(keras.layers.Dense(units=hp_fourth_layer_units, activation=hp_fourth_layer_activation))
 
     # Dropout should allow for more epochs without overfiting
-    hp_dropout_rate = hp.Choice('dropout-rate', values=[0, 0.1, 0.2])
+    hp_dropout_rate = hp.Choice('dropout-rate', values=[0.0, 0.1, 0.2])
     model.add(keras.layers.Dropout(rate=hp_dropout_rate))
 
     # output layer
@@ -49,20 +50,9 @@ def model_builder(hp):
     return model
 
 
-if __name__ == '__main__':
-    dataset = tf.data.Dataset.load(f"../data/datasets/vs_datasets/walker_{simulators.get_all_simulator_names()[0]}"
-                                   f"_vs_{quantum_computers.quantum_computer_names[1]}_dataset")
-
-    # Get the total number of elements in the dataset
-    num_elements = tf.data.experimental.cardinality(dataset).numpy()
-
-    # Calculate the number of elements for training and testing
-    train_size = int(0.8 * num_elements)
-
-    # Create training and testing datasets
-    train_dataset = dataset.take(train_size)
-    test_dataset = dataset.skip(train_size)
-
+# Hyper parameter tuning -> changing the model (number of neurons, activation function, optimizier, ...)
+def tune_and_evaluate_model(custom_dataset: CustomDataset):
+    train_dataset, test_dataset = custom_dataset.get_dataset_test_train_split()
     train_features, train_labels = tuple(zip(*train_dataset))
     test_features, test_labels = tuple(zip(*test_dataset))
 
@@ -71,7 +61,7 @@ if __name__ == '__main__':
     test_features = np.array(test_features)
     test_labels = np.array(test_labels)
 
-    tuner = kt.Hyperband(model_builder,
+    tuner = kt.Hyperband(__model_builder,
                          objective='val_accuracy',
                          max_epochs=10,
                          factor=3)
@@ -82,26 +72,27 @@ if __name__ == '__main__':
     best_hps = tuner.get_best_hyperparameters(num_trials=1)[0]
 
     print(f"""
-    The hyperparameter search is complete.
-    Number of units in the first densely-connected layer is {best_hps['first_layer_units']} with activation function {best_hps['first_layer_activation']}.
-    Number of units in the second densely-connected layer is {best_hps['second_layer_units']} with activation function {best_hps['second_layer_activation']}.
-    Number of units in the third densely-connected layer is {best_hps['third_layer_units']} with activation function {best_hps['third_layer_activation']}.
-    Number of units in the fourth densely-connected layer is {best_hps['fourth_layer_units']} with activation function {best_hps['fourth_layer_activation']}.
-    The optimal learning rate for the optimizer is {best_hps.get('learning_rate')}.
-    """)
+        The hyperparameter search is complete.
+        Number of units in the first densely-connected layer is {best_hps['first_layer_units']} with activation function {best_hps['first_layer_activation']}.
+        Number of units in the second densely-connected layer is {best_hps['second_layer_units']} with activation function {best_hps['second_layer_activation']}.
+        Number of units in the third densely-connected layer is {best_hps['third_layer_units']} with activation function {best_hps['third_layer_activation']}.
+        Number of units in the fourth densely-connected layer is {best_hps['fourth_layer_units']} with activation function {best_hps['fourth_layer_activation']}.
+        The optimal learning rate for the optimizer is {best_hps.get('learning_rate')}.
+        """)
 
-    # Train the model
-    # Build the model with the optimal hyperparameters and train it on the data for 10 epochs
+    # Figure out the optimum amount of epochs
+    # Build the model with the optimal hyperparameters and train it on the data for 15 epochs
     model = tuner.hypermodel.build(best_hps)
     history = model.fit(train_features, train_labels, epochs=15, validation_split=0.2)
-
     val_acc_per_epoch = history.history['val_accuracy']
     best_epoch = val_acc_per_epoch.index(max(val_acc_per_epoch)) + 1
     print('Best epoch: %d' % (best_epoch,))
 
+    # Train the model
+    # Retrain the model with the optimum amount of epochs
     hypermodel = tuner.hypermodel.build(best_hps)
-
-    # Retrain the model
     hypermodel.fit(train_features, train_labels, epochs=best_epoch, validation_split=0.2)
-    eval_result = hypermodel.evaluate(test_features, test_labels)
-    print("[test loss, test accuracy]:", eval_result)
+    test_loss, test_acc = hypermodel.evaluate(test_features, test_labels)
+    print("[test loss, test accuracy]:", test_loss, test_acc)
+
+    return test_acc
