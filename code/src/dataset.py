@@ -93,20 +93,3 @@ class CustomDataset:
         for c in self.circuit_runs:
             output += f"    {c}\n"
         return output
-
-    def print_overview(self):
-        logging.info("Dataset overview:")
-        logging.info(self)
-        dataset = self.get_dataset()
-        logging.info(f"Number of elements: {len(dataset)}")
-        # features, labels = tuple(zip(*dataset))
-        # min_feature_value = 9999999999
-        # max_feature_value = -1
-        # for feature in features:
-        #    minimum = min(feature)
-        #    maximum = max(feature)
-        #    if min_feature_value > minimum:
-        #        min_feature_value = minimum
-        #    if max_feature_value < maximum:
-        #        max_feature_value = maximum
-        # logging.info(f"Feature value range: {min_feature_value}, {max_feature_value}")

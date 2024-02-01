@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 
+# Hyper parameter tuning -> changing the model (number of neurons, activation function, optimizier, ...)
 def model_builder(hp):
     model = keras.Sequential()
 

@@ -20,13 +20,13 @@ def __train(clf, train_features, train_labels, test_features, test_labels) -> fl
     acc_test = number_of_correct_predictions / len(test_labels)
 
     # Testing on training data
-    # predictions_train = clf.predict(train_features)
-    # number_of_correct_predictions = 0
-    # for i in range(len(train_labels)):
-    #    if train_labels[i] == predictions_train[i]:
-    #        number_of_correct_predictions += 1
-    # acc_train = number_of_correct_predictions / len(train_labels)
-    return acc_test
+    predictions_train = clf.predict(train_features)
+    number_of_correct_predictions = 0
+    for i in range(len(train_labels)):
+        if train_labels[i] == predictions_train[i]:
+            number_of_correct_predictions += 1
+    acc_train = number_of_correct_predictions / len(train_labels)
+    return acc_test, acc_train
 
 
 def evaluate_svm(custom_dataset: CustomDataset) -> float:
@@ -48,9 +48,9 @@ def evaluate_svm(custom_dataset: CustomDataset) -> float:
         ["Poly d.4 SVM", svm.SVC(kernel='poly', degree=4, decision_function_shape='ovr')],
         ["RBF SVM", svm.SVC(kernel='rbf', decision_function_shape='ovr')],
     ]):
-        acc_test = __train(alg_fun, train_features, train_labels, test_features, test_labels)
+        acc_test, acc_train = __train(alg_fun, train_features, train_labels, test_features, test_labels)
         logging.info(f"SVM-Algorithm: {alg_name}")
-        logging.info(f"Test acc.: {acc_test}")
+        logging.info(f"Test acc.: {acc_test}; (Train acc.: {acc_train})")
         if acc_test > max_accuracy:
             max_accuracy = acc_test
 

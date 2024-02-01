@@ -2,7 +2,7 @@ import logging
 
 from circuit_runs import CircuitRuns
 from dataset import CustomDataset
-from model import svm
+from model import svm, neural_net
 from quantum_backends import QuantumBackends
 from quantum_circuits.walker import Walker
 
@@ -20,13 +20,12 @@ if __name__ == '__main__':
 
     custom_dataset = CustomDataset(data)
 
-    custom_dataset.print_overview()
-
     # Execute different learning algorithms
     # SVM
-    svm.evaluate_svm(custom_dataset)
+    svm_acc = svm.evaluate_svm(custom_dataset)
 
     # Neural Model
+    neural_net_acc = neural_net.evaluate_neural_net(custom_dataset)
 
     # Tuning Neural Model
 
