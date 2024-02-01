@@ -1,6 +1,8 @@
 import logging
 import os
 from typing import List
+
+import numpy as np
 import tensorflow as tf
 
 from circuit_runs import CircuitRuns
@@ -34,6 +36,17 @@ class CustomDataset:
         train_dataset = dataset.take(train_size)
         test_dataset = dataset.skip(train_size)
         return train_dataset, test_dataset
+
+    def get_dataset_separated(self, train_split=0.8):
+        train_dataset, test_dataset = self.get_dataset_test_train_split(train_split)
+
+        train_features, train_labels = tuple(zip(*train_dataset))
+        test_features, test_labels = tuple(zip(*test_dataset))
+        train_features = np.array(train_features).tolist()
+        train_labels = np.array(train_labels).tolist()
+        test_features = np.array(test_features).tolist()
+        test_labels = np.array(test_labels).tolist()
+        return train_features, train_labels, test_features, test_labels
 
     def get_dataset(self) -> tf.data.Dataset:
         dataset_name = self.get_name()

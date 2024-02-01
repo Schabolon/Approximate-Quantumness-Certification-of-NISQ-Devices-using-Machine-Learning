@@ -30,14 +30,7 @@ def __train(clf, train_features, train_labels, test_features, test_labels) -> fl
 
 
 def evaluate_svm(custom_dataset: CustomDataset) -> float:
-    (train_dataset, test_dataset) = custom_dataset.get_dataset_test_train_split()
-
-    train_features, train_labels = tuple(zip(*train_dataset))
-    test_features, test_labels = tuple(zip(*test_dataset))
-    train_features = np.array(train_features).tolist()
-    train_labels = np.array(train_labels).tolist()
-    test_features = np.array(test_features).tolist()
-    test_labels = np.array(test_labels).tolist()
+    train_features, train_labels, test_features, test_labels = custom_dataset.get_dataset_separated()
 
     max_accuracy = -1
     for alg_num, (alg_name, alg_fun) in enumerate([

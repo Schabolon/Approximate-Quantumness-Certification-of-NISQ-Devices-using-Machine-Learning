@@ -33,7 +33,7 @@ def __model_builder(hp):
     model.add(keras.layers.Dense(units=hp_fourth_layer_units, activation=hp_fourth_layer_activation))
 
     # Dropout should allow for more epochs without overfiting
-    hp_dropout_rate = hp.Choice('dropout-rate', values=[0.0, 0.1, 0.2])
+    hp_dropout_rate = hp.Choice('dropout_rate', values=[0.0, 0.1, 0.2])
     model.add(keras.layers.Dropout(rate=hp_dropout_rate))
 
     # output layer
@@ -52,14 +52,7 @@ def __model_builder(hp):
 
 # Hyper parameter tuning -> changing the model (number of neurons, activation function, optimizier, ...)
 def tune_and_evaluate_model(custom_dataset: CustomDataset):
-    train_dataset, test_dataset = custom_dataset.get_dataset_test_train_split()
-    train_features, train_labels = tuple(zip(*train_dataset))
-    test_features, test_labels = tuple(zip(*test_dataset))
-
-    train_features = np.array(train_features)
-    train_labels = np.array(train_labels)
-    test_features = np.array(test_features)
-    test_labels = np.array(test_labels)
+    train_features, train_labels, test_features, test_labels = custom_dataset.get_dataset_separated()
 
     tuner = kt.Hyperband(__model_builder,
                          objective='val_accuracy',
@@ -77,6 +70,7 @@ def tune_and_evaluate_model(custom_dataset: CustomDataset):
         Number of units in the second densely-connected layer is {best_hps['second_layer_units']} with activation function {best_hps['second_layer_activation']}.
         Number of units in the third densely-connected layer is {best_hps['third_layer_units']} with activation function {best_hps['third_layer_activation']}.
         Number of units in the fourth densely-connected layer is {best_hps['fourth_layer_units']} with activation function {best_hps['fourth_layer_activation']}.
+        Best dropout rate is {best_hps['dropout_rate']}
         The optimal learning rate for the optimizer is {best_hps.get('learning_rate')}.
         """)
 

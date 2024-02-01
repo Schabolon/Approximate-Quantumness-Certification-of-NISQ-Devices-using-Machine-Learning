@@ -2,7 +2,7 @@ import logging
 
 from circuit_runs import CircuitRuns
 from dataset import CustomDataset
-from model import svm, neural_net
+from model import svm, neural_net, neural_net_tuner, cnn
 from quantum_backends import QuantumBackends
 from quantum_circuits.walker import Walker
 
@@ -28,6 +28,9 @@ if __name__ == '__main__':
     neural_net_acc = neural_net.evaluate_neural_net(custom_dataset)
 
     # Tuning Neural Model
+    tuned_neural_net_acc = neural_net_tuner.tune_and_evaluate_model(custom_dataset)
 
-    # TODO CNN
+    # CNN
+    cnn_acc = cnn.evaluate_model(custom_dataset)
+
     # TODO LSTM
