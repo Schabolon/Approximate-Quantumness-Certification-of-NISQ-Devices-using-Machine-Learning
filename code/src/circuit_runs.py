@@ -79,6 +79,7 @@ class CircuitRuns:
         np.savetxt(output_filename, executions_memory, delimiter=',')
         return executions_memory
 
+    # todo make possible to use multiple window sizes (combine results)
     def calculate_probabilities(self, window_size=1000):
         executions = self.extract_execution_memory()
         if executions.shape[0] % window_size > 0:
@@ -107,3 +108,6 @@ class CircuitRuns:
         os.makedirs(path, exist_ok=True)
         logging.info(f"Saving probabilities in {file_path} with shape {probabilities.shape}")
         np.save(file_path, probabilities)
+
+    def __str__(self) -> str:
+        return f"Circuit: {self.circuit.get_name()}; Backend: {self.backend.backend_name}; Shots: {self.shots}"

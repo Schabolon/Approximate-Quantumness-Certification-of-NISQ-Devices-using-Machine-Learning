@@ -2,6 +2,7 @@ import logging
 
 from circuit_runs import CircuitRuns
 from dataset import CustomDataset
+from model import svm
 from quantum_backends import QuantumBackends
 from quantum_circuits.walker import Walker
 
@@ -17,14 +18,17 @@ if __name__ == '__main__':
 
     data = [qc_data, simulator_data]
 
-    dataset = CustomDataset(data).get_dataset()
+    custom_dataset = CustomDataset(data)
 
-    # 4. Execute different learning algorithms
-    # 4.1 SVM
+    custom_dataset.print_overview()
 
-    # 4.2 Neuronal Model
+    # Execute different learning algorithms
+    # SVM
+    svm.evaluate_svm(custom_dataset)
 
-    # 4.3 Tuning Neuronal Model
+    # Neural Model
+
+    # Tuning Neural Model
 
     # TODO CNN
     # TODO LSTM

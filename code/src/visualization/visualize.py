@@ -5,7 +5,6 @@ from collections import Counter
 
 from qiskit.visualization import plot_distribution
 
-import data_sources.data
 from quantum_circuits.walker import Walker
 
 

@@ -37,7 +37,7 @@ def save_quantum_circuit_simulation(implemented_circuit: ImplementedQuantumCircu
             continue
 
         logging.info(f"Simulating circuit run {i}/{number_of_runs}.")
-        # transpiles the circuit into supported gates.
+        # transpiles the circuits into supported gates.
         transpiled_circuits = transpile(implemented_circuit.get_circuits(), simulator)
 
         result = simulator.run(transpiled_circuits, memory=True, shots=shots).result()
