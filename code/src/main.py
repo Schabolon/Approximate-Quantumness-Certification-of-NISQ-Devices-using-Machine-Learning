@@ -39,7 +39,7 @@ def create_stats_csv(circuit: ImplementedQuantumCircuit):
                 qc_data_2 = CircuitRuns(circuit, simulator)
 
                 data = [qc_data, qc_data_2]
-                custom_dataset = CustomDataset(data)
+                custom_dataset = CustomDataset(data, use_probabilities=True)
                 svm_acc = svm.evaluate_svm(custom_dataset)
                 results.append(svm_acc)
             results.insert(0, qc.backend_name)

@@ -36,11 +36,12 @@ class CircuitRuns:
     def get_execution_memory(self) -> np.ndarray:
         """
         Extracted memory as table looks like this (for example):
-                         | Circuit Step 1 | Circuit Step 2 | ... | Circuit Step n |
+        | Shot           | Circuit Step 1 | Circuit Step 2 | ... | Circuit Step n |
         | -------------- | -------------- | -------------- | --- | -------------- |
-        | 1. Shot result | 0x0            | 0x1            | ... | 0x0            |
-        | 2. Shot result | 0x3            | 0x3            | ... | 0x3            |
+        | 1              | 0x0            | 0x1            | ... | 0x0            |
+        | 2              | 0x3            | 0x3            | ... | 0x3            |
         | ...            | ...            | ...            | ... | ...            |
+        | 8000           | 0x1            | 0x0            | ... | 0x2            |
 
         All shots for the 1. circuit step are stored in the first column.
         For 8000 shots with 250 files in `circuit_execution_files` this results in 2.000.000 rows.
@@ -78,32 +79,33 @@ class CircuitRuns:
         executions_memory = np.array(executions_memory)
         logging.info(f"Saving executions in {output_filename} with shape {executions_memory.shape}")
         os.makedirs(os.path.dirname(output_filename), exist_ok=True)
-        np.savetxt(output_filename, executions_memory, delimiter=',')
+        np.savetxt(output_filename, executions_memory, fmt='%s', delimiter=',')
         return executions_memory
 
     # todo make possible to use multiple window sizes (combine results)
-    def get_probabilities(self, window_size=1000) -> np.ndarray:
-        executions = self.get_execution_memory()
-        if executions.shape[0] % window_size > 0:
-            raise Exception("Not divisible")
-
+    def get_probabilities(self, window_size) -> np.ndarray:
         path = f"../data/probabilities/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}"
+        os.makedirs(path, exist_ok=True)
         output_filename = os.path.join(path, f"probabilities-{window_size}-{self.backend.backend_name}.npy")
 
         if os.path.exists(output_filename):
             logging.info(f"Probabilities for {self.backend.backend_name} on circuit {self.circuit.get_name()} have already been calculated.")
             logging.debug("Loading data from already existing file.")
-            return np.loadtxt(output_filename, delimiter=',')
+            return np.load(output_filename)
+
+        executions = self.get_execution_memory()
+        if executions.shape[0] % window_size > 0:
+            raise Exception("Not divisible")
 
         logging.debug(f"Calculate probabilities with window_size={window_size}")
         num_rows = executions.shape[0]
         num_columns = executions.shape[1]
         probabilities = np.zeros((int(num_rows / window_size), num_columns, len(np.unique(executions))),
                                  dtype='float32')
-        for n in range(num_rows):
-            i = int(n / window_size)
-            for t in range(num_columns):
-                probabilities[i, t, executions[n, t]] += 1
+        for current_shot_num in range(num_rows):
+            i = int(current_shot_num / window_size)
+            for current_circuit_step in range(num_columns):
+                probabilities[i, current_circuit_step, int(executions[current_shot_num, current_circuit_step])] += 1
 
         probabilities = probabilities / window_size
         os.makedirs(path, exist_ok=True)

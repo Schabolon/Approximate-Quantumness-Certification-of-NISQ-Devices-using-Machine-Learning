@@ -14,12 +14,14 @@ class CustomDataset:
     labels: List[int]
     features: List[List[int]]
 
-    def __init__(self, circuit_runs: List[CircuitRuns]):
+    def __init__(self, circuit_runs: List[CircuitRuns], use_probabilities=False):
         self.circuit_runs = circuit_runs
         self.labels = []
         self.features = []
-        self.__load_data()
-        # todo make possible to use probabilities
+        if use_probabilities:
+            self.__load_probability_data()
+        else:
+            self.__load_data()
         # TODO add normalization for features?
         self.__shuffle()
 
@@ -54,10 +56,37 @@ class CustomDataset:
             assert len(self.labels) == len(self.features)
         logging.info("Finished loading dataset.")
 
+    def __load_probability_data(self):
+        logging.info("Loading probability dataset ...")
+        for circuit_run in self.circuit_runs:
+            # load features
+            window_size = 1000
+            if circuit_run.shots % window_size > 0:
+                raise Exception("Not divisible")
+            num_of_elements_per_feature = int(circuit_run.shots / window_size)
+            probabilities = circuit_run.get_probabilities(window_size)
+            num_rows = probabilities.shape[0]
+            num_columns = probabilities.shape[1]  # equals the number of steps the circuit was generated with
+            num_different_results = probabilities.shape[2]
+            for n in range(0, num_rows, num_of_elements_per_feature):
+                for t in range(num_columns):
+                    self.features.append(
+                        CustomDataset.__flatten(
+                            probabilities[n:n + num_of_elements_per_feature, t, :num_different_results].tolist()))
+            # add labels
+            num_labels = int(num_rows / num_of_elements_per_feature) * num_columns
+            self.labels.extend([circuit_run.backend.backend_type.label] * num_labels)
+            assert len(self.labels) == len(self.features)
+        logging.info("Finished loading probability dataset.")
+
     def __shuffle(self):
         combined = list(zip(self.features, self.labels))
         random.shuffle(combined)
         self.features, self.labels = zip(*combined)
+
+    @staticmethod
+    def __flatten(two_dimensional_list):
+        return [x for xs in two_dimensional_list for x in xs]
 
     def __str__(self) -> str:
         output = "Circuit runs in Dataset:\n"
