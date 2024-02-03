@@ -1,5 +1,6 @@
 import logging
 import csv
+import os
 
 from circuit_runs import CircuitRuns
 from dataset import CustomDataset
@@ -10,7 +11,9 @@ from quantum_circuits.walker import Walker
 
 
 def create_stats_csv(circuit: ImplementedQuantumCircuit):
-    with (open(f"../results/{circuit.get_name()}_svm_quantum_vs_simulator.csv", 'w', newline='') as csvfile):
+    path = "../results"
+    os.makedirs(path, exist_ok=True)
+    with (open(f"{path}/{circuit.get_name()}_svm_quantum_vs_simulator.csv", 'w', newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         first_row = ['quantum computer name / simulator name']

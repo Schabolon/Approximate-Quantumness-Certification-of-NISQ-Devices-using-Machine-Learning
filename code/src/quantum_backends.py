@@ -39,6 +39,7 @@ class QuantumBackends(QuantumBackend, Enum):
     STATEVECTOR_SIMULATOR = "statevector_simulator", QuantumBackendType.SIMULATOR
 
     # Simulators with error models
+    # todo is this one really with noise?
     QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR
 
     # Other backends with problems:

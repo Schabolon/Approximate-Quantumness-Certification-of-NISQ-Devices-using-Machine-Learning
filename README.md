@@ -22,7 +22,7 @@
 > - Creation: `python -m venv venv`
 > - Activation:
 >   - Windows: cmd: `venv\Scripts\activate.bat` or PowerShell: `venv\Scripts\Activate.ps1`
->   - Linux/MacOS: run `source myvenv/bin/activate`
+>   - Linux/MacOS: run `source venv/bin/activate`
  
 Install required packages: `pip install -r requirements.txt`
 
