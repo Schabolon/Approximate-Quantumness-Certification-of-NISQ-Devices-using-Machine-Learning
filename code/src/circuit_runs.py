@@ -33,7 +33,7 @@ class CircuitRuns:
     def get_extracted_memory_filename(self) -> str:
         return (f"../data/extracted_executions/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}/executions-memory-{self.backend.backend_name}.csv")
 
-    def extract_execution_memory(self) -> np.ndarray:
+    def get_execution_memory(self) -> np.ndarray:
         """
         Extracted memory as table looks like this (for example):
                          | Circuit Step 1 | Circuit Step 2 | ... | Circuit Step n |
@@ -49,6 +49,7 @@ class CircuitRuns:
         """
         executions_memory = []
 
+        # load execution memory if it has already been extracted before.
         output_filename = self.get_extracted_memory_filename()
         if os.path.exists(output_filename):
             logging.info(
@@ -81,19 +82,18 @@ class CircuitRuns:
         return executions_memory
 
     # todo make possible to use multiple window sizes (combine results)
-    def calculate_probabilities(self, window_size=1000):
-        executions = self.extract_execution_memory()
+    def get_probabilities(self, window_size=1000) -> np.ndarray:
+        executions = self.get_execution_memory()
         if executions.shape[0] % window_size > 0:
             raise Exception("Not divisible")
 
         path = f"../data/probabilities/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}"
-        file_path = os.path.join(path, f"probabilities-{window_size}-{self.backend.backend_name}.npy")
+        output_filename = os.path.join(path, f"probabilities-{window_size}-{self.backend.backend_name}.npy")
 
-        if os.path.exists(file_path):
+        if os.path.exists(output_filename):
             logging.info(f"Probabilities for {self.backend.backend_name} on circuit {self.circuit.get_name()} have already been calculated.")
-            # TODO auch laden + returnen?
-            logging.debug("Skipping ...")
-            return
+            logging.debug("Loading data from already existing file.")
+            return np.loadtxt(output_filename, delimiter=',')
 
         logging.debug(f"Calculate probabilities with window_size={window_size}")
         num_rows = executions.shape[0]
@@ -107,10 +107,12 @@ class CircuitRuns:
 
         probabilities = probabilities / window_size
         os.makedirs(path, exist_ok=True)
-        logging.info(f"Saving probabilities in {file_path} with shape {probabilities.shape}")
-        np.save(file_path, probabilities)
+        logging.info(f"Saving probabilities in {output_filename} with shape {probabilities.shape}")
+        np.save(output_filename, probabilities)
+        return probabilities
 
     def get_histogram_counts(self, step: int):
+        CircuitRuns.__change_work_dir_to_current()
         counts = {}
         for filename in self.get_circuit_run_result_filenames():
             content = pickle.load(open(filename, 'rb'))
@@ -120,3 +122,9 @@ class CircuitRuns:
 
     def __str__(self) -> str:
         return f"Circuit: {self.circuit.get_name()}; Backend: {self.backend.backend_name}; Shots: {self.shots}"
+
+    @staticmethod
+    def __change_work_dir_to_current():
+        script_path = os.path.abspath(__file__)
+        script_dir = os.path.dirname(script_path)
+        os.chdir(script_dir)

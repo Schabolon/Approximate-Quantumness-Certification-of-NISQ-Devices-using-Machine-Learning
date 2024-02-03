@@ -13,7 +13,7 @@ def create_stats_csv(circuit: ImplementedQuantumCircuit):
     with (open(f"../results/{circuit.get_name()}_svm_quantum_vs_simulator.csv", 'w', newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        first_row = ['quantum computer name / quantum computer name']
+        first_row = ['quantum computer name / simulator name']
         first_row.extend(QuantumBackends.get_quantum_computer_backends())
         csv_writer.writerow(first_row)
 

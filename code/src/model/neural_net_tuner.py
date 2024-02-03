@@ -1,5 +1,4 @@
 import keras_tuner as kt
-import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
@@ -52,7 +51,7 @@ def __model_builder(hp):
 
 # Hyper parameter tuning -> changing the model (number of neurons, activation function, optimizier, ...)
 def tune_and_evaluate_model(custom_dataset: CustomDataset):
-    train_features, train_labels, test_features, test_labels = custom_dataset.get_dataset_separated()
+    train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
     tuner = kt.Hyperband(__model_builder,
                          objective='val_accuracy',

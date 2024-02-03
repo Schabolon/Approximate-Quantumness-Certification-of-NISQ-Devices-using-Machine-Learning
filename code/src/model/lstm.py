@@ -9,7 +9,7 @@ from dataset import CustomDataset
 
 
 def evaluate_model(custom_dataset: CustomDataset):
-    train_features, train_labels, test_features, test_labels = custom_dataset.get_dataset_separated()
+    train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
     # todo reshape input data to (samples, timesteps, features)
     # like this: data = data.reshape((1, len(data), 1))

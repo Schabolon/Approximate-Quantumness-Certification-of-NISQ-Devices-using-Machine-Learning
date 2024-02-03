@@ -31,7 +31,7 @@ def __train(clf, train_features, train_labels, test_features, test_labels) -> tu
 
 
 def evaluate_svm(custom_dataset: CustomDataset) -> float:
-    train_features, train_labels, test_features, test_labels = custom_dataset.get_dataset_separated()
+    train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
     max_accuracy = -1
     for alg_num, (alg_name, alg_fun) in enumerate([
