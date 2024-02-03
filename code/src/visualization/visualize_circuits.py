@@ -1,6 +1,3 @@
-"""
-Provides utility functions for quantum circuits.
-"""
 from matplotlib import pyplot as plt
 from qiskit import QuantumCircuit
 
@@ -18,7 +15,7 @@ def get_all_circuits() -> list[ImplementedQuantumCircuit]:
 def save_circuits_to_image(circs: list[QuantumCircuit], circuit_name: str):
     for i in range(len(circs)):
         circs[i].draw(output='mpl')
-        plt.savefig("../../circuit_images/{}-step-{}.svg".format(circuit_name, i + 1))
+        plt.savefig("../../visualization/circuit_images/{}-step-{}.svg".format(circuit_name, i + 1))
         plt.close()
 
 

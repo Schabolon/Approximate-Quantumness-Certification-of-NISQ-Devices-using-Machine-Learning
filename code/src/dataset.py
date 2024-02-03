@@ -61,6 +61,7 @@ class CustomDataset:
             logging.info(f"Loaded Dataset {file_path}")
         except tf.errors.NotFoundError:
             dataset = self.__generate_dataset()
+            # todo stop generating datasets? (only lists are enough + shuffle)
             dataset.save(file_path)
         return dataset
 

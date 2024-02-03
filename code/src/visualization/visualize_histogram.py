@@ -1,34 +1,21 @@
-import glob
-import os
-import pickle
-from collections import Counter
-
 from qiskit.visualization import plot_distribution
 
+from circuit_runs import CircuitRuns
+from quantum_backends import QuantumBackends
 from quantum_circuits.walker import Walker
 
 
-def plot_probabilities(circuit, simulator_name, qc_name, step_to_compare):
-    simulator_counts = {}
-    for filename in data_sources.data.get_data_filenames(circuit, simulator_name):
-        content = pickle.load(open(filename, 'rb'))
-        simulator_counts = dict(
-            Counter(simulator_counts) + Counter(content["results"][step_to_compare]["data"]["counts"]))
-
-    qc_counts = {}
-    for filename in data_sources.data.get_data_filenames(circuit, qc_name):
-        content = pickle.load(open(filename, 'rb'))
-        qc_counts = dict(Counter(qc_counts) + Counter(content["results"][step_to_compare]["data"]["counts"]))
-
-    hist = plot_distribution([simulator_counts, qc_counts], title="Simulator vs Quantum Computer",
-                             legend=[simulator_name, qc_name], figsize=(13, 7))
-    hist.savefig(f'../../data/visualization/hist_{qc_name}_vs_{simulator_name}_step_{step_to_compare}.svg')
+def plot_probabilities(circuit, simulator, qc, step_to_compare):
+    cr_simulator = CircuitRuns(circuit, simulator)
+    cr_qc = CircuitRuns(circuit, qc)
+    hist = plot_distribution([
+        cr_simulator.get_histogram_counts(step_to_compare),
+        cr_qc.get_histogram_counts(step_to_compare)],
+        title="Simulator vs Quantum Computer",
+        legend=[simulator, qc], figsize=(13, 7))
+    hist.savefig(f'../../data/visualization/histogram/hist_{qc}_vs_{simulator}_step_{step_to_compare}.svg')
 
 
 if __name__ == "__main__":
     for i in range(8):
-        plot_probabilities(Walker(),
-                           data_sources.data.simulators.get_all_simulator_names()[0],
-                           data_sources.data.quantum_computers.quantum_computer_names[0],
-                           i)
-    exit(0)
+        plot_probabilities(Walker(), QuantumBackends.AER_SIMULATOR, QuantumBackends.IBMQ_QUITO, i)

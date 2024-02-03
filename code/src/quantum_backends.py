@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from quantum_backend_type import QuantumBackendType
 
 
-# Todo is this class a mixin?
 @dataclass
 class QuantumBackend:
     backend_name: str
@@ -21,6 +20,7 @@ class QuantumBackends(QuantumBackend, Enum):
     IBMQ_5_YORKTOWN = "ibmq_5_yorktown", QuantumBackendType.QUANTUM_COMPUTER
     IBMQ_BOGOTA = "ibmq_bogota", QuantumBackendType.QUANTUM_COMPUTER
     IBMQ_QUITO = "ibmq_quito", QuantumBackendType.QUANTUM_COMPUTER
+    IBMQ_LIMA = "ibmq_lima", QuantumBackendType.QUANTUM_COMPUTER
     # ROME is only used for circuit "Ramsey"
     # IBMQ_ROME = "ibmq_rome", QuantumBackendType.QUANTUM_COMPUTER
 

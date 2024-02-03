@@ -6,6 +6,7 @@ from typing import List
 
 import numpy as np
 
+from collections import Counter
 from quantum_backends import QuantumBackends
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 
@@ -108,6 +109,14 @@ class CircuitRuns:
         os.makedirs(path, exist_ok=True)
         logging.info(f"Saving probabilities in {file_path} with shape {probabilities.shape}")
         np.save(file_path, probabilities)
+
+    def get_histogram_counts(self, step: int):
+        counts = {}
+        for filename in self.get_circuit_run_result_filenames():
+            content = pickle.load(open(filename, 'rb'))
+            counts = dict(
+                Counter(counts) + Counter(content["results"][step]["data"]["counts"]))
+        return counts
 
     def __str__(self) -> str:
         return f"Circuit: {self.circuit.get_name()}; Backend: {self.backend.backend_name}; Shots: {self.shots}"
