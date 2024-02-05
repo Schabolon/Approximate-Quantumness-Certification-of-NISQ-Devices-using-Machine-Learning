@@ -15,7 +15,7 @@ def get_all_circuits() -> list[ImplementedQuantumCircuit]:
 def save_circuits_to_image(circs: list[QuantumCircuit], circuit_name: str):
     for i in range(len(circs)):
         circs[i].draw(output='mpl')
-        plt.savefig("../../visualization/circuit_images/{}-step-{}.svg".format(circuit_name, i + 1))
+        plt.savefig(f"../../data/visualization/circuit_images/{circuit_name}-step-{i + 1}.svg")
         plt.close()
 
 
@@ -32,4 +32,5 @@ def display_all_circuits_as_text():
 
 
 if __name__ == "__main__":
-    display_all_circuits_as_text()
+    #display_all_circuits_as_text()
+    save_circuits_to_image(Walker().get_circuits(), "walker")
