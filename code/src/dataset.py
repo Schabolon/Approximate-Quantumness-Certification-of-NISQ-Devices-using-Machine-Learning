@@ -44,6 +44,7 @@ class CustomDataset:
         return (self.features[:num_train_elements], self.labels[:num_train_elements],
                 self.features[num_train_elements:], self.labels[num_train_elements:])
 
+    # TODO die 9 seperaten runs nacheinander ins dataset einfügen?
     def __load_data(self):
         logging.info("Loading dataset ...")
         for circuit_run in self.circuit_runs:

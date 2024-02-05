@@ -12,7 +12,6 @@ from quantum_circuits.walker import Walker
 
 
 def create_stats_csv(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, window_size=0):
-    # todo include in the name whether probabilities have been used (+window size?)
     logging.info("Creating stats CSV ...")
     path = "../results"
     os.makedirs(path, exist_ok=True)
@@ -20,21 +19,13 @@ def create_stats_csv(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, wi
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         first_row = ['quantum computer name / simulator name']
-        first_row.extend(QuantumBackends.get_quantum_computer_backends())
+        first_row.extend(QuantumBackends.get_simulator_backends())
         csv_writer.writerow(first_row)
 
-        for row_num, qc in enumerate(QuantumBackends.get_quantum_computer_backends()):
-            if row_num == 0:
-                # skip the first data row
-                continue
+        for qc in QuantumBackends.get_quantum_computer_backends():
             qc_data = CircuitRuns(circuit, qc)
             results = []
-            for column_num, simulator in enumerate(QuantumBackends.get_simulator_backends()):
-                # remove "duplicates" (order doesn't matter)
-                if column_num >= row_num:
-                    results.append(0.00)
-                    continue
-
+            for simulator in QuantumBackends.get_simulator_backends():
                 qc_data_2 = CircuitRuns(circuit, simulator)
 
                 data = [qc_data, qc_data_2]
@@ -102,5 +93,5 @@ def basic_usage():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-    #create_stats_csv(Walker(), svm.SupportVectorMachine())
-    chart_probability_windows(Walker(), svm.SupportVectorMachine(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR)
+    create_stats_csv(Walker(), svm.SupportVectorMachine(), window_size=1000)
+    #chart_probability_windows(Walker(), svm.SupportVectorMachine(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR)
