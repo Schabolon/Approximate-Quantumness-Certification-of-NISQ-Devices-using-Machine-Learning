@@ -8,13 +8,17 @@ from quantum_backend_type import QuantumBackendType
 
 class CustomDataset:
     circuit_runs: List[CircuitRuns]
-
-    # steps: List[int]: circuit steps to take into account for generating the dataset.
-
+    steps: List[int]
     labels: List[int]
     features: List[List[int]]
 
-    def __init__(self, circuit_runs: List[CircuitRuns], window_size=0):
+    # these additional features and labels contain data from steps which are not taken into account in the
+    # "main" dataset.
+    # Todo use or remove?
+    additional_test_features: List[List[int]]
+    additional_test_labels: List[List[int]]
+
+    def __init__(self, circuit_runs: List[CircuitRuns], steps: List[int], window_size=0):
         """
         :param circuit_runs:
         :param window_size: uses probability data for the dataset if window_size > 0. (regular dataset otherwise).
@@ -22,6 +26,9 @@ class CustomDataset:
         self.circuit_runs = circuit_runs
         self.labels = []
         self.features = []
+        self.steps = steps
+        self.additional_test_features = []
+        self.additional_test_labels = []
         if window_size > 0:
             self.__load_probability_data(window_size)
         else:
@@ -30,8 +37,8 @@ class CustomDataset:
         self.__shuffle()
 
         # sanity checks
-        assert self.labels.count(QuantumBackendType.QUANTUM_COMPUTER.label) > 10
-        assert self.labels.count(QuantumBackendType.SIMULATOR.label) > 10
+        assert self.labels.count(QuantumBackendType.QUANTUM_COMPUTER.label) > 1
+        assert self.labels.count(QuantumBackendType.SIMULATOR.label) > 1
         assert len(self.labels) == len(self.features)
 
     def get_test_train_split(self, train_split=0.8):
@@ -51,12 +58,11 @@ class CustomDataset:
             # load features
             extracted_executions = circuit_run.get_execution_memory()
             num_rows = extracted_executions.shape[0]
-            num_columns = extracted_executions.shape[1]  # equals the number of steps the circuit was generated with
             for n in range(0, num_rows, circuit_run.shots):
-                for t in range(num_columns):
+                for t in self.steps:
                     self.features.append(extracted_executions[n:n + circuit_run.shots, t].tolist())
             # add labels
-            num_labels = int(num_rows / circuit_run.shots) * num_columns
+            num_labels = int(num_rows / circuit_run.shots) * len(self.steps)
             self.labels.extend([circuit_run.backend.backend_type.label] * num_labels)
             assert len(self.labels) == len(self.features)
         logging.info("Finished loading dataset.")
@@ -70,15 +76,14 @@ class CustomDataset:
             num_of_elements_per_feature = int(circuit_run.shots / window_size)
             probabilities = circuit_run.get_probabilities(window_size)
             num_rows = probabilities.shape[0]
-            num_columns = probabilities.shape[1]  # equals the number of steps the circuit was generated with
             num_different_results = probabilities.shape[2]
             for n in range(0, num_rows, num_of_elements_per_feature):
-                for t in range(num_columns):
+                for t in self.steps:
                     self.features.append(
                         CustomDataset.__flatten(
                             probabilities[n:n + num_of_elements_per_feature, t, :num_different_results].tolist()))
             # add labels
-            num_labels = int(num_rows / num_of_elements_per_feature) * num_columns
+            num_labels = int(num_rows / num_of_elements_per_feature) * len(self.steps)
             self.labels.extend([circuit_run.backend.backend_type.label] * num_labels)
             assert len(self.labels) == len(self.features)
         logging.info("Finished loading probability dataset.")

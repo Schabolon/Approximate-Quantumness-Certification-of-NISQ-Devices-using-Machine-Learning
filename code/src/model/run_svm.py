@@ -8,7 +8,7 @@ from dataset import CustomDataset
 from model.ml_wrapper import MLWrapper
 
 
-class SupportVectorMachine(MLWrapper):
+class RunSVM(MLWrapper):
 
     def __init__(self):
         super().__init__("svm")
@@ -57,7 +57,7 @@ class SupportVectorMachine(MLWrapper):
             ["Poly d.4 SVM", svm.SVC(kernel='poly', degree=4, decision_function_shape='ovr')],
             ["RBF SVM", svm.SVC(kernel='rbf', decision_function_shape='ovr')],
         ]):
-            acc_test, acc_train = SupportVectorMachine.__train_and_evaluate(alg_fun, train_features, train_labels, test_features, test_labels)
+            acc_test, acc_train = RunSVM.__train_and_evaluate(alg_fun, train_features, train_labels, test_features, test_labels)
             logging.info(f"SVM-Algorithm: {alg_name}")
             logging.info(f"Test acc.: {acc_test}; (Train acc.: {acc_train})")
             if acc_test > max_accuracy:
