@@ -12,10 +12,10 @@ def evaluate_neural_net(custom_dataset: CustomDataset):
     train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
     model = tf.keras.Sequential([
-        layers.InputLayer(input_shape=(8000,)),
-        layers.Dense(1000, activation='tanh'),
-        layers.Dense(500, activation='tanh'),
-        layers.Dense(128, activation='relu'),
+        layers.InputLayer(input_shape=(len(train_features[0]),)),
+        layers.Dense(10, activation='tanh'),
+        layers.Dense(5, activation='tanh'),
+        # layers.Dense(128, activation='relu'),
         # use 'sigmoid' for output activation, squishes the values between 0 and 1.
         layers.Dense(1, activation='sigmoid')
     ])

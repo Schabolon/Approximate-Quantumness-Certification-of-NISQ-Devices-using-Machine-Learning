@@ -83,7 +83,7 @@ class CircuitRuns:
         return executions_memory
 
     # todo make possible to use multiple window sizes (combine results)
-    def get_probabilities(self, window_size) -> np.ndarray:
+    def get_probabilities(self, window_size: int) -> np.ndarray:
         path = f"../data/probabilities/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}"
         os.makedirs(path, exist_ok=True)
         output_filename = os.path.join(path, f"probabilities-{window_size}-{self.backend.backend_name}.npy")

@@ -14,12 +14,16 @@ class CustomDataset:
     labels: List[int]
     features: List[List[int]]
 
-    def __init__(self, circuit_runs: List[CircuitRuns], use_probabilities=False):
+    def __init__(self, circuit_runs: List[CircuitRuns], window_size=0):
+        """
+        :param circuit_runs:
+        :param window_size: uses probability data for the dataset if window_size > 0. (regular dataset otherwise).
+        """
         self.circuit_runs = circuit_runs
         self.labels = []
         self.features = []
-        if use_probabilities:
-            self.__load_probability_data()
+        if window_size > 0:
+            self.__load_probability_data(window_size)
         else:
             self.__load_data()
         # TODO add normalization for features?
@@ -56,11 +60,10 @@ class CustomDataset:
             assert len(self.labels) == len(self.features)
         logging.info("Finished loading dataset.")
 
-    def __load_probability_data(self):
+    def __load_probability_data(self, window_size: int):
         logging.info("Loading probability dataset ...")
         for circuit_run in self.circuit_runs:
             # load features
-            window_size = 1000
             if circuit_run.shots % window_size > 0:
                 raise Exception("Not divisible")
             num_of_elements_per_feature = int(circuit_run.shots / window_size)
