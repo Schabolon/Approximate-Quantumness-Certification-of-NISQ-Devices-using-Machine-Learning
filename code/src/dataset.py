@@ -42,12 +42,24 @@ class CustomDataset:
 
     def get_test_train_split(self, train_split=0.8):
         """
-        :param train_split: percentage of features/labels used for training
+        :param train_split: percentage of features/labels which can be used for training.
+                            the test features/labels are (1-train_split) percent.
         :return: (train_features, train_labels, test_features, test_labels)
         """
+        train_f, train_l, _, _, test_f, test_l = self.get_test_train_validation_split(train_split=train_split, test_split=1 - train_split, validation_split=0)
+        return train_f, train_l, test_f, test_l
+
+    def get_test_train_validation_split(self, train_split=0.6, validation_split=0.2, test_split=0.2):
+        """
+        :param train_split: percentage of features/labels which can be used for training.
+        :param validation_split: percentage of features/labels which can be used for validation.
+        :param test_split: percentage of features/labels which can be used for validation.
+        :return: (train_features, train_labels, validation_features, validation_labels, test_features, test_labels)
+        """
+        assert train_split + validation_split + test_split == 1
         assert len(self.labels) == len(self.features)
 
-        split_ratios = np.array([train_split, 1 - train_split])
+        split_ratios = np.array([train_split, validation_split, test_split])
 
         split_indices_features = (self.features.shape[0] * np.cumsum(split_ratios)).astype(int)
         split_features = np.split(self.features, split_indices_features[:-1])
@@ -55,7 +67,7 @@ class CustomDataset:
         split_indices_labels = (self.labels.size * np.cumsum(split_ratios)).astype(int)
         split_labels = np.split(self.labels, split_indices_labels[:-1])
 
-        return split_features[0], split_labels[0], split_features[1], split_labels[1]
+        return split_features[0], split_labels[0], split_features[1], split_labels[1], split_features[2], split_labels[2]
 
     def __normalize_features(self, normalization_technique: NormalizationTechnique):
         match normalization_technique:

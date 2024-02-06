@@ -12,7 +12,7 @@ class RunSVM(MLWrapper):
         super().__init__("svm")
 
     @staticmethod
-    def __train_and_evaluate(clf, train_features, train_labels, test_features, test_labels) -> tuple[float, float]:
+    def __train_and_evaluate(clf: svm.SVC, train_features, train_labels, test_features, test_labels) -> tuple[float, float]:
         """
         :param clf:
         :param train_features:
@@ -44,11 +44,11 @@ class RunSVM(MLWrapper):
 
     @staticmethod
     def train_and_evaluate(custom_dataset: CustomDataset) -> float:
-        train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
+        train_features, train_labels, val_features, val_labels, test_features, test_labels = custom_dataset.get_test_train_validation_split()
 
         max_accuracy = -1
-        # TODO use only 20% of the data for "validation" (which algorithm to choose)
-        # TODO or get rid of multiple algorithms all together? (and only use RBF?)
+        best_fun: svm.SVC
+        best_alg_name = ""
         for alg_num, (alg_name, alg_fun) in enumerate([
             ["Linear SVM (LinearSVC)", svm.LinearSVC()],
             ["Linear SVM", svm.SVC(kernel='linear', decision_function_shape='ovr')],
@@ -57,10 +57,19 @@ class RunSVM(MLWrapper):
             ["Poly d.4 SVM", svm.SVC(kernel='poly', degree=4, decision_function_shape='ovr')],
             ["RBF SVM", svm.SVC(kernel='rbf', decision_function_shape='ovr')],
         ]):
-            acc_test, acc_train = RunSVM.__train_and_evaluate(alg_fun, train_features, train_labels, test_features, test_labels)
-            logging.info(f"SVM-Algorithm: {alg_name}")
-            logging.info(f"Test acc.: {acc_test}; (Train acc.: {acc_train})")
+            # Uses the validation part of the dataset to find the algorithm which seems to fit best.
+            acc_test, acc_train = RunSVM.__train_and_evaluate(alg_fun, val_features, val_labels, test_features, test_labels)
+            logging.debug(f"SVM-Algorithm: {alg_name}")
+            logging.debug(f"Test acc.: {acc_test}; (Train acc.: {acc_train})")
             if acc_test > max_accuracy:
                 max_accuracy = acc_test
+                best_fun = alg_fun
+                best_alg_name = alg_name
+
+        # Train best algorithm
+        acc_test, acc_train = RunSVM.__train_and_evaluate(best_fun, train_features, train_labels, test_features, test_labels)
+        logging.info(f"SVM-Algorithm: {best_alg_name}")
+        logging.info(f"Test acc.: {acc_test}; (Train acc.: {acc_train})")
+
 
         return max_accuracy
