@@ -21,7 +21,8 @@ class CustomDataset:
     labels: npt.NDArray[np.int8]
     features: npt.NDArray[np.float32]
 
-    def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1, normalization_technique=NormalizationTechnique.NONE):
+    def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1,
+                 normalization_technique=NormalizationTechnique.NONE):
         """
         :param circuit_run_data:
         :param window_size: uses probability data for the dataset if window_size > 1. ("regular" dataset otherwise).
@@ -68,7 +69,6 @@ class CustomDataset:
                 features_std = self.features.mean(axis=0)
                 for i, feature in enumerate(self.features):
                     self.features[i] = (feature - features_mean) / features_std
-
 
     def __load_probability_data(self, window_size: int):
         logging.info("Loading probability dataset ...")

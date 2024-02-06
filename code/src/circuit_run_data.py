@@ -8,6 +8,7 @@ import numpy as np
 
 from collections import Counter
 
+import simulator
 from quantum_backend_type import QuantumBackendType
 from quantum_backends import QuantumBackends
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
@@ -17,10 +18,15 @@ class CircuitRunData:
     circuit: ImplementedQuantumCircuit
     backend: QuantumBackends
 
-    #todo run simulator if simulator + no data found
     def __init__(self, circuit: ImplementedQuantumCircuit, backend: QuantumBackends):
         self.circuit = circuit
         self.backend = backend
+        if not self.__execution_data_exists():
+            logging.debug(f"Could not find run data for circuit {circuit.get_name()} and backend {backend.backend_name}.")
+            if self.backend.backend_type == QuantumBackendType.QUANTUM_COMPUTER:
+                raise Exception("No quantum computer data found!")
+            elif self.backend.backend_type == QuantumBackendType.SIMULATOR:
+                simulator.save_quantum_circuit_simulation(circuit, backend.backend_name)
         self.shots = self.__extract_shots()
 
     def get_circuit_run_result_filenames(self) -> List[str]:
@@ -32,7 +38,7 @@ class CircuitRunData:
         return filenames
 
     def get_extracted_memory_filename(self) -> str:
-        return (f"../data/extracted_executions/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}/executions-memory-{self.backend.backend_name}.csv")
+        return f"../data/extracted_executions/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}/executions-memory-{self.backend.backend_name}.csv"
 
     def get_execution_memory(self) -> np.ndarray:
         """
@@ -135,6 +141,12 @@ class CircuitRunData:
                 else:
                     assert noise == content['results'][i]['metadata']['noise']
         return noise
+
+    def __execution_data_exists(self) -> bool:
+        for filename in self.get_circuit_run_result_filenames():
+            if not os.path.exists(filename):
+                return False
+        return True
 
     def __extract_shots(self) -> int:
         shots = 0
