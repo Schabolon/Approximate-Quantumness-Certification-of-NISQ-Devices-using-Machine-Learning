@@ -49,7 +49,7 @@ def chart_probability_windows(circuit: ImplementedQuantumCircuit, ml_model: MLWr
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow(['window size', 'accuracy'])
         data = [CircuitRunData(circuit, quantum_backend), CircuitRunData(circuit, quantum_backend_2)]
-        for window_size in [0, 1, 5, 8, 10, 40, 50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:
+        for window_size in [1, 5, 8, 10, 40, 50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:
             logging.debug(f"Calculating accuracy with window size {window_size}.")
             results = [window_size]
             custom_dataset = CustomDataset(data, window_size)
@@ -122,7 +122,7 @@ def basic_usage():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-    basic_usage()
+    #basic_usage()
     #create_quantum_computers_vs_simulators_stats_csv(Walker(), svm.SupportVectorMachine(), window_size=1000)
     #course_of_accuracy_different_steps(Walker(), run_cnn.RunCNN(), QuantumBackends.IBMQ_LIMA, QuantumBackends.QUASM_SIMULATOR, window_size=1000)
-    #chart_probability_windows(Walker(), svm.SupportVectorMachine(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR)
+    chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR)
