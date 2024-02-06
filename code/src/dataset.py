@@ -3,6 +3,7 @@ from enum import Enum
 from typing import List
 
 import numpy as np
+import numpy.typing as npt
 
 from circuit_run_data import CircuitRunData
 from quantum_backend_type import QuantumBackendType
@@ -11,13 +12,14 @@ from quantum_backend_type import QuantumBackendType
 class NormalizationTechnique(Enum):
     NONE = 0
     MIN_MAX = 1
+    MEAN_STD = 2
 
 
 class CustomDataset:
     circuit_run_data: List[CircuitRunData]
     steps: List[int]
-    labels: np.array
-    features: np.array
+    labels: npt.NDArray[np.int8]
+    features: npt.NDArray[np.float32]
 
     def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1, normalization_technique=NormalizationTechnique.NONE):
         """
@@ -25,7 +27,7 @@ class CustomDataset:
         :param window_size: uses probability data for the dataset if window_size > 1. ("regular" dataset otherwise).
         """
         self.circuit_run_data = circuit_run_data
-        self.labels = np.array([])
+        self.labels = np.array([], dtype=np.int8)
         self.features = np.array([])
         self.steps = steps
         self.__load_probability_data(window_size)
@@ -44,12 +46,12 @@ class CustomDataset:
         """
         assert len(self.labels) == len(self.features)
 
-        split_ratios_features = np.array([train_split, 1 - train_split])
-        split_indices_features = (self.features.shape[0] * np.cumsum(split_ratios_features)).astype(int)
+        split_ratios = np.array([train_split, 1 - train_split])
+
+        split_indices_features = (self.features.shape[0] * np.cumsum(split_ratios)).astype(int)
         split_features = np.split(self.features, split_indices_features[:-1])
 
-        split_ratios_labels = np.array([train_split, 1 - train_split])
-        split_indices_labels = (self.labels.size * np.cumsum(split_ratios_labels)).astype(int)
+        split_indices_labels = (self.labels.size * np.cumsum(split_ratios)).astype(int)
         split_labels = np.split(self.labels, split_indices_labels[:-1])
 
         return split_features[0], split_labels[0], split_features[1], split_labels[1]
@@ -57,10 +59,16 @@ class CustomDataset:
     def __normalize_features(self, normalization_technique: NormalizationTechnique):
         match normalization_technique:
             case NormalizationTechnique.MIN_MAX:
-                feature_min = np.min(self.features)
-                feature_max = np.max(self.features)
+                features_min = np.min(self.features)
+                features_max = np.max(self.features)
                 for i, feature in enumerate(self.features):
-                    self.features[i] = (feature - feature_min) / (feature_max - feature_min)
+                    self.features[i] = (feature - features_min) / (features_max - features_min)
+            case NormalizationTechnique.MEAN_STD:
+                features_mean = self.features.mean(axis=0)
+                features_std = self.features.mean(axis=0)
+                for i, feature in enumerate(self.features):
+                    self.features[i] = (feature - features_mean) / features_std
+
 
     def __load_probability_data(self, window_size: int):
         logging.info("Loading probability dataset ...")

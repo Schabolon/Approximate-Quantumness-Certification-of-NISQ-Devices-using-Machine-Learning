@@ -3,7 +3,7 @@ import logging
 import os
 
 from circuit_run_data import CircuitRunData
-from dataset import CustomDataset
+from dataset import CustomDataset, NormalizationTechnique
 from model import run_svm, run_neural_net, neural_net_tuner, run_cnn
 from model.ml_wrapper import MLWrapper
 from quantum_backends import QuantumBackends
@@ -100,7 +100,7 @@ def basic_usage():
 
     data = [qc_data, simulator_data]
 
-    custom_dataset = CustomDataset(data, list(range(0, 1)), 1000)
+    custom_dataset = CustomDataset(data, list(range(0, 1)), 1000, NormalizationTechnique.NONE)
 
     # Execute different learning algorithms
     # SVM
