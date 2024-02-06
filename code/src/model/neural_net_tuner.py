@@ -5,13 +5,14 @@ from tensorflow import keras
 from dataset import CustomDataset
 
 
-def __model_builder(hp):
+def __model_builder(hp, input_dimension):
     model = keras.Sequential()
 
     # first layer
     hp_first_layer_units = hp.Int('first_layer_units', min_value=32, max_value=4096, step=32)
     hp_first_layer_activation = hp.Choice('first_layer_activation', values=['relu', 'sigmoid', 'tanh'])
     model.add(
+        # TODO adjust input shape dynamically
         tf.keras.layers.Dense(units=hp_first_layer_units, input_shape=(8000,), activation=hp_first_layer_activation)),
 
     # second layer

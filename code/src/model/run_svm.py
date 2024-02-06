@@ -1,7 +1,5 @@
 import logging
-from typing import Tuple
 
-import numpy as np
 from sklearn import svm
 
 from dataset import CustomDataset
@@ -49,6 +47,8 @@ class RunSVM(MLWrapper):
         train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
         max_accuracy = -1
+        # TODO use only 20% of the data for "validation" (which algorithm to choose)
+        # TODO or get rid of multiple algorithms all together? (and only use RBF?)
         for alg_num, (alg_name, alg_fun) in enumerate([
             ["Linear SVM (LinearSVC)", svm.LinearSVC()],
             ["Linear SVM", svm.SVC(kernel='linear', decision_function_shape='ovr')],

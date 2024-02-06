@@ -8,6 +8,7 @@ from qiskit import transpile
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 
 
+# TODO add noise
 def save_quantum_circuit_simulation(implemented_circuit: ImplementedQuantumCircuit, simulator_name: str,
                                     number_of_runs=250, shots=8000) -> list[str]:
     """

@@ -19,7 +19,7 @@ class RunNeuralNet(MLWrapper):
         train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
         model = tf.keras.Sequential([
-            layers.InputLayer(input_shape=(len(train_features[0]),)),
+            layers.InputLayer(input_shape=(train_features.shape[1], )),
             layers.Dense(10, activation='tanh'),
             layers.Dense(5, activation='tanh'),
             # layers.Dense(128, activation='relu'),

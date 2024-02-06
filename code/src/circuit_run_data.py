@@ -2,25 +2,26 @@ import glob
 import logging
 import os
 import pickle
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
 from collections import Counter
+
+from quantum_backend_type import QuantumBackendType
 from quantum_backends import QuantumBackends
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 
 
-class CircuitRuns:
+class CircuitRunData:
     circuit: ImplementedQuantumCircuit
     backend: QuantumBackends
-    shots: int
 
     #todo run simulator if simulator + no data found
-    def __init__(self, circuit: ImplementedQuantumCircuit, backend: QuantumBackends, shots=8000):
+    def __init__(self, circuit: ImplementedQuantumCircuit, backend: QuantumBackends):
         self.circuit = circuit
         self.backend = backend
-        self.shots = shots
+        self.shots = self.__extract_shots()
 
     def get_circuit_run_result_filenames(self) -> List[str]:
         file_pattern = (f"../data/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}"
@@ -65,8 +66,7 @@ class CircuitRuns:
                 logging.warning(f"File {filename} could not be found. Skipping ...")
                 continue
             circuit_results = pickle.load(open(filename, 'rb'))
-            shots = len(circuit_results['results'][0]['data']['memory'])
-            for n in range(shots):
+            for n in range(self.shots):
                 current_execution = []
                 for t in range(len(circuit_results['results'])):
                     execution = int(circuit_results['results'][t]['data']['memory'][n], 0)
@@ -82,7 +82,6 @@ class CircuitRuns:
         np.savetxt(output_filename, executions_memory, fmt='%s', delimiter=',')
         return executions_memory
 
-    # todo make possible to use multiple window sizes (combine results)
     def get_probabilities(self, window_size: int) -> np.ndarray:
         path = f"../data/probabilities/{self.backend.backend_type.folder_name}/{self.circuit.get_name()}"
         os.makedirs(path, exist_ok=True)
@@ -114,13 +113,40 @@ class CircuitRuns:
         return probabilities
 
     def get_histogram_counts(self, step: int):
-        CircuitRuns.__change_work_dir_to_current()
+        CircuitRunData.__change_work_dir_to_current()
         counts = {}
         for filename in self.get_circuit_run_result_filenames():
             content = pickle.load(open(filename, 'rb'))
             counts = dict(
                 Counter(counts) + Counter(content["results"][step]["data"]["counts"]))
         return counts
+
+    def get_noise_level(self) -> Optional[str]:
+        if self.backend.backend_type == QuantumBackendType.QUANTUM_COMPUTER:
+            return None
+
+        noise = ""
+        for filename in self.get_circuit_run_result_filenames():
+            content = pickle.load(open(filename, 'rb'))
+            num_results = len(content['results'])
+            for i in range(num_results):
+                if noise == "":
+                    noise = content['results'][i]['metadata']['noise']
+                else:
+                    assert noise == content['results'][i]['metadata']['noise']
+        return noise
+
+    def __extract_shots(self) -> int:
+        shots = 0
+        for filename in self.get_circuit_run_result_filenames():
+            content = pickle.load(open(filename, 'rb'))
+            num_results = len(content['results'])
+            for i in range(num_results):
+                if shots == 0:
+                    shots = int(content['results'][i]['shots'])
+                else:
+                    assert shots == int(content['results'][i]['shots'])
+        return shots
 
     def __str__(self) -> str:
         return f"Circuit: {self.circuit.get_name()}; Backend: {self.backend.backend_name}; Shots: {self.shots}"
@@ -130,3 +156,4 @@ class CircuitRuns:
         script_path = os.path.abspath(__file__)
         script_dir = os.path.dirname(script_path)
         os.chdir(script_dir)
+

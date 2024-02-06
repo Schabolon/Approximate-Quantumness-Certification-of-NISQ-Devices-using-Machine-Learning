@@ -1,7 +1,7 @@
 import numpy as np
 from qiskit.visualization import plot_distribution
 
-from circuit_runs import CircuitRuns
+from circuit_run_data import CircuitRunData
 from quantum_backends import QuantumBackends
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 from quantum_circuits.walker import Walker
@@ -9,8 +9,8 @@ from quantum_circuits.walker import Walker
 
 def plot_histogram_simulator_vs_qc(circuit: ImplementedQuantumCircuit, simulator: QuantumBackends, qc: QuantumBackends,
                                    step_to_compare):
-    cr_simulator = CircuitRuns(circuit, simulator)
-    cr_qc = CircuitRuns(circuit, qc)
+    cr_simulator = CircuitRunData(circuit, simulator)
+    cr_qc = CircuitRunData(circuit, qc)
     hist = plot_distribution([
         cr_simulator.get_histogram_counts(step_to_compare),
         cr_qc.get_histogram_counts(step_to_compare)],
@@ -37,12 +37,12 @@ def plot_overview_histogram(circuit: ImplementedQuantumCircuit, step_to_compare:
     data = []
     legend_names = []
     for simulator in QuantumBackends.get_simulator_backends():
-        cr_simulator = CircuitRuns(circuit, simulator)
+        cr_simulator = CircuitRunData(circuit, simulator)
         data.append(cr_simulator.get_histogram_counts(step_to_compare))
         legend_names.append(simulator.backend_name)
 
     for i, qc in enumerate(QuantumBackends.get_quantum_computer_backends()):
-        cr_qc = CircuitRuns(circuit, qc)
+        cr_qc = CircuitRunData(circuit, qc)
         data.append(cr_qc.get_histogram_counts(step_to_compare))
         legend_names.append(qc.backend_name)
 

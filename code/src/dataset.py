@@ -1,44 +1,40 @@
 import logging
-import random
+from enum import Enum
 from typing import List
 
-from circuit_runs import CircuitRuns
+import numpy as np
+
+from circuit_run_data import CircuitRunData
 from quantum_backend_type import QuantumBackendType
 
 
+class NormalizationTechnique(Enum):
+    NONE = 0
+    MIN_MAX = 1
+
+
 class CustomDataset:
-    circuit_runs: List[CircuitRuns]
+    circuit_run_data: List[CircuitRunData]
     steps: List[int]
-    labels: List[int]
-    features: List[List[int]]
+    labels: np.array
+    features: np.array
 
-    # these additional features and labels contain data from steps which are not taken into account in the
-    # "main" dataset.
-    # Todo use or remove?
-    additional_test_features: List[List[int]]
-    additional_test_labels: List[List[int]]
-
-    def __init__(self, circuit_runs: List[CircuitRuns], steps: List[int], window_size=0):
+    def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1, normalization_technique=NormalizationTechnique.NONE):
         """
-        :param circuit_runs:
-        :param window_size: uses probability data for the dataset if window_size > 0. (regular dataset otherwise).
+        :param circuit_run_data:
+        :param window_size: uses probability data for the dataset if window_size > 1. ("regular" dataset otherwise).
         """
-        self.circuit_runs = circuit_runs
-        self.labels = []
-        self.features = []
+        self.circuit_run_data = circuit_run_data
+        self.labels = np.array([])
+        self.features = np.array([])
         self.steps = steps
-        self.additional_test_features = []
-        self.additional_test_labels = []
-        if window_size > 0:
-            self.__load_probability_data(window_size)
-        else:
-            self.__load_data()
-        # TODO add normalization for features?
+        self.__load_probability_data(window_size)
+        self.__normalize_features(normalization_technique)
         self.__shuffle()
 
         # sanity checks
-        assert self.labels.count(QuantumBackendType.QUANTUM_COMPUTER.label) > 1
-        assert self.labels.count(QuantumBackendType.SIMULATOR.label) > 1
+        assert np.count_nonzero(self.labels == QuantumBackendType.QUANTUM_COMPUTER.label) > 1
+        assert np.count_nonzero(self.labels == QuantumBackendType.SIMULATOR.label) > 1
         assert len(self.labels) == len(self.features)
 
     def get_test_train_split(self, train_split=0.8):
@@ -47,58 +43,56 @@ class CustomDataset:
         :return: (train_features, train_labels, test_features, test_labels)
         """
         assert len(self.labels) == len(self.features)
-        num_train_elements = int(len(self.labels) * train_split)
-        return (self.features[:num_train_elements], self.labels[:num_train_elements],
-                self.features[num_train_elements:], self.labels[num_train_elements:])
 
-    # TODO die 9 seperaten runs nacheinander ins dataset einfügen?
-    def __load_data(self):
-        logging.info("Loading dataset ...")
-        for circuit_run in self.circuit_runs:
-            # load features
-            extracted_executions = circuit_run.get_execution_memory()
-            num_rows = extracted_executions.shape[0]
-            for n in range(0, num_rows, circuit_run.shots):
-                for t in self.steps:
-                    self.features.append(extracted_executions[n:n + circuit_run.shots, t].tolist())
-            # add labels
-            num_labels = int(num_rows / circuit_run.shots) * len(self.steps)
-            self.labels.extend([circuit_run.backend.backend_type.label] * num_labels)
-            assert len(self.labels) == len(self.features)
-        logging.info("Finished loading dataset.")
+        split_ratios_features = np.array([train_split, 1 - train_split])
+        split_indices_features = (self.features.shape[0] * np.cumsum(split_ratios_features)).astype(int)
+        split_features = np.split(self.features, split_indices_features[:-1])
+
+        split_ratios_labels = np.array([train_split, 1 - train_split])
+        split_indices_labels = (self.labels.size * np.cumsum(split_ratios_labels)).astype(int)
+        split_labels = np.split(self.labels, split_indices_labels[:-1])
+
+        return split_features[0], split_labels[0], split_features[1], split_labels[1]
+
+    def __normalize_features(self, normalization_technique: NormalizationTechnique):
+        match normalization_technique:
+            case NormalizationTechnique.MIN_MAX:
+                feature_min = np.min(self.features)
+                feature_max = np.max(self.features)
+                for i, feature in enumerate(self.features):
+                    self.features[i] = (feature - feature_min) / (feature_max - feature_min)
 
     def __load_probability_data(self, window_size: int):
         logging.info("Loading probability dataset ...")
-        for circuit_run in self.circuit_runs:
-            # load features
+        for circuit_run in self.circuit_run_data:
             if circuit_run.shots % window_size > 0:
                 raise Exception("Not divisible")
-            num_of_elements_per_feature = int(circuit_run.shots / window_size)
+            # load features
             probabilities = circuit_run.get_probabilities(window_size)
-            num_rows = probabilities.shape[0]
-            num_different_results = probabilities.shape[2]
-            for n in range(0, num_rows, num_of_elements_per_feature):
-                for t in self.steps:
-                    self.features.append(
-                        CustomDataset.__flatten(
-                            probabilities[n:n + num_of_elements_per_feature, t, :num_different_results].tolist()))
+            # take only data for step
+            logging.debug(f"Taking only measurement steps {self.steps}")
+            probabilities = probabilities[:, self.steps, :]
+
+            new_feature_probabilities = probabilities.reshape(probabilities.shape[0], -1)
+            if len(self.features) > 0:
+                self.features = np.concatenate((self.features, new_feature_probabilities))
+            else:
+                self.features = new_feature_probabilities
+
             # add labels
-            num_labels = int(num_rows / num_of_elements_per_feature) * len(self.steps)
-            self.labels.extend([circuit_run.backend.backend_type.label] * num_labels)
+            num_labels = len(new_feature_probabilities)
+            self.labels = np.concatenate((self.labels, np.array([circuit_run.backend.backend_type.label] * num_labels)))
             assert len(self.labels) == len(self.features)
         logging.info("Finished loading probability dataset.")
 
     def __shuffle(self):
-        combined = list(zip(self.features, self.labels))
-        random.shuffle(combined)
-        self.features, self.labels = zip(*combined)
-
-    @staticmethod
-    def __flatten(two_dimensional_list):
-        return [x for xs in two_dimensional_list for x in xs]
+        assert len(self.features) == len(self.labels)
+        shuffle_index = np.random.permutation(len(self.features))
+        self.features = self.features[shuffle_index]
+        self.labels = self.labels[shuffle_index]
 
     def __str__(self) -> str:
         output = "Circuit runs in Dataset:\n"
-        for c in self.circuit_runs:
+        for c in self.circuit_run_data:
             output += f"    {c}\n"
         return output

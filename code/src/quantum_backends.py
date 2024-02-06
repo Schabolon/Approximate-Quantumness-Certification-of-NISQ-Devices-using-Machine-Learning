@@ -5,13 +5,12 @@ from quantum_backend_type import QuantumBackendType
 
 
 @dataclass
-class QuantumBackend:
+class _QuantumBackend:
     backend_name: str
     backend_type: QuantumBackendType
 
 
-# todo use flag instead of enum?
-class QuantumBackends(QuantumBackend, Enum):
+class QuantumBackends(_QuantumBackend, Enum):
     # Quantum Computers
     IBMQ_ATHENS = "ibmq_athens", QuantumBackendType.QUANTUM_COMPUTER
     IMBQ_SANTIAGO = "ibmq_santiago", QuantumBackendType.QUANTUM_COMPUTER
@@ -37,10 +36,10 @@ class QuantumBackends(QuantumBackend, Enum):
     AER_SIMULATOR_STATEVECTOR = "aer_simulator_statevector", QuantumBackendType.SIMULATOR
     AER_SIMULATOR_MATRIX_PRODUCT_STATE = "aer_simulator_matrix_product_state", QuantumBackendType.SIMULATOR
     STATEVECTOR_SIMULATOR = "statevector_simulator", QuantumBackendType.SIMULATOR
+    QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR
 
     # Simulators with error models
-    # todo is this one really with noise?
-    QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR
+    # TODO Add
 
     # Other backends with problems:
     # `Aer.get_backend('aer_simulator_stabilizer')`: results in an error.
