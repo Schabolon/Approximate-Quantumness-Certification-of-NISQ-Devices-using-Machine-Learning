@@ -129,4 +129,4 @@ if __name__ == '__main__':
     steps = []
     for step in range(0, 9):
         steps.append(step)
-        chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR, steps)
+        chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.FAKE_VIGO, steps)
