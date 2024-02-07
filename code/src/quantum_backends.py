@@ -5,7 +5,8 @@ from typing import Optional
 
 import qiskit
 
-from qiskit_ibm_runtime.fake_provider import FakeVigoV2, FakeAthensV2, FakeSantiagoV2, FakeLimaV2
+from qiskit_ibm_runtime.fake_provider import FakeVigoV2, FakeAthensV2, FakeSantiagoV2, FakeLimaV2, FakeBelemV2, \
+    FakeArmonkV2
 
 from quantum_backend_type import QuantumBackendType
 
@@ -51,6 +52,8 @@ class QuantumBackends(_QuantumBackend, Enum):
     FAKE_ATHENS_V2 = "fake_athens_v2", QuantumBackendType.SIMULATOR, FakeAthensV2()
     FAKE_SANTIAGO_V2 = "fake_santiago_v2", QuantumBackendType.SIMULATOR, FakeSantiagoV2()
     FAKE_LIMA_V2 = "fake_lima_v2", QuantumBackendType.SIMULATOR, FakeLimaV2()
+    FAKE_BELEM_V2 = "fake_belem_v2", QuantumBackendType.SIMULATOR, FakeBelemV2()
+    FAKE_ARMONK_V2 = "fake_armonk_v2", QuantumBackendType.SIMULATOR, FakeArmonkV2()
 
     # Other backends with problems:
     # `Aer.get_backend('aer_simulator_stabilizer')`: results in an error.

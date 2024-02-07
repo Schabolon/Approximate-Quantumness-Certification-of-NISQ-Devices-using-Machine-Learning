@@ -91,6 +91,40 @@ def course_of_accuracy_different_steps(circuit: ImplementedQuantumCircuit, ml_mo
     logging.info("Finished chart creation.")
 
 
+def accuracy_quantum_computers_vs_simulators_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, window_size=1000):
+    logging.info("Creating accuracy with different steps for combination of quantum computers vs all simulators ...")
+    path = "../results"
+    os.makedirs(path, exist_ok=True)
+    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_quantum_computers_vs_simulators_window_size_{window_size}.csv", 'w',
+               newline='') as csvfile):
+        csv_writer = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        csv_writer.writerow(['step k', 'single step accuracy k', 'step range accuracy 1 to k'])
+        steps = []
+        data = []
+        for qc in QuantumBackends.get_quantum_computer_backends():
+            data.append(CircuitRunData(circuit, qc))
+        for s in QuantumBackends.get_simulator_backends():
+            data.append(CircuitRunData(circuit, s))
+        for step in range(0, 9):
+            steps.append(step)
+            logging.debug(f"Calculating accuracy for steps {steps}.")
+            results = [step + 1]
+
+            # single step
+            custom_dataset = CustomDataset(data, [step], window_size=window_size)
+            single_step_acc = ml_model.train_and_evaluate(custom_dataset)
+            # store float as string with 3 decimal places
+            results.append("%.3f" % single_step_acc)
+
+            custom_dataset = CustomDataset(data, steps, window_size=window_size)
+            acc = ml_model.train_and_evaluate(custom_dataset)
+            # store float as string with 3 decimal places
+            results.append("%.3f" % acc)
+            csv_writer.writerow(results)
+    logging.info("Finished chart creation.")
+
+
 def basic_usage():
     circuit = Walker()
     qc = QuantumBackends.IBMQ_CASABLANCA
@@ -119,10 +153,11 @@ def basic_usage():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+    accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
     #basic_usage()
     #create_quantum_computers_vs_simulators_stats_csv(Walker(), svm.SupportVectorMachine(), window_size=1000)
     #course_of_accuracy_different_steps(Walker(), run_cnn.RunCNN(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO, window_size=1000)
-    steps = []
-    for step in range(0, 9):
-        steps.append(step)
-        chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.FAKE_VIGO_V2, steps)
+    #steps = []
+    #for step in range(0, 9):
+    #    steps.append(step)
+    #    chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.FAKE_VIGO_V2, steps)
