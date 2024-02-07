@@ -116,10 +116,6 @@ def basic_usage():
     # CNN
     cnn_acc = run_cnn.RunCNN.train_and_evaluate(custom_dataset)
 
-    # LSTM
-    # todo WIP
-    # lstm_acc = lstm.evaluate_model(custom_dataset)
-
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)

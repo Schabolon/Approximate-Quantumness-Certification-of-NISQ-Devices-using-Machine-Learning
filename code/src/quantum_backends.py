@@ -46,6 +46,7 @@ class QuantumBackends(_QuantumBackend, Enum):
     QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR, None
 
     # Simulators *with* noise models (use FakeProvider V2 Backends)
+    # see https://docs.quantum.ibm.com/api/qiskit/qiskit.providers.fake_provider.FakeProviderForBackendV2
     FAKE_VIGO_V2 = "fake_vigo_v2", QuantumBackendType.SIMULATOR, FakeVigoV2()
     FAKE_ATHENS_V2 = "fake_athens_v2", QuantumBackendType.SIMULATOR, FakeAthensV2()
     FAKE_SANTIAGO_V2 = "fake_santiago_v2", QuantumBackendType.SIMULATOR, FakeSantiagoV2()
