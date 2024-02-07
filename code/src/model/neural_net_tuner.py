@@ -5,7 +5,7 @@ from tensorflow import keras
 from dataset import CustomDataset
 
 
-def __model_builder(hp, input_dimension):
+def __model_builder(hp):
     model = keras.Sequential()
 
     # first layer

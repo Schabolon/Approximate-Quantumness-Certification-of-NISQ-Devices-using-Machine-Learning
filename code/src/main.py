@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+from typing import List
 
 from circuit_run_data import CircuitRunData
 from dataset import CustomDataset, NormalizationTechnique
@@ -39,11 +40,11 @@ def create_quantum_computers_vs_simulators_stats_csv(circuit: ImplementedQuantum
 
 
 # chart of different window sizes
-def chart_probability_windows(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, quantum_backend: QuantumBackends, quantum_backend_2: QuantumBackends):
+def chart_probability_windows(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, quantum_backend: QuantumBackends, quantum_backend_2: QuantumBackends, steps: List[int]):
     logging.info("Creating chart for probability with different windows ...")
     path = "../results"
     os.makedirs(path, exist_ok=True)
-    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_different_probabilities_{quantum_backend.backend_name}_vs_{quantum_backend_2.backend_name}.csv", 'w',
+    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_different_probabilities_{quantum_backend.backend_name}_vs_{quantum_backend_2.backend_name}_steps_{steps}.csv", 'w',
                newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -52,7 +53,7 @@ def chart_probability_windows(circuit: ImplementedQuantumCircuit, ml_model: MLWr
         for window_size in [1, 5, 8, 10, 40, 50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:
             logging.debug(f"Calculating accuracy with window size {window_size}.")
             results = [window_size]
-            custom_dataset = CustomDataset(data, window_size)
+            custom_dataset = CustomDataset(data, steps, window_size=window_size)
             acc = ml_model.train_and_evaluate(custom_dataset)
             # store float as string with 3 decimal places
             results.append("%.3f" % acc)
@@ -124,5 +125,8 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
     #basic_usage()
     #create_quantum_computers_vs_simulators_stats_csv(Walker(), svm.SupportVectorMachine(), window_size=1000)
-    course_of_accuracy_different_steps(Walker(), run_cnn.RunCNN(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO, window_size=1000)
-    #chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR)
+    #course_of_accuracy_different_steps(Walker(), run_cnn.RunCNN(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO, window_size=1000)
+    steps = []
+    for step in range(0, 9):
+        steps.append(step)
+        chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR, steps)

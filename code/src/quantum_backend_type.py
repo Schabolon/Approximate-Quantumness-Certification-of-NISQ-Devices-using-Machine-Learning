@@ -2,13 +2,12 @@ import dataclasses
 from enum import Enum
 
 
-# Todo is this class a mixin?
 @dataclasses.dataclass
-class QuantumBackendTypeData:
+class _QuantumBackendTypeDataMixin:
     label: int
     folder_name: str
 
 
-class QuantumBackendType(QuantumBackendTypeData, Enum):
+class QuantumBackendType(_QuantumBackendTypeDataMixin, Enum):
     QUANTUM_COMPUTER = 0, "quantum_computer"
     SIMULATOR = 1, "simulator"
