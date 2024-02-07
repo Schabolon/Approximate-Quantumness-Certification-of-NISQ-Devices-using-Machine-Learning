@@ -42,6 +42,8 @@ Use ML techniques to decide whether a quantum circuit was run on a quantum compu
 // TODO use different circuits? (or only use walker?).
 - 8000 shots per run.
 
+// TODO create table with characteristics of different quantum computers and simulators (e.g. does Simulator use noise?)
+
 Table Execution memory:
 #table(
   columns: (auto, auto, auto, auto, auto),
@@ -126,10 +128,12 @@ Describes why this thesis really solves the problem it claims to solve. (contain
 List of relevant work, how is the other work relevant + comparison with own work (short summary).
 
 - Distinguish on which quantum computer a specific quantum circuit has been executed (fingerprint) using a support vector machine. @martinaLearningNoiseFingerprint2022
-- unique hardware fingerprints @smithFastFingerprintingCloudbased2022
-  (generate fingerprints, compare them to differenciate between quantum computers?)
+- unique hardware fingerprints (based on qubit frequency) extracted from calibration data. @smithFastFingerprintingCloudbased2022
+- Fingerprinting of quantum computers using crosstalk. @miShortPaperDevice2021
+- Send Quantum Physically Unclonable Function (QuPUF) to quantum computer, get back response, compare response with expected response (unique to each hardware because of gate error rates, decoherence times, ...) @phalakQuantumPUFSecurity2021
 
 == Probably irrelevant
+// TODO confirm (and delete)
 - Use a quantum algorithm to localize different devices emmiting radio frequencies (mobile phones, IoT devices).@shokryDeviceindependentQuantumFingerprinting2022
 
 = Future Work
