@@ -5,7 +5,7 @@ from typing import Optional
 
 import qiskit
 
-from qiskit_ibm_runtime.fake_provider import FakeVigoV2
+from qiskit_ibm_runtime.fake_provider import FakeVigoV2, FakeAthensV2, FakeSantiagoV2, FakeLimaV2
 
 from quantum_backend_type import QuantumBackendType
 
@@ -46,7 +46,10 @@ class QuantumBackends(_QuantumBackend, Enum):
     QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR, None
 
     # Simulators *with* noise models (use FakeProvider V2 Backends)
-    FAKE_VIGO = "fake_vigo_v2", QuantumBackendType.SIMULATOR, FakeVigoV2()
+    FAKE_VIGO_V2 = "fake_vigo_v2", QuantumBackendType.SIMULATOR, FakeVigoV2()
+    FAKE_ATHENS_V2 = "fake_athens_v2", QuantumBackendType.SIMULATOR, FakeAthensV2()
+    FAKE_SANTIAGO_V2 = "fake_santiago_v2", QuantumBackendType.SIMULATOR, FakeSantiagoV2()
+    FAKE_LIMA_V2 = "fake_lima_v2", QuantumBackendType.SIMULATOR, FakeLimaV2()
 
     # Other backends with problems:
     # `Aer.get_backend('aer_simulator_stabilizer')`: results in an error.
@@ -69,7 +72,8 @@ class QuantumBackends(_QuantumBackend, Enum):
 
     @staticmethod
     def get_simulator_backends_with_noise_model():
-        return [b for b in QuantumBackends if b.backend_type == QuantumBackendType.SIMULATOR and b.noisy_backend is not None]
+        return [b for b in QuantumBackends if
+                b.backend_type == QuantumBackendType.SIMULATOR and b.noisy_backend is not None]
 
     def __str__(self):
         return self.backend_name
