@@ -1,6 +1,12 @@
 from enum import Enum
 
 from dataclasses import dataclass
+from typing import Optional
+
+import qiskit
+
+from qiskit_ibm_runtime.fake_provider import FakeVigoV2
+
 from quantum_backend_type import QuantumBackendType
 
 
@@ -8,18 +14,19 @@ from quantum_backend_type import QuantumBackendType
 class _QuantumBackend:
     backend_name: str
     backend_type: QuantumBackendType
+    noisy_backend: Optional[qiskit.providers.backend.BackendV2]
 
 
 class QuantumBackends(_QuantumBackend, Enum):
     # Quantum Computers
-    IBMQ_ATHENS = "ibmq_athens", QuantumBackendType.QUANTUM_COMPUTER
-    IMBQ_SANTIAGO = "ibmq_santiago", QuantumBackendType.QUANTUM_COMPUTER
-    IBMQ_CASABLANCA = "ibmq_casablanca", QuantumBackendType.QUANTUM_COMPUTER
-    IBMQ_CASABLANCA_BIS = "ibmq_casablanca-bis", QuantumBackendType.QUANTUM_COMPUTER
-    IBMQ_5_YORKTOWN = "ibmq_5_yorktown", QuantumBackendType.QUANTUM_COMPUTER
-    IBMQ_BOGOTA = "ibmq_bogota", QuantumBackendType.QUANTUM_COMPUTER
-    IBMQ_QUITO = "ibmq_quito", QuantumBackendType.QUANTUM_COMPUTER
-    IBMQ_LIMA = "ibmq_lima", QuantumBackendType.QUANTUM_COMPUTER
+    IBMQ_ATHENS = "ibmq_athens", QuantumBackendType.QUANTUM_COMPUTER, None
+    IMBQ_SANTIAGO = "ibmq_santiago", QuantumBackendType.QUANTUM_COMPUTER, None
+    IBMQ_CASABLANCA = "ibmq_casablanca", QuantumBackendType.QUANTUM_COMPUTER, None
+    IBMQ_CASABLANCA_BIS = "ibmq_casablanca-bis", QuantumBackendType.QUANTUM_COMPUTER, None
+    IBMQ_5_YORKTOWN = "ibmq_5_yorktown", QuantumBackendType.QUANTUM_COMPUTER, None
+    IBMQ_BOGOTA = "ibmq_bogota", QuantumBackendType.QUANTUM_COMPUTER, None
+    IBMQ_QUITO = "ibmq_quito", QuantumBackendType.QUANTUM_COMPUTER, None
+    IBMQ_LIMA = "ibmq_lima", QuantumBackendType.QUANTUM_COMPUTER, None
     # ROME is only used for circuit "Ramsey"
     # IBMQ_ROME = "ibmq_rome", QuantumBackendType.QUANTUM_COMPUTER
 
@@ -30,16 +37,16 @@ class QuantumBackends(_QuantumBackend, Enum):
     # 'ibmq_athens-split10H', 'ibmq_athens-split10I', 'ibmq_athens-split10J',
 
     # Simulators
-    # Simulators without error models
-    AER_SIMULATOR = "aer_simulator", QuantumBackendType.SIMULATOR
-    AER_SIMULATOR_DENSITY_MATRIX = "aer_simulator_density_matrix", QuantumBackendType.SIMULATOR
-    AER_SIMULATOR_STATEVECTOR = "aer_simulator_statevector", QuantumBackendType.SIMULATOR
-    AER_SIMULATOR_MATRIX_PRODUCT_STATE = "aer_simulator_matrix_product_state", QuantumBackendType.SIMULATOR
-    STATEVECTOR_SIMULATOR = "statevector_simulator", QuantumBackendType.SIMULATOR
-    QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR
+    # Simulators *without* noise models
+    AER_SIMULATOR = "aer_simulator", QuantumBackendType.SIMULATOR, None
+    AER_SIMULATOR_DENSITY_MATRIX = "aer_simulator_density_matrix", QuantumBackendType.SIMULATOR, None
+    AER_SIMULATOR_STATEVECTOR = "aer_simulator_statevector", QuantumBackendType.SIMULATOR, None
+    AER_SIMULATOR_MATRIX_PRODUCT_STATE = "aer_simulator_matrix_product_state", QuantumBackendType.SIMULATOR, None
+    STATEVECTOR_SIMULATOR = "statevector_simulator", QuantumBackendType.SIMULATOR, None
+    QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR, None
 
-    # Simulators with error models
-    # TODO Add
+    # Simulators *with* noise models (use FakeProvider V2 Backends)
+    FAKE_VIGO = "fake_vigo_v2", QuantumBackendType.SIMULATOR, FakeVigoV2()
 
     # Other backends with problems:
     # `Aer.get_backend('aer_simulator_stabilizer')`: results in an error.
@@ -59,6 +66,10 @@ class QuantumBackends(_QuantumBackend, Enum):
     @staticmethod
     def get_simulator_backends():
         return [b for b in QuantumBackends if b.backend_type == QuantumBackendType.SIMULATOR]
+
+    @staticmethod
+    def get_simulator_backends_with_noise_model():
+        return [b for b in QuantumBackends if b.backend_type == QuantumBackendType.SIMULATOR and b.noisy_backend is not None]
 
     def __str__(self):
         return self.backend_name

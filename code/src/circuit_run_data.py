@@ -26,7 +26,7 @@ class CircuitRunData:
             if self.backend.backend_type == QuantumBackendType.QUANTUM_COMPUTER:
                 raise Exception("No quantum computer data found!")
             elif self.backend.backend_type == QuantumBackendType.SIMULATOR:
-                simulator.save_quantum_circuit_simulation(circuit, backend.backend_name)
+                simulator.save_quantum_circuit_simulation(circuit, backend)
         self.shots = self.__extract_shots()
 
     def get_circuit_run_result_filenames(self) -> List[str]:
@@ -143,7 +143,10 @@ class CircuitRunData:
         return noise
 
     def __execution_data_exists(self) -> bool:
-        for filename in self.get_circuit_run_result_filenames():
+        filenames = self.get_circuit_run_result_filenames()
+        if len(filenames) == 0:
+            return False
+        for filename in filenames:
             if not os.path.exists(filename):
                 return False
         return True

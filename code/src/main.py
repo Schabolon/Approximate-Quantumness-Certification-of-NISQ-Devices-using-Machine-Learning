@@ -124,5 +124,5 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
     #basic_usage()
     #create_quantum_computers_vs_simulators_stats_csv(Walker(), svm.SupportVectorMachine(), window_size=1000)
-    course_of_accuracy_different_steps(Walker(), run_cnn.RunCNN(), QuantumBackends.IBMQ_LIMA, QuantumBackends.QUASM_SIMULATOR, window_size=1000)
+    course_of_accuracy_different_steps(Walker(), run_cnn.RunCNN(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO, window_size=1000)
     #chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.AER_SIMULATOR)
