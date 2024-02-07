@@ -21,11 +21,11 @@ class RunSVM(MLWrapper):
         :param test_labels:
         :return: test accuracy and training accuracy.
         """
-        logging.info("Training SVM...")
+        logging.debug("Training SVM...")
         clf.fit(train_features, train_labels)
-        logging.info("Finished training SVM.")
+        logging.debug("Finished training SVM.")
 
-        logging.info(f"Testing Accuracy of SVM on {len(test_labels)} test samples ...")
+        logging.debug(f"Testing Accuracy of SVM on {len(test_labels)} test samples ...")
         predictions_test = clf.predict(test_features)
         number_of_correct_predictions = 0
         for i in range(len(test_labels)):
@@ -46,6 +46,7 @@ class RunSVM(MLWrapper):
     def train_and_evaluate(custom_dataset: CustomDataset) -> float:
         train_features, train_labels, val_features, val_labels, test_features, test_labels = custom_dataset.get_test_train_validation_split()
 
+        logging.info("Choosing the best SVM model by using validation data ...")
         max_accuracy = -1
         best_fun: svm.SVC
         best_alg_name = ""
@@ -67,9 +68,9 @@ class RunSVM(MLWrapper):
                 best_alg_name = alg_name
 
         # Train best algorithm
+        logging.info(f"Training best SVM algorithm {best_alg_name} on training data ...")
         acc_test, acc_train = RunSVM.__train_and_evaluate(best_fun, train_features, train_labels, test_features, test_labels)
         logging.info(f"SVM-Algorithm: {best_alg_name}")
         logging.info(f"Test acc.: {acc_test}; (Train acc.: {acc_train})")
-
 
         return max_accuracy
