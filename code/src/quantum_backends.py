@@ -38,11 +38,12 @@ class QuantumBackends(_QuantumBackend, Enum):
     # Simulators
     # Simulators *without* noise models
     AER_SIMULATOR = "aer_simulator", QuantumBackendType.SIMULATOR, None
-    AER_SIMULATOR_DENSITY_MATRIX = "aer_simulator_density_matrix", QuantumBackendType.SIMULATOR, None
-    AER_SIMULATOR_STATEVECTOR = "aer_simulator_statevector", QuantumBackendType.SIMULATOR, None
-    AER_SIMULATOR_MATRIX_PRODUCT_STATE = "aer_simulator_matrix_product_state", QuantumBackendType.SIMULATOR, None
-    STATEVECTOR_SIMULATOR = "statevector_simulator", QuantumBackendType.SIMULATOR, None
-    QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR, None
+    # Use only one simulator without noise (with noise is much more interesting)
+    # AER_SIMULATOR_DENSITY_MATRIX = "aer_simulator_density_matrix", QuantumBackendType.SIMULATOR, None
+    # AER_SIMULATOR_STATEVECTOR = "aer_simulator_statevector", QuantumBackendType.SIMULATOR, None
+    # AER_SIMULATOR_MATRIX_PRODUCT_STATE = "aer_simulator_matrix_product_state", QuantumBackendType.SIMULATOR, None
+    # STATEVECTOR_SIMULATOR = "statevector_simulator", QuantumBackendType.SIMULATOR, None
+    # QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR, None
 
     # Simulators *with* noise models (use FakeProvider V2 Backends)
     # see https://docs.quantum.ibm.com/api/qiskit/qiskit.providers.fake_provider.FakeProviderForBackendV2
@@ -52,13 +53,6 @@ class QuantumBackends(_QuantumBackend, Enum):
     FAKE_LIMA_V2 = "fake_lima_v2", QuantumBackendType.SIMULATOR, FakeLimaV2()
     FAKE_BELEM_V2 = "fake_belem_v2", QuantumBackendType.SIMULATOR, FakeBelemV2()
     FAKE_CAIRO_V2 = "fake_cairo_v2", QuantumBackendType.SIMULATOR, FakeCairoV2()
-
-    # Other backends with problems:
-    # `Aer.get_backend('aer_simulator_stabilizer')`: results in an error.
-    # `Aer.get_backend('unitary_simulator')`: results in an error.
-    # `Aer.get_backend('aer_simulator_unitary')`: seems like it can't measure.
-    # `Aer.get_backend('aer_simulator_superop')`: seems like it can't measure.
-    # `Aer.get_backend('aer_simulator_extended_stabilizer')`: takes very long.
 
     @staticmethod
     def get_all_backends():
