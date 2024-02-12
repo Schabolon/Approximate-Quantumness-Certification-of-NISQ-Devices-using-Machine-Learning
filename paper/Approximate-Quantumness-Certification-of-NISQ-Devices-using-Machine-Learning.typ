@@ -47,6 +47,19 @@ In the end @conclusion contains a short conclusion.
 
 
 = Terms and Definitions <terms-and-definitions>
+- qubit -> 1, 0, superposition
+- after meassuring -> wave function collapse -> result is 1 or 0.
+- different gates (hadamard 'H', Cnot '+', Pauli-X 'X')
+- current architecture error prone. -> noise
+- different physical implementation/architecture. -> what does IBM use?
+- execute circuit multiple times -> shots
+
+ml basics:
+- svm
+- neural net
+- cnn
+(kein gradient descent erklären)
+
 // wenig detail, self contained
 // Grundkonzepte von Circuit darstellen (auf computer science ebene)
 Very short, reference other works whenever possible.
@@ -99,13 +112,18 @@ Example:
   grid(
     columns: 2,
     gutter: 2mm,
-    image("images/walker-step-1.svg"),
+    image("images/walker-step-1.svg", width: auto, height: auto),
     image("images/walker-step-2.svg"),
     image("images/walker-step-3.svg"),
+    image("images/walker-step-4.svg"),
+    image("images/walker-step-5.svg"),
+    image("images/walker-step-6.svg"),
+    image("images/walker-step-7.svg"),
+    image("images/walker-step-8.svg"),
+    image("images/walker-step-9.svg"),
     ),
   caption: "Walker circuit with different steps."
 ) <walker-steps>
-The third circuit is repeated 3 times.
 
 // TODO bilder nicht, wenn selbse generiert
 
