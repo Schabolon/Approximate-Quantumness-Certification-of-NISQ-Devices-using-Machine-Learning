@@ -17,7 +17,7 @@ def plot_histogram_simulator_vs_qc(circuit: ImplementedQuantumCircuit, simulator
         title="Simulator vs Quantum Computer",
         legend=[simulator.backend_name, qc.backend_name], figsize=(17, 7))
     hist.savefig(
-        f'../../data/visualization/histogram/hist_circuit_{circuit.get_name()}_{qc.backend_name}_vs_{simulator.backend_name}_step_{step_to_compare}.svg')
+        f'../../visualization/histogram/hist_circuit_{circuit.get_name()}_{qc.backend_name}_vs_{simulator.backend_name}_step_{step_to_compare}.svg')
 
 
 def __generate_color_gradient(base_color, num_colors, offset=0.4):
@@ -48,7 +48,7 @@ def plot_overview_histogram(circuit: ImplementedQuantumCircuit, step_to_compare:
 
     hist = plot_distribution(data, title="Simulators vs Quantum Computers", legend=legend_names, color=colors, figsize=(37, 7))
     hist.savefig(
-        f'../data/visualization/hist_{circuit.get_name()}_simulators_vs_quantum_computers_step_{step_to_compare}.svg')
+        f'../visualization/hist_{circuit.get_name()}_simulators_vs_quantum_computers_step_{step_to_compare}.svg')
 
 
 if __name__ == "__main__":

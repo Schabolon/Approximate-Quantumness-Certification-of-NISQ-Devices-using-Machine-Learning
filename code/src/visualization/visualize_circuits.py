@@ -15,7 +15,7 @@ def get_all_circuits() -> list[ImplementedQuantumCircuit]:
 def save_circuits_to_image(circs: list[QuantumCircuit], circuit_name: str):
     for i in range(len(circs)):
         circs[i].draw(output='mpl')
-        plt.savefig(f"../../data/visualization/circuit_images/{circuit_name}-step-{i + 1}.svg")
+        plt.savefig(f"../../visualization/circuit_images/{circuit_name}-step-{i + 1}.svg")
         plt.close()
 
 

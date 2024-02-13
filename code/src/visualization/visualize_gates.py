@@ -1,11 +1,8 @@
 from qiskit import QuantumCircuit
-from qiskit.visualization import circuit_drawer
-from matplotlib import pyplot as plt
-
 
 
 if __name__ == "__main__":
-    output_folder = "../../data/visualization/gates/"
+    output_folder = "../../visualization/gates/"
 
     # Hadamard-Gate
     hadamard = QuantumCircuit(1)
