@@ -2,13 +2,19 @@
 
 ## Overview
 - `code/`: all the python code and data for training and evaluating the ML model.
-  - `circuit_images/`: images for the used quantum circuits (with their default parameters).
-  - `data/`: trainings data.
+  - `visualization/`: images of quantum circuits, quantum gates and histograms.
+  - `results/`: files containing accuracy measurements for the different models.
+  - `data/`: training data.
   - `src/`: python code.
-    - `extract_data.py`: combines simulated and quantum_computer data into one dataset.
-    - `model.py`: very simple ML model.
+    - `model/`: contains code for training and evaluating the different machine learning models
+    - `quantum_circuits/`: Qiskit implementations for the quantum circuits.
+    - `visualization/`: code for generating visualizations for quantum circuits, gates and histograms.
+    - `circuit_run_data.py`: manages the data for a single circuit + backend.
+    - `dataset.py`: manages a dataset. Generates simulator data if needed.
+    - `main.py`: start evaluating the machine learning models from here.
+    - `quantum_backend_type.py`: enum to manage different labels and folder names for quantum computers and simulators.
+    - `quantum_backends.py`: enum of quantum backends (simulators and quantum computers).
     - `simulator.py`: generate training data by simulating quantum circuits.
-    - `quantum_circuits/`: Qiskit implementations for the used quantum circuits.
 - `paper/`: the source file for building the paper as pdf.
 
 ## Setup
@@ -31,7 +37,5 @@ Install required packages: `pip install -r requirements.txt`
 - Execute `.py` files by entering the corresponding folder and running `python <filename>.py`
 
 ## Roadmap
-- [ ] (Optional) Try out model with time dependence. (should allow a flexible amount of shots to be used.)
-- [ ] Try to train ML Model on QC dataONLY (replicate paper findings with own Neuronal Net)
-- [ ] Create datasets which extract probabilities
-- [ ] Split datasets into parts (each circuit part should be evaluated on it's own + all together)
+- Exclude multiple quantum computers from training and add them only for testing.
+- Adversarial attack on the neural net.
