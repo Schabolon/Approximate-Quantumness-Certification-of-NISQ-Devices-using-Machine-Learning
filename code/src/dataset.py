@@ -21,11 +21,12 @@ class CustomDataset:
     labels: npt.NDArray[np.int8]
     features: npt.NDArray[np.float32]
 
-    def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1,
+    def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1000,
                  normalization_technique=NormalizationTechnique.NONE):
         """
         :param circuit_run_data:
-        :param window_size: uses probability data for the dataset if window_size > 1. ("regular" dataset otherwise).
+        :param window_size: uses probability data for the dataset if window_size > 1. (otherwise the dataset encodes the qubit-results as "one-hot").
+        :param normalization_technique: not really needed, probabilities are already "normalized" to sum up to 1.
         """
         self.circuit_run_data = circuit_run_data
         self.labels = np.array([], dtype=np.int8)

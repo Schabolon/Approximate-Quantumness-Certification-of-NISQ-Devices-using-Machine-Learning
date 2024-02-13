@@ -3,6 +3,7 @@ import logging
 import os
 from typing import List
 
+import visualization.visualize_histogram
 from circuit_run_data import CircuitRunData
 from dataset import CustomDataset, NormalizationTechnique
 from model import run_svm, run_neural_net, neural_net_tuner, run_cnn
@@ -139,7 +140,7 @@ def basic_usage():
 
     # Execute different learning algorithms
     # SVM
-    svm_acc = run_svm.RunSVM.train_and_evaluate(custom_dataset)
+    #svm_acc = run_svm.RunSVM.train_and_evaluate(custom_dataset)
 
     # Neural Model
     neural_net_acc = run_neural_net.RunNeuralNet.train_and_evaluate(custom_dataset)
@@ -153,10 +154,11 @@ def basic_usage():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-    accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
+    #visualization.visualize_histogram.plot_overview_histogram(Walker(), 1)
+    #accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
     #basic_usage()
-    #create_quantum_computers_vs_simulators_stats_csv(Walker(), svm.SupportVectorMachine(), window_size=1000)
-    #course_of_accuracy_different_steps(Walker(), run_cnn.RunCNN(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO, window_size=1000)
+    #create_quantum_computers_vs_simulators_stats_csv(Walker(), run_svm.RunSVM(), window_size=1000)
+    course_of_accuracy_different_steps(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO_V2, window_size=1000)
     #steps = []
     #for step in range(0, 9):
     #    steps.append(step)
