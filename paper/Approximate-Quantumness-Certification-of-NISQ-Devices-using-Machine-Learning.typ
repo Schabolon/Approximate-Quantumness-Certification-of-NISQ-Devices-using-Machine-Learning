@@ -8,6 +8,7 @@
 
 #pagebreak()
 
+// TODO at some places switch quantum computer with QC
 = Introduction and Motivation
 The quantum computing market is expected to grow from USD 866 million in 2023 to USD 4375 million in 2030 @QuantumComputingMarket2023. //TODO is source good enough? // TODO add , (or .?) to 4375?
 Quantum computing is especially promising in the fields of simulations, drug development and cybersecurity @emilioCurrentStatusNext2022.
@@ -22,9 +23,12 @@ Finally, results are sent back to the user.
   image("images/quantum-based-cloud-provider-trust-left-to-right.svg"),
   caption: "The user is sending the quantum circuit to the cloud-based quantum computing provider and has to trust the provider that the circuit is executed on an actual quantum computer."
 ) <cloud-trust>
-In this cloud based scenario, the user has to trust the cloud-based quantum provider to execute tho quantum circuit on the advertised quantum hardware.
+// TODO Threat model mehr herausarbeiten. (eigene Überschrift?)
+// TODO erwähnen, dass dieses Threat model nur für kleine Circuits relevant ist? (explosion der Dimensonen, nicht mit klassischer Hardware berechenbar)
+In this cloud based scenario, the user has to trust the cloud-based quantum provider to execute the quantum circuit on the advertised quantum hardware.
 An adversarial cloud-provider could potentially claim to have a quantum computer backend, but in reality all circuits are just simulated on a classical computer.
 // TODO write in 3rd person?
+// TODO Paper Contributions mehr herausarbeiten.
 This work provides a machine learning based approach which allows the users of cloud-based quantum computers to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
 
 == Related Work
@@ -47,15 +51,55 @@ In the end @conclusion contains a short conclusion.
 
 
 = Terms and Definitions <terms-and-definitions>
-- qubit -> 1, 0, superposition
-- after meassuring -> wave function collapse -> result is 1 or 0.
-- different gates (hadamard 'H', Cnot '+', Pauli-X 'X')
-- current architecture error prone. -> noise
-- different physical implementation/architecture. -> what does IBM use?
-- execute circuit multiple times -> shots
+This section provides a brief introduction to quantum computing and machine learning ideas.
 
-ml basics:
-- svm
+== Quantum Computing
+A quantum computer leverages quantum bits (qubits).
+Qubits have two basis states $|0 angle.r = [1, 0]^T$ and $|1 angle.r = [0, 1]^T$. // TODO change 'T' to dedicated Transpose symbol?
+The notation with '$| med angle.r$' is called Dirac notation.
+Classical bits are either 0 or 1.
+Qubits on the other hand can be in states other than $|0 angle.r$ and $|1 angle.r$.
+A superposition is denoted as linear combination of states as seen in @superpositon-linear-combination.
+#figure(
+  $ |psi angle.r = alpha|0 angle.r + beta|1 angle.r $,
+  caption: "Qubit state written as linear combination of the two basis states"
+) <superpositon-linear-combination>
+In @superpositon-linear-combination $alpha$ and $beta$ are complex values and describe probability amplitudes.
+The probabilities have to satisfy the normalization condition $|alpha|^2 + |beta|^2 = 1$.
+By leveraging quantum properties such as superposition, interference and entanglement, it is possible to solve a specific selection of problems with reduced time and space complexity.
+One example for such a quantum algorithm is Shor's algorithm @shorPolynomialTimeAlgorithmsPrime1997.
+In this paper circuit are made of the Pauli-X gate, the Hadamard gate, the Controlled not gate (CNOT) and the Toffoli gate. Their respective circuit representation can be seen in @quantum-gates.
+The Pauli-X gate performs a base flip on a single qubit.
+// TODO what does the hadamard gate do?
+The CNOT gate performs a base flip on the target qubit, depending on the state of the control qubit.
+Similarly, the Toffoli gate has two control qubits which influence, whether the target qubit gets flipped.
+#figure(
+  grid(
+    columns: 4,
+    align(horizon, image("images/gates/pauli-x.svg", width: 50%)),
+    align(horizon, image("images/gates/hadamard.svg", width: 50%)),
+    align(horizon, image("images/gates/cnot.svg", width: 40%)),
+    align(horizon, image("images/gates/ccx.svg", width: 30%))
+  ),
+  caption: "Quantum gates (from left to right): Pauli-X gate, Hadamard gate, Controlled not gate, Toffoli gate"
+) <quantum-gates>
+After performing a measurement on a qubit, the result is either a $0$ or a $1$.
+// TODO add reference to circuit design (reason, why these different circuits had to be created/run seperately and not measured in between)
+After a measurement, the wave function collapses and the qubit remains in either the $|0 angle.r$ state (if $0$ has been measured) or in the $|1 angle.r$ state (if $1$ has been measured).
+The number of shots specifies how many times one algorithm is run on the quantum computer.
+As a result, the user receives a distribution of the different outcomes @nielsenQuantumComputationQuantum2010.
+
+// Current hardware (physical qubits)
+For building physical quantum computers, different approaches exist.
+Quantum computers built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
+Other architectures include trapped ions, photonics and nuclear magnetic resonance @laddQuantumComputers2010.
+Current quantum chips mainly suffer from decoherence, gate errors, readout errors and crosstalk.
+For a qubit the decoherence time refers to how long the qubit can contain its information.
+Decoherence can occur for example when a qubit interacts with the environment.
+When quantum computers are constructed from multiple qubits, unwanted interactions between these qubits is called crosstalk.
+
+== Machine Learning
+// svm really short, no "new" research in this paper
 - neural net
 - cnn
 (kein gradient descent erklären)
@@ -124,6 +168,8 @@ Example:
     ),
   caption: "Walker circuit with different steps."
 ) <walker-steps>
+
+// TODO in the beginning, every qubit is in state |0>
 
 // TODO bilder nicht, wenn selbse generiert
 

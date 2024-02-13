@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="52.989403pt"
+   height="109.52305pt"
+   viewBox="0 0 52.989402 109.52305"
+   version="1.1"
+   id="svg17"
+   sodipodi:docname="ccx.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <sodipodi:namedview
+     id="namedview17"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt" />
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:date>2024-02-13T11:50:11.816909</dc:date>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Matplotlib v3.8.2, https://matplotlib.org/</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs1">
+    <style
+       type="text/css"
+       id="style1">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+  </defs>
+  <g
+     id="figure_1"
+     transform="translate(-63.609199,-39.013684)">
+    <g
+       id="patch_1">
+      <path
+         d="M 0,172.0036 H 127.434 V 0 H 0 Z"
+         style="fill:#ffffff"
+         id="path1" />
+    </g>
+    <g
+       id="axes_1">
+      <g
+         id="line2d_1">
+        <path
+           d="M 64.609196,44.2832 H 115.5986"
+           clip-path="url(#pb347f68e17)"
+           style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square"
+           id="path2" />
+      </g>
+      <g
+         id="line2d_2">
+        <path
+           d="M 64.609196,90.637199 H 115.5986"
+           clip-path="url(#pb347f68e17)"
+           style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square"
+           id="path3" />
+      </g>
+      <g
+         id="line2d_3">
+        <path
+           d="M 64.609196,136.9912 H 115.5986"
+           clip-path="url(#pb347f68e17)"
+           style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:square"
+           id="path4" />
+      </g>
+      <g
+         id="line2d_4">
+        <path
+           d="M 89.640356,136.9912 V 44.2832"
+           clip-path="url(#pb347f68e17)"
+           style="fill:none;stroke:#bb8bff;stroke-width:2;stroke-linecap:square"
+           id="path6" />
+      </g>
+      <g
+         id="patch_3">
+        <path
+           d="m 89.640356,48.802714 c 1.19859,0 2.348249,-0.476204 3.19578,-1.323735 0.84753,-0.847531 1.323735,-1.99719 1.323735,-3.195779 0,-1.19859 -0.476205,-2.348249 -1.323735,-3.19578 -0.847531,-0.847531 -1.99719,-1.323735 -3.19578,-1.323735 -1.198589,0 -2.348249,0.476204 -3.19578,1.323735 -0.84753,0.847531 -1.323735,1.99719 -1.323735,3.19578 0,1.198589 0.476205,2.348248 1.323735,3.195779 0.847531,0.847531 1.997191,1.323735 3.19578,1.323735 z"
+           clip-path="url(#pb347f68e17)"
+           style="fill:#bb8bff;stroke:#bb8bff;stroke-width:1.5;stroke-linejoin:miter"
+           id="path7" />
+      </g>
+      <g
+         id="patch_4">
+        <path
+           d="m 89.640356,95.156714 c 1.19859,0 2.348249,-0.476205 3.19578,-1.323735 0.84753,-0.847531 1.323735,-1.997191 1.323735,-3.19578 0,-1.198589 -0.476205,-2.348249 -1.323735,-3.19578 -0.847531,-0.84753 -1.99719,-1.323735 -3.19578,-1.323735 -1.198589,0 -2.348249,0.476205 -3.19578,1.323735 -0.84753,0.847531 -1.323735,1.997191 -1.323735,3.19578 0,1.198589 0.476205,2.348249 1.323735,3.19578 0.847531,0.84753 1.997191,1.323735 3.19578,1.323735 z"
+           clip-path="url(#pb347f68e17)"
+           style="fill:#bb8bff;stroke:#bb8bff;stroke-width:1.5;stroke-linejoin:miter"
+           id="path8" />
+      </g>
+      <g
+         id="patch_5">
+        <path
+           d="m 89.640356,147.53673 c 2.796709,0 5.479248,-1.11114 7.456819,-3.08871 1.977572,-1.97757 3.088715,-4.66011 3.088715,-7.45682 0,-2.79671 -1.111143,-5.47925 -3.088715,-7.45682 -1.977571,-1.97757 -4.66011,-3.08872 -7.456819,-3.08872 -2.796708,0 -5.479248,1.11115 -7.456819,3.08872 -1.977572,1.97757 -3.088716,4.66011 -3.088716,7.45682 0,2.79671 1.111144,5.47925 3.088716,7.45682 1.977571,1.97757 4.660111,3.08871 7.456819,3.08871 z"
+           clip-path="url(#pb347f68e17)"
+           style="fill:#bb8bff;stroke:#bb8bff;stroke-width:2;stroke-linejoin:miter"
+           id="path9" />
+      </g>
+      <g
+         id="line2d_5">
+        <path
+           d="M 89.640356,143.01722 V 130.96518"
+           clip-path="url(#pb347f68e17)"
+           style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:square"
+           id="path10" />
+      </g>
+      <g
+         id="line2d_6">
+        <path
+           d="m 83.614336,136.9912 h 12.05204"
+           clip-path="url(#pb347f68e17)"
+           style="fill:none;stroke:#ffffff;stroke-width:2;stroke-linecap:square"
+           id="path11" />
+      </g>
+      <g
+         id="text_1">
+        <g
+           clip-path="url(#pb347f68e17)"
+           id="g13">
+          <!-- ${q}_{0}$ -->
+          <g
+             transform="matrix(0.1625,0,0,-0.1625,37.300897,48.734176)"
+             id="g12">
+            <defs
+               id="defs11" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="text_2">
+        <g
+           clip-path="url(#pb347f68e17)"
+           id="g15">
+          <!-- ${q}_{1}$ -->
+          <g
+             transform="matrix(0.1625,0,0,-0.1625,37.300897,95.088175)"
+             id="g14">
+            <defs
+               id="defs13" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="text_3">
+        <g
+           clip-path="url(#pb347f68e17)"
+           id="g17">
+          <!-- ${q}_{2}$ -->
+          <g
+             transform="matrix(0.1625,0,0,-0.1625,37.300897,141.44217)"
+             id="g16">
+            <defs
+               id="defs15" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <defs
+     id="defs17">
+    <clipPath
+       id="pb347f68e17">
+      <rect
+         x="7.1999998"
+         y="7.1999998"
+         width="113.034"
+         height="157.60359"
+         id="rect17" />
+    </clipPath>
+  </defs>
+</svg>
