@@ -99,8 +99,84 @@ Decoherence can occur for example when a qubit interacts with the environment.
 When quantum computers are constructed from multiple qubits, unwanted interactions between these qubits is called crosstalk.
 
 == Machine Learning
+In this paper, the following supervised learning approaches are being utilized.
+
+=== Support Vector Machine
+#figure(
+  cetz.canvas(length: 1cm, {
+    import cetz.draw: *
+    import cetz.plot
+      plot.plot(
+        size: (5,4),
+        x-tick-step: none,
+        y-tick-step: none,
+        x-min: 0,
+        x-max: 6,
+        y-min: 0,
+        y-max: 6,
+        x-label: "",
+        y-label: "",
+        legend: "legend.south",
+      {
+      plot.add(((0,1), (5,6)), label: "Hyperplane")
+      let points_above = ((.3, 2), (1,4), (.7, 3), (1.1, 5), (1.4, 4), (2, 3.4), (2.1, 4.5), (2.9, 4.4), (3.4, 5.2), (4, 5.5))
+      let points_below = ((.7,1), (1,.3), (1.8, 1.5), (2.5, 1.2), (2.2, 0.8), (3.1, 1.3), (3.8, 1.1), (4.2, 1.8), (4.5, 1.5), (5.8, 1.1), (2.7, 0.5), (3.4, 0.8), (3.9, 0.6), (4.6, 0.9), (5.3, 0.7), (4, 4), (5, 5.4), (3.7, 3), (5.8, 5), (5, 3), (3, 2), (2, 2), (2.5, 3.1), (1.5, 1.9), (5.2, 3.8), (5.3, 2))
+      for (p_1, p_2) in points_above {
+        cetz.plot.add(((p_1, p_2),), mark: "o", mark-style: (stroke: red, fill: red), mark-size: .1)
+      }
+      for (p_1, p_2) in points_below {
+        cetz.plot.add(((p_1, p_2),), mark: "o", mark-style: (stroke: green, fill: green), mark-size: .1)
+      }
+    })
+  }),
+  caption: "SVM:"
+) <svm>
+// A support vector machine (SVM) uses a hyperplane based on a linear function to separate input features into two classes, see @svm.
+// By mapping the input features into a higher-dimensional features space, a so-called kernel trick, it is possible to perform non-linear classification.
+// svm maximizes margin? -> best generalization?
 // svm really short, no "new" research in this paper
-- neural net
+
+A Support Vector Machine (SVM) is a machine learning algorithm primarily used for classification and regression tasks.
+It operates by constructing an optimal hyperplane in a high-dimensional space that separates different classes of data points.
+This optimal hyperplane is determined by the data points, referred to as support vectors, that lie closest to the decision boundary, see @svm.
+The hyperplane divides the input features into two distinct classes.
+Its position and orientation are determined to maximize the margin or distance between the hyperplane and the nearest data point from either class.
+This approach ensures the best possible separation between classes and enhances the algorithm's generalization capabilities.
+However, real-world data is often not linearly separable.
+To overcome this limitation, SVMs employ a technique known as the kernel trick.
+A linear decision boundary can be found by mapping the input features into a higher dimensional feature space.
+The kernel trick allows SVMs to construct a non-linear decision boundary in the original input space, thereby enabling the classification of complex datasets.
+As a result, SVMs are computationally efficient and particularly suited for handling high-dimensional data.
+See @cristianiniIntroductionSupportVector2000 for additional details.
+
+=== Feedforward Neural Network
+Each neural network consists of multiple neurons/perceptrons.
+These perceptrons are grouped in layers.
+The first layer is called input layer.
+After that come hidden layers.
+The results are taken from the last layer, the output layer.
+See @feedforward-net for a visualization.
+#figure(
+  image("images/feedforward-neural-network.svg", height: 25%),
+  caption: "Feed forward neural net"
+) <feedforward-net>
+
+For each neuron @perceptron-math is calculated.
+
+#figure(
+  $ y = f(sum_(i=1)^(n) w_i x_i + b) $,
+  caption: "Equation for a single perceptron. y: output, f: activation function, w_i: weights for each input x_i, b: bias, n: number of inputs"
+) <perceptron-math>
+
+For more details see @russellArtificialIntelligenceModern2021.
+
+// multiple neuron layers
+// hidden layer
+// connections have weights
+// bias
+// each neuron has activation function
+
+=== Convolutional Neural Network
 - cnn
 (kein gradient descent erklären)
 
