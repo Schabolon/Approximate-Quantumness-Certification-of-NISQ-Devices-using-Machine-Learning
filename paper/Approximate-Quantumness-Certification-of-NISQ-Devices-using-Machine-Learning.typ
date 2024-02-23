@@ -10,11 +10,11 @@
 
 // TODO at some places switch quantum computer with QC
 = Introduction and Motivation
-The quantum computing market is expected to grow from USD 866 million in 2023 to USD 4375 million in 2030 @QuantumComputingMarket2023. //TODO is source good enough? // TODO add , (or .?) to 4375?
+The quantum computing market is expected to grow from USD 866 million in 2023 to USD 4.375 million in 2030 @QuantumComputingMarket2023. //TODO is source good enough?
 Quantum computing is especially promising in the fields of simulations, drug development and cybersecurity @emilioCurrentStatusNext2022.
 Despite these positive prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
-Current quantum computers are provided as cloud based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
-These services are mainly aimed at academics and researchers. //TODO relevant?
+Current quantum computers are provided as cloud based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
+These services are mainly aimed at academics and researchers.
 As a first step for using such a cloud-based quantum computer, a user account needs to be registered.
 Afterwards, the user develops the quantum circuit (e.g. in IBM's Qiskit @Qiskit2024), uploads the quantum circuit and can choose a backend to execute the circuit on.
 In a next step, the request gets scheduled and executed on the quantum computer.
@@ -24,12 +24,14 @@ Finally, results are sent back to the user.
   caption: "The user is sending the quantum circuit to the cloud-based quantum computing provider and has to trust the provider that the circuit is executed on an actual quantum computer."
 ) <cloud-trust>
 // TODO Threat model mehr herausarbeiten. (eigene Überschrift?)
-// TODO erwähnen, dass dieses Threat model nur für kleine Circuits relevant ist? (explosion der Dimensonen, nicht mit klassischer Hardware berechenbar)
+// TODO erwähnen, dass dieses Threat model nur für kleine Circuits relevant ist (explosion der Dimensonen, nicht mit klassischer Hardware berechenbar)
+// die grenze, in der ein solcher angriff überhaupt sinnvoll ist: 54 qubits in 2019. (quantum supremacy)
 In this cloud based scenario, the user has to trust the cloud-based quantum provider to execute the quantum circuit on the advertised quantum hardware.
 An adversarial cloud-provider could potentially claim to have a quantum computer backend, but in reality all circuits are just simulated on a classical computer.
 // TODO write in 3rd person?
 // TODO Paper Contributions mehr herausarbeiten.
 This work provides a machine learning based approach which allows the users of cloud-based quantum computers to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
+// TODO grobe Kostenrechnung: (beispiel Quantumcomputer xyz kosten), Simulaton grob (nur falls Informationen aufindbar).
 
 == Related Work
 Previous work has already shown that it is possible to generate a unique hardware fingerprint which is based on the qubit frequencies. The fingerprint is based on quantum computer calibration data which was made available by the cloud provider @smithFastFingerprintingCloudbased2022.
@@ -37,15 +39,17 @@ A different research group has developed a Quantum Physically Unclonable Functio
 By utilizing the QuPUF, it is possible to identify the quantum computer the QuPUF was executed on @phalakQuantumPUFSecurity2021.
 Another approach uses a tomography-based fingerprinting method which is based on crosstalk-induced errors @miShortPaperDevice2021.
 
-A paper by Martina et al. //TODO ist das korrekt?
-distinguishes on which quantum computer a specific quantum circuit has been executed by learning the error-fingerprint using a support vector machine. @martinaLearningNoiseFingerprint2022
+The paper "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. //TODO ist das korrekt?
+distinguishes on which quantum computer a specific quantum circuit has been executed by learning the error-fingerprint using a support vector machine @martinaLearningNoiseFingerprint2022.
 
-This paper takes a similar approach to @martinaLearningNoiseFingerprint2022 and utilizes the same quantum circuit, but instead of differentiating between various quantum computers, this paper creates machine learning models which are capable of distinguishing whether a quantum circuit was executed by a quantum computer or a simulator on a classical computer.
+This paper takes a similar approach to "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. @martinaLearningNoiseFingerprint2022 and utilizes the same quantum circuit, but instead of differentiating between various quantum computers, this paper creates machine learning models which are capable of distinguishing whether a quantum circuit was executed by a quantum computer or a simulator on a classical computer.
 
 == Structure
 @terms-and-definitions gives a short overview about the most important concepts of quantum computing and machine learning used in this paper.
 In @approach the dataset used for training different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
 After that in @evaluation the accuracies of the different machine learning algorithms are compared and limitations of this work are discussed.
+// TODO und die Anwendbarkeit gezeigt.
+// TODO angreifbarkeit zeigen (adversarial attack)
 @future-work points out possible questions for further research.
 In the end @conclusion contains a short conclusion.
 
@@ -142,6 +146,7 @@ This optimal hyperplane is determined by the data points, referred to as support
 The hyperplane divides the input features into two distinct classes.
 Its position and orientation are determined to maximize the margin or distance between the hyperplane and the nearest data point from either class.
 This approach ensures the best possible separation between classes and enhances the algorithm's generalization capabilities.
+// TODO eventuell kürzen??
 However, real-world data is often not linearly separable.
 To overcome this limitation, SVMs employ a technique known as the kernel trick.
 A linear decision boundary can be found by mapping the input features into a higher dimensional feature space.
@@ -191,11 +196,47 @@ Very short, reference other works whenever possible.
 Main algorithm/approach of this thesis.
 
 Use ML techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the calculated results.
+// TODO Ansatz etwas ausführen
 
 == Data for Training
-erst rohdaten, hat nicht funktioniert -> danach vorverarbeitet.
-Vorverarbeiten auch gut, da verschiedene circuit steps (aber im selben run) zusammengefasst werden. -> zeitliche abhängigkeit.
-// TODO evtl untersuchen (Graph mit Window Size)
+// meine rohdaten stammen von hier, weil:
+Executions on Quantum Computer
+- no own access to a quantum computer -> run-data taken from @martinaLearningQuantumNoiseFingerprint2023
+- used up to 8 different IBM quantum machines to run the circuit on.
+
+=== Circuit
+Circuits executed multiple times until different points.
+
+Example:
+#figure(
+  grid(
+    columns: 2,
+    gutter: 2mm,
+    image("images/walker-step-1.svg", width: auto, height: auto),
+    image("images/walker-step-2.svg"),
+    image("images/walker-step-3.svg"),
+    image("images/walker-step-4.svg"),
+    image("images/walker-step-5.svg"),
+    image("images/walker-step-6.svg"),
+    image("images/walker-step-7.svg"),
+    image("images/walker-step-8.svg"),
+    image("images/walker-step-9.svg"),
+    ),
+  caption: "Walker circuit with different steps."
+) <walker-steps>
+// TODO erste drei Bilder einzeln beschreiben.
+// Im ersten wird nach zwei hadamard + cnot gemessen.
+// Im zweiten wird erst nach einem zusäczlichen x + cnot gemessen.
+// TODO text pro bild (bildunterschrift: erster Messpunkt, zweiter Messpunkt, ...)
+// dies wird nun schrittweise weiter hintereinanter durchgeführt.
+// TODO restlichen schaubilder in eine figur
+// daraus ergibt sich, dass man für diesen Schaltkreis 9 Messpunkte erhält.
+
+// TODO in the beginning, every qubit is in state |0>
+
+// TODO bilder nicht, wenn selbse generiert
+
+Each step is executed seperately.
 
 // TODO use different circuits? (or only use walker?).
 - 8000 shots per run.
@@ -223,36 +264,6 @@ There exist around 250 of these tables for each quantum computer for circuit Wal
   caption: "Comparison accuracy of SVM for all quantum computers vs all simulators on circuit walker."
 )
 
-
-=== Circuits
-Circuits executed multiple times until different points.
-
-Example:
-#figure(
-  grid(
-    columns: 2,
-    gutter: 2mm,
-    image("images/walker-step-1.svg", width: auto, height: auto),
-    image("images/walker-step-2.svg"),
-    image("images/walker-step-3.svg"),
-    image("images/walker-step-4.svg"),
-    image("images/walker-step-5.svg"),
-    image("images/walker-step-6.svg"),
-    image("images/walker-step-7.svg"),
-    image("images/walker-step-8.svg"),
-    image("images/walker-step-9.svg"),
-    ),
-  caption: "Walker circuit with different steps."
-) <walker-steps>
-
-// TODO in the beginning, every qubit is in state |0>
-
-// TODO bilder nicht, wenn selbse generiert
-
-Each step is executed seperately.
-
-//TODO Komplette Quantencomputer aus dem trainingsset excludieren.
-
 //TODO "angreiferseite": Adversarial Machine Learning manipulieren
 
 === Executins on Simulator
@@ -260,11 +271,13 @@ Each step is executed seperately.
 - 1 backend calculates a noise free result.
 - 6 backends _with_ noise models.
 
-=== Executions on Quantum Computer
-- no own access to a quantum computer -> run-data taken from @martinaLearningQuantumNoiseFingerprint2023
-- used up to 8 different IBM quantum machines to run the circuit on.
-
 == Machine Learning Approaches
+
+erst rohdaten, hat nicht funktioniert -> danach vorverarbeitet.
+Vorverarbeiten auch gut, da verschiedene circuit steps (aber im selben run) zusammengefasst werden. -> zeitliche abhängigkeit.
+// TODO evtl untersuchen (Graph mit Window Size)
+//TODO Komplette Quantencomputer aus dem trainingsset excludieren.
+
 === Support Vector Machine
 - Use different svm algorithms (linear, poly 4, rbf, ...) as proposed in @martinaLearningNoiseFingerprint2022.
 
@@ -276,6 +289,10 @@ Each step is executed seperately.
 
 = Evaluation <evaluation>
 Describes why this thesis really solves the problem it claims to solve. (contains results and measurements) 
+
+// hier "beste" fälle zeigen
+// zeige sowohl "gemischtes ausschließen", als auch "mehrere Quantencomputer ausschließen"
+// TODO ohne manche simulator trainieren (erkennt er einen unbekannten simulator)
 
 #let prob_data = csv("data/walker_svm_different_probabilities_ibmq_quito_vs_aer_simulator.csv")
 #cetz.canvas(length: 1.5cm, {
@@ -293,6 +310,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
 })
 
 == Limitations
+// TODO nur eingeschränkt richtig
 // possible to detect the circuit and route it (maybe to another provider for correct results).
 // To counteract this: embed the circuit inside the "real circuit". (uses only 4 qubits of possibly larger quantum computer)
 
