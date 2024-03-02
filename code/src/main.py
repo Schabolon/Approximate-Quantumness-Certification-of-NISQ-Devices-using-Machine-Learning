@@ -40,25 +40,35 @@ def create_quantum_computers_vs_simulators_stats_csv(circuit: ImplementedQuantum
     logging.info("Finished creating stats CSV ...")
 
 
-# chart of different window sizes
-def chart_probability_windows(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, quantum_backend: QuantumBackends, quantum_backend_2: QuantumBackends, steps: List[int]):
-    logging.info("Creating chart for probability with different windows ...")
+def window_sizes_vs_step_ranges_all_backends(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper):
+    logging.info("Creating table with window sizes vs step ranges for all backends combined ...")
     path = "../results"
     os.makedirs(path, exist_ok=True)
-    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_different_probabilities_{quantum_backend.backend_name}_vs_{quantum_backend_2.backend_name}_steps_{steps}.csv", 'w',
+    with (open(f"{path}/{ml_model.get_name()}_window_sizes_vs_step_ranges_all_backends_combined.csv", 'w',
                newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        csv_writer.writerow(['window size', 'accuracy'])
-        data = [CircuitRunData(circuit, quantum_backend), CircuitRunData(circuit, quantum_backend_2)]
-        for window_size in [1, 5, 8, 10, 40, 50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:
-            logging.debug(f"Calculating accuracy with window size {window_size}.")
-            results = [window_size]
-            custom_dataset = CustomDataset(data, steps, window_size=window_size)
-            acc = ml_model.train_and_evaluate(custom_dataset)
-            # store float as string with 3 decimal places
-            results.append("%.3f" % acc)
-            csv_writer.writerow(results)
+
+        data = []
+        for qc in QuantumBackends.get_quantum_computer_backends():
+            data.append(CircuitRunData(circuit, qc))
+        for s in QuantumBackends.get_simulator_backends():
+            data.append(CircuitRunData(circuit, s))
+
+        csv_writer.writerow(['window size/step ranges', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]', '[1 ... 7]', '[1 ... 8]', '[1 ... 9]'])
+        for window_size in [5, 8, 10, 40, 50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:
+            logging.debug(f"Calculating with window size {window_size}.")
+
+            steps = []
+            row_results = [window_size]
+            for step in range(0, 9):
+                steps.append(step)
+                logging.debug(f"Calculating for steps {steps}")
+                custom_dataset = CustomDataset(data, steps, window_size=window_size)
+                acc = ml_model.train_and_evaluate(custom_dataset)
+                # store float as string with 3 decimal places
+                row_results.append("%.3f" % acc)
+            csv_writer.writerow(row_results)
     logging.info("Finished chart creation.")
 
 
@@ -154,11 +164,12 @@ def basic_usage():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+    window_sizes_vs_step_ranges_all_backends(Walker(), run_svm.RunSVM())
     #visualization.visualize_histogram.plot_overview_histogram(Walker(), 1)
     #accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
     #basic_usage()
     #create_quantum_computers_vs_simulators_stats_csv(Walker(), run_svm.RunSVM(), window_size=1000)
-    course_of_accuracy_different_steps(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO_V2, window_size=1000)
+    #course_of_accuracy_different_steps(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO_V2, window_size=1000)
     #steps = []
     #for step in range(0, 9):
     #    steps.append(step)
