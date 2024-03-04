@@ -56,7 +56,7 @@ def window_sizes_vs_step_ranges_all_backends(circuit: ImplementedQuantumCircuit,
             data.append(CircuitRunData(circuit, s))
 
         csv_writer.writerow(['window size/step ranges', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]', '[1 ... 7]', '[1 ... 8]', '[1 ... 9]'])
-        for window_size in [5, 8, 10, 40, 50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:
+        for window_size in [50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:  # removed: 5, 8, 10, 40
             logging.debug(f"Calculating with window size {window_size}.")
 
             steps = []
@@ -164,7 +164,10 @@ def basic_usage():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+    #window_sizes_vs_step_ranges_all_backends(Walker(), run_neural_net.RunNeuralNet())
+    #window_sizes_vs_step_ranges_all_backends(Walker(), run_cnn.RunCNN())
     window_sizes_vs_step_ranges_all_backends(Walker(), run_svm.RunSVM())
+
     #visualization.visualize_histogram.plot_overview_histogram(Walker(), 1)
     #accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
     #basic_usage()
