@@ -102,6 +102,41 @@ def course_of_accuracy_different_steps(circuit: ImplementedQuantumCircuit, ml_mo
     logging.info("Finished chart creation.")
 
 
+def exclude_quantum_computer_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, window_size=2000):
+    logging.info("Creating table with excluded quantum computer vs step ranges for all other backends combined ...")
+    path = "../results"
+    os.makedirs(path, exist_ok=True)
+    with (open(f"{path}/{ml_model.get_name()}_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv", 'w',
+               newline='') as csvfile):
+        csv_writer = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(
+            ['excluded QC', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]',
+             '[1 ... 7]', '[1 ... 8]', '[1 ... 9]'])
+        for qc_to_exclude in QuantumBackends.get_quantum_computer_backends():
+            logging.debug(f"Calculating with excluded {qc_to_exclude}.")
+
+            data = []
+            for qc in QuantumBackends.get_quantum_computer_backends():
+                if qc != qc_to_exclude:
+                    data.append(CircuitRunData(circuit, qc))
+            for s in QuantumBackends.get_simulator_backends():
+                data.append(CircuitRunData(circuit, s))
+
+            steps = []
+            row_results = [qc_to_exclude]
+            for step in range(0, 9):
+                steps.append(step)
+                logging.debug(f"Calculating for steps {steps}")
+                custom_dataset = CustomDataset(data, steps, window_size=window_size)
+                acc = ml_model.train_and_evaluate(custom_dataset)
+                # store float as string with 3 decimal places
+                row_results.append("%.3f" % acc)
+            csv_writer.writerow(row_results)
+        logging.info("Finished chart creation.")
+
+
 def accuracy_quantum_computers_vs_simulators_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, window_size=1000):
     logging.info("Creating accuracy with different steps for combination of quantum computers vs all simulators ...")
     path = "../results"
@@ -164,9 +199,14 @@ def basic_usage():
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+
     #window_sizes_vs_step_ranges_all_backends(Walker(), run_neural_net.RunNeuralNet())
     #window_sizes_vs_step_ranges_all_backends(Walker(), run_cnn.RunCNN())
-    window_sizes_vs_step_ranges_all_backends(Walker(), run_svm.RunSVM())
+    #window_sizes_vs_step_ranges_all_backends(Walker(), run_svm.RunSVM())
+
+    exclude_quantum_computer_different_steps(Walker(), run_cnn.RunCNN())
+    exclude_quantum_computer_different_steps(Walker(), run_svm.RunSVM())
+    exclude_quantum_computer_different_steps(Walker(), run_neural_net.RunNeuralNet())
 
     #visualization.visualize_histogram.plot_overview_histogram(Walker(), 1)
     #accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
