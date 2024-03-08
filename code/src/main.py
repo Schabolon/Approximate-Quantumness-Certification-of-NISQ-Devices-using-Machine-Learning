@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+from itertools import combinations
 from typing import List
 
 import visualization.visualize_histogram
@@ -13,11 +14,13 @@ from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircu
 from quantum_circuits.walker import Walker
 
 
-def create_quantum_computers_vs_simulators_stats_csv(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, window_size=0):
+def create_quantum_computers_vs_simulators_stats_csv(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper,
+                                                     window_size=0):
     logging.info("Creating stats CSV ...")
     path = "../results"
     os.makedirs(path, exist_ok=True)
-    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_quantum_vs_simulator_window_size_{window_size}.csv", 'w', newline='') as csvfile):
+    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_quantum_vs_simulator_window_size_{window_size}.csv",
+               'w', newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         first_row = ['quantum computer name / simulator name']
@@ -55,7 +58,9 @@ def window_sizes_vs_step_ranges_all_backends(circuit: ImplementedQuantumCircuit,
         for s in QuantumBackends.get_simulator_backends():
             data.append(CircuitRunData(circuit, s))
 
-        csv_writer.writerow(['window size/step ranges', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]', '[1 ... 7]', '[1 ... 8]', '[1 ... 9]'])
+        csv_writer.writerow(
+            ['window size/step ranges', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]',
+             '[1 ... 7]', '[1 ... 8]', '[1 ... 9]'])
         for window_size in [50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:  # removed: 5, 8, 10, 40
             logging.debug(f"Calculating with window size {window_size}.")
 
@@ -72,12 +77,16 @@ def window_sizes_vs_step_ranges_all_backends(circuit: ImplementedQuantumCircuit,
     logging.info("Finished chart creation.")
 
 
-def course_of_accuracy_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, quantum_backend: QuantumBackends, quantum_backend_2: QuantumBackends, window_size=1000):
+def course_of_accuracy_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper,
+                                       quantum_backend: QuantumBackends, quantum_backend_2: QuantumBackends,
+                                       window_size=1000):
     logging.info("Creating course of accuracy with different steps ...")
     path = "../results"
     os.makedirs(path, exist_ok=True)
-    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_variable_steps_{quantum_backend.backend_name}_vs_{quantum_backend_2.backend_name}_window_size_{window_size}.csv", 'w',
-               newline='') as csvfile):
+    with (open(
+            f"{path}/{circuit.get_name()}_{ml_model.get_name()}_variable_steps_{quantum_backend.backend_name}_vs_{quantum_backend_2.backend_name}_window_size_{window_size}.csv",
+            'w',
+            newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow(['step k', 'single step accuracy k', 'step range accuracy 1 to k'])
@@ -102,11 +111,71 @@ def course_of_accuracy_different_steps(circuit: ImplementedQuantumCircuit, ml_mo
     logging.info("Finished chart creation.")
 
 
-def exclude_quantum_computer_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, window_size=2000):
+def generate_permutations_with_num_removed_elements(lst, num_to_remove):
+    all_lists = []
+    for comb in combinations(lst, num_to_remove):
+        new_list = [item for item in lst if item not in comb]
+        all_lists.append(new_list)
+    return all_lists
+
+
+def exclude_multiple_quantum_computer_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper,
+                                                      window_size=2000):
+    logging.info(
+        "Creating table with multiple excluded quantum computer vs step ranges for all other backends combined ...")
+    path = "../results"
+    os.makedirs(path, exist_ok=True)
+    with (open(
+            f"{path}/{ml_model.get_name()}_exclude_multiple_quantum_computer_vs_step_ranges_all_other_backends_combined.csv",
+            'w',
+            newline='') as csvfile):
+        csv_writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(
+            ['# of excluded QCs', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]', '[1 ... 7]',
+             '[1 ... 8]', '[1 ... 9]'])
+        for num_to_exclude in range(2, 6):
+            lists_with_qcs_excluded = generate_permutations_with_num_removed_elements(
+                QuantumBackends.get_quantum_computer_backends(), num_to_exclude)
+            row_results = [num_to_exclude.__str__()]
+            accumulated_acc = 0.0
+            steps = []
+            for step in range(0, 9):
+                steps.append(step)
+                logging.debug(f"Calculating for steps {steps}")
+                for qc_data_single_run in lists_with_qcs_excluded:
+                    logging.debug(f"Calculating with excluded #{num_to_exclude}.")
+
+                    data = []
+                    for qc in qc_data_single_run:
+                        data.append(CircuitRunData(circuit, qc))
+                    for s in QuantumBackends.get_simulator_backends():
+                        data.append(CircuitRunData(circuit, s))
+
+                    excluded_qcs = []
+                    for qc in QuantumBackends.get_quantum_computer_backends():
+                        if qc not in qc_data_single_run:
+                            excluded_qcs.append(CircuitRunData(circuit, qc))
+
+                    additional_test_dataset = CustomDataset(excluded_qcs, steps, window_size=window_size)
+                    custom_dataset = CustomDataset(data, steps, window_size=window_size)
+                    acc = ml_model.train_and_evaluate(custom_dataset, additional_test_dataset=additional_test_dataset)
+                    accumulated_acc = accumulated_acc + acc
+
+                # store float as string with 3 decimal places
+                row_results.append("%.3f" % accumulated_acc / len(lists_with_qcs_excluded))
+
+            csv_writer.writerow(row_results)
+        logging.info("Finished chart creation.")
+
+
+def exclude_single_quantum_computer_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper,
+                                                    window_size=2000):
     logging.info("Creating table with excluded quantum computer vs step ranges for all other backends combined ...")
     path = "../results"
     os.makedirs(path, exist_ok=True)
-    with (open(f"{path}/{ml_model.get_name()}_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv", 'w',
+    with (open(f"{path}/{ml_model.get_name()}_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv",
+               'w',
                newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -130,7 +199,8 @@ def exclude_quantum_computer_different_steps(circuit: ImplementedQuantumCircuit,
                 steps.append(step)
                 logging.debug(f"Calculating for steps {steps}")
                 custom_dataset = CustomDataset(data, steps, window_size=window_size)
-                additional_test_dataset = CustomDataset([CircuitRunData(circuit, qc_to_exclude)], steps, window_size=window_size)
+                additional_test_dataset = CustomDataset([CircuitRunData(circuit, qc_to_exclude)], steps,
+                                                        window_size=window_size)
                 acc = ml_model.train_and_evaluate(custom_dataset, additional_test_dataset=additional_test_dataset)
                 # store float as string with 3 decimal places
                 row_results.append("%.3f" % acc)
@@ -138,12 +208,15 @@ def exclude_quantum_computer_different_steps(circuit: ImplementedQuantumCircuit,
         logging.info("Finished chart creation.")
 
 
-def accuracy_quantum_computers_vs_simulators_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper, window_size=1000):
+def accuracy_quantum_computers_vs_simulators_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper,
+                                                             window_size=1000):
     logging.info("Creating accuracy with different steps for combination of quantum computers vs all simulators ...")
     path = "../results"
     os.makedirs(path, exist_ok=True)
-    with (open(f"{path}/{circuit.get_name()}_{ml_model.get_name()}_quantum_computers_vs_simulators_window_size_{window_size}.csv", 'w',
-               newline='') as csvfile):
+    with (open(
+            f"{path}/{circuit.get_name()}_{ml_model.get_name()}_quantum_computers_vs_simulators_window_size_{window_size}.csv",
+            'w',
+            newline='') as csvfile):
         csv_writer = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
         csv_writer.writerow(['step k', 'single step accuracy k', 'step range accuracy 1 to k'])
@@ -186,13 +259,13 @@ def basic_usage():
 
     # Execute different learning algorithms
     # SVM
-    #svm_acc = run_svm.RunSVM.train_and_evaluate(custom_dataset)
+    # svm_acc = run_svm.RunSVM.train_and_evaluate(custom_dataset)
 
     # Neural Model
     neural_net_acc = run_neural_net.RunNeuralNet.train_and_evaluate(custom_dataset)
 
     # Tuning Neural Model
-    #tuned_neural_net_acc = neural_net_tuner.tune_and_evaluate_model(custom_dataset)
+    # tuned_neural_net_acc = neural_net_tuner.tune_and_evaluate_model(custom_dataset)
 
     # CNN
     cnn_acc = run_cnn.RunCNN.train_and_evaluate(custom_dataset)
@@ -201,20 +274,24 @@ def basic_usage():
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 
-    #window_sizes_vs_step_ranges_all_backends(Walker(), run_neural_net.RunNeuralNet())
-    #window_sizes_vs_step_ranges_all_backends(Walker(), run_cnn.RunCNN())
-    #window_sizes_vs_step_ranges_all_backends(Walker(), run_svm.RunSVM())
+    # window_sizes_vs_step_ranges_all_backends(Walker(), run_neural_net.RunNeuralNet())
+    # window_sizes_vs_step_ranges_all_backends(Walker(), run_cnn.RunCNN())
+    # window_sizes_vs_step_ranges_all_backends(Walker(), run_svm.RunSVM())
 
-    exclude_quantum_computer_different_steps(Walker(), run_cnn.RunCNN())
-    exclude_quantum_computer_different_steps(Walker(), run_svm.RunSVM())
-    exclude_quantum_computer_different_steps(Walker(), run_neural_net.RunNeuralNet())
+    # exclude_single_quantum_computer_different_steps(Walker(), run_cnn.RunCNN())
+    # exclude_single_quantum_computer_different_steps(Walker(), run_svm.RunSVM())
+    # exclude_single_quantum_computer_different_steps(Walker(), run_neural_net.RunNeuralNet())
 
-    #visualization.visualize_histogram.plot_overview_histogram(Walker(), 1)
-    #accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
-    #basic_usage()
-    #create_quantum_computers_vs_simulators_stats_csv(Walker(), run_svm.RunSVM(), window_size=1000)
-    #course_of_accuracy_different_steps(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO_V2, window_size=1000)
-    #steps = []
-    #for step in range(0, 9):
+    exclude_multiple_quantum_computer_different_steps(Walker(), run_cnn.RunCNN())
+    exclude_multiple_quantum_computer_different_steps(Walker(), run_svm.RunSVM())
+    exclude_multiple_quantum_computer_different_steps(Walker(), run_neural_net.RunNeuralNet())
+
+    # visualization.visualize_histogram.plot_overview_histogram(Walker(), 1)
+    # accuracy_quantum_computers_vs_simulators_different_steps(Walker(), run_neural_net.RunNeuralNet(), window_size=1000)
+    # basic_usage()
+    # create_quantum_computers_vs_simulators_stats_csv(Walker(), run_svm.RunSVM(), window_size=1000)
+    # course_of_accuracy_different_steps(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_LIMA, QuantumBackends.FAKE_VIGO_V2, window_size=1000)
+    # steps = []
+    # for step in range(0, 9):
     #    steps.append(step)
     #    chart_probability_windows(Walker(), run_svm.RunSVM(), QuantumBackends.IBMQ_QUITO, QuantumBackends.FAKE_VIGO_V2, steps)
