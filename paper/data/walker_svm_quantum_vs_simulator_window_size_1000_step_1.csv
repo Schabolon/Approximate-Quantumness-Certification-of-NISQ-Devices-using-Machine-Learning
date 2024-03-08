@@ -1,9 +1,0 @@
-quantum computer name / simulator name,aer_simulator,aer_simulator_density_matrix,aer_simulator_statevector,aer_simulator_matrix_product_state,statevector_simulator,qasm_simulator,fake_vigo_v2,fake_athens_v2,fake_santiago_v2,fake_lima_v2,fake_belem_v2,fake_cairo_v2
-ibmq_athens,0.988,0.981,0.975,0.975,0.976,0.980,0.999,0.860,0.846,1.000,0.998,0.675
-ibmq_santiago,0.998,1.000,0.995,0.996,0.996,0.998,0.922,0.704,0.695,0.979,0.921,0.879
-ibmq_casablanca,0.999,0.999,0.995,0.996,0.991,0.993,0.804,0.767,0.767,0.941,0.851,0.943
-ibmq_casablanca-bis,0.994,0.994,0.998,0.998,0.995,0.994,0.991,0.766,0.735,1.000,0.993,0.770
-ibmq_5_yorktown,1.000,1.000,1.000,1.000,1.000,1.000,0.968,0.999,0.999,0.960,0.963,1.000
-ibmq_bogota,1.000,1.000,1.000,1.000,0.999,1.000,0.960,0.657,0.713,0.999,0.965,0.951
-ibmq_quito,0.988,0.983,0.994,0.988,0.983,0.983,0.995,0.723,0.691,1.000,0.998,0.807
-ibmq_lima,0.999,0.998,0.996,0.998,0.999,0.998,0.961,0.635,0.654,0.998,0.978,0.924
