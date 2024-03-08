@@ -37,8 +37,8 @@ class CustomDataset:
         self.__shuffle()
 
         # sanity checks
-        assert np.count_nonzero(self.labels == QuantumBackendType.QUANTUM_COMPUTER.label) > 1
-        assert np.count_nonzero(self.labels == QuantumBackendType.SIMULATOR.label) > 1
+        #assert np.count_nonzero(self.labels == QuantumBackendType.QUANTUM_COMPUTER.label) > 1
+        #assert np.count_nonzero(self.labels == QuantumBackendType.SIMULATOR.label) > 1
         assert len(self.labels) == len(self.features)
 
     def get_test_train_split(self, train_split=0.8):

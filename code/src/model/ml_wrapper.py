@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import Optional
 
 from dataset import CustomDataset
 
@@ -11,7 +12,7 @@ class MLWrapper:
 
     @staticmethod
     @abstractmethod
-    def train_and_evaluate(custom_dataset: CustomDataset):
+    def train_and_evaluate(custom_dataset: CustomDataset, additional_test_dataset: Optional[CustomDataset] = None):
         pass
 
     def get_name(self) -> str:

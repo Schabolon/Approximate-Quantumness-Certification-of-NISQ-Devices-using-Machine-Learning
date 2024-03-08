@@ -2,6 +2,9 @@
 Neural Net: a simple feed-forward-network.
 """
 import logging
+from typing import Optional
+
+import numpy as np
 import tensorflow as tf
 
 from tensorflow.keras import layers
@@ -15,11 +18,14 @@ class RunNeuralNet(MLWrapper):
         super().__init__("neural_net")
 
     @staticmethod
-    def train_and_evaluate(custom_dataset: CustomDataset):
+    def train_and_evaluate(custom_dataset: CustomDataset, additional_test_dataset: Optional[CustomDataset] = None):
         train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
+        if additional_test_dataset is not None:
+            test_features = np.append(test_features, additional_test_dataset.features, axis=0)
+            test_labels = np.append(test_labels, additional_test_dataset.labels, axis=0)
 
         model = tf.keras.Sequential([
-            layers.InputLayer(input_shape=(train_features.shape[1], )),
+            layers.InputLayer(input_shape=(train_features.shape[1],)),
             layers.Dense(10, activation='tanh'),
             layers.Dense(5, activation='tanh'),
             # layers.Dense(128, activation='relu'),
@@ -27,9 +33,11 @@ class RunNeuralNet(MLWrapper):
             layers.Dense(1, activation='sigmoid')
         ])
 
-        model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(from_logits=False), metrics=['accuracy'])
+        model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(from_logits=False),
+                      metrics=['accuracy'])
 
-        model.fit(train_features, train_labels, epochs=5, verbose=1, batch_size=32, validation_data=(test_features, test_labels))
+        model.fit(train_features, train_labels, epochs=5, verbose=1, batch_size=32,
+                  validation_data=(test_features, test_labels))
 
         test_loss, test_acc = model.evaluate(test_features, test_labels, verbose=1)
 

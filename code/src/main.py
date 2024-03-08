@@ -130,7 +130,8 @@ def exclude_quantum_computer_different_steps(circuit: ImplementedQuantumCircuit,
                 steps.append(step)
                 logging.debug(f"Calculating for steps {steps}")
                 custom_dataset = CustomDataset(data, steps, window_size=window_size)
-                acc = ml_model.train_and_evaluate(custom_dataset)
+                additional_test_dataset = CustomDataset([CircuitRunData(circuit, qc_to_exclude)], steps, window_size=window_size)
+                acc = ml_model.train_and_evaluate(custom_dataset, additional_test_dataset=additional_test_dataset)
                 # store float as string with 3 decimal places
                 row_results.append("%.3f" % acc)
             csv_writer.writerow(row_results)

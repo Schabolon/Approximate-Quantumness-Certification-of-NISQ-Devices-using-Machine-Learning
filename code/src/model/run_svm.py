@@ -1,5 +1,7 @@
 import logging
+from typing import Optional
 
+import numpy as np
 from sklearn import svm
 
 from dataset import CustomDataset
@@ -43,8 +45,11 @@ class RunSVM(MLWrapper):
         return acc_test, acc_train
 
     @staticmethod
-    def train_and_evaluate(custom_dataset: CustomDataset) -> float:
+    def train_and_evaluate(custom_dataset: CustomDataset, additional_test_dataset: Optional[CustomDataset] = None) -> float:
         train_features, train_labels, val_features, val_labels, test_features, test_labels = custom_dataset.get_test_train_validation_split()
+        if additional_test_dataset is not None:
+            test_features = np.append(test_features, additional_test_dataset.features, axis=0)
+            test_labels = np.append(test_labels, additional_test_dataset.labels, axis=0)
 
         logging.info("Choosing the best SVM model by using validation data ...")
         max_accuracy = -1
