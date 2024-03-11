@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 
 from circuit_run_data import CircuitRunData
+from quantum_backend_type import QuantumBackendType
 from quantum_backends import QuantumBackends
 from quantum_circuits.walker import Walker
 
@@ -41,7 +42,7 @@ def normalize_every_pair_of_four(tensor):
     return normalized_tensor_with_restored_shape
 
 
-def adversarial_attak(input_feature, input_label):
+def adversarial_attack(input_feature, input_label):
     print(f"Original input: {input_feature}")
     print(f"Original result: {trained_model.predict(input_feature)}")
 
@@ -56,18 +57,20 @@ def adversarial_attak(input_feature, input_label):
 
 
 if __name__ == '__main__':
+    window_size = 2000
+
     simulator_data = CircuitRunData(Walker(), QuantumBackends.get_simulator_backends()[0])
-    simulator_probability_data = simulator_data.get_probabilities(window_size=2000)
+    simulator_probability_data = simulator_data.get_probabilities(window_size=window_size)
     simulator_probability_data = simulator_probability_data.reshape(len(simulator_probability_data), 36)
 
     qc_data = CircuitRunData(Walker(), QuantumBackends.get_quantum_computer_backends()[0])
-    qc_probability_data = qc_data.get_probabilities(window_size=2000)
+    qc_probability_data = qc_data.get_probabilities(window_size=window_size)
     qc_probability_data = qc_probability_data.reshape(len(qc_probability_data), 36)
 
     single_simulator_value = simulator_probability_data[0:1, :]
-    simulator_label = np.array([1]).reshape(-1, 1)
+    simulator_label = np.array([QuantumBackendType.SIMULATOR]).reshape(-1, 1)
 
     single_qc_value = qc_probability_data[0:1, :]
-    qc_label = np.array([0]).reshape(-1, 1)
+    qc_label = np.array([QuantumBackendType.QUANTUM_COMPUTER]).reshape(-1, 1)
 
-    adversarial_attak(single_simulator_value, simulator_label)
+    adversarial_attack(single_simulator_value, simulator_label)
