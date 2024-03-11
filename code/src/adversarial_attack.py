@@ -41,6 +41,20 @@ def normalize_every_pair_of_four(tensor):
     return normalized_tensor_with_restored_shape
 
 
+def adversarial_attak(input_feature, input_label):
+    print(f"Original input: {input_feature}")
+    print(f"Original result: {trained_model.predict(input_feature)}")
+
+    perturbations = create_adversarial_pattern(input_feature, input_label)
+    epsilons = [0, 0.01, 0.1, 0.15]
+    for i, eps in enumerate(epsilons):
+        adv_x = input_feature + eps * perturbations
+        adv_x = tf.clip_by_value(adv_x, 0, 1)  # only allow values between 0 and 1
+        adv_x = normalize_every_pair_of_four(adv_x)  # normalize probabilities (packs of 4 have to sum up to 1)
+        print(f"Adversarial Input for epsilon {eps}: {adv_x}")
+        print(f"Adversarial result (epsilon: {eps}) : {trained_model.predict(adv_x)}")
+
+
 if __name__ == '__main__':
     simulator_data = CircuitRunData(Walker(), QuantumBackends.get_simulator_backends()[0])
     simulator_probability_data = simulator_data.get_probabilities(window_size=2000)
@@ -51,15 +65,9 @@ if __name__ == '__main__':
     qc_probability_data = qc_probability_data.reshape(len(qc_probability_data), 36)
 
     single_simulator_value = simulator_probability_data[0:1, :]
+    simulator_label = np.array([1]).reshape(-1, 1)
 
-    print(f"Original input: {single_simulator_value}")
-    print(f"Original result: {trained_model.predict(single_simulator_value)}")
+    single_qc_value = qc_probability_data[0:1, :]
+    qc_label = np.array([0]).reshape(-1, 1)
 
-    perturbations = create_adversarial_pattern(single_simulator_value, np.array([1]).reshape(-1, 1))
-    epsilons = [0, 0.01, 0.1, 0.15]
-    for i, eps in enumerate(epsilons):
-        adv_x = single_simulator_value + eps * perturbations
-        adv_x = tf.clip_by_value(adv_x, 0, 1)  # only allow values between 0 and 1
-        adv_x = normalize_every_pair_of_four(adv_x)
-        print(f"Adversarial Input for epsilon {eps}: {adv_x}")
-        print(f"Adversarial result (epsilon: {eps}) : {trained_model.predict(adv_x)}")
+    adversarial_attak(single_simulator_value, simulator_label)
