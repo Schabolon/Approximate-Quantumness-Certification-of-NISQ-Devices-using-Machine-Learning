@@ -7,6 +7,7 @@ from circuit_run_data import CircuitRunData
 from dataset import CustomDataset
 from model import run_svm, run_neural_net, run_cnn
 from model.ml_wrapper import MLWrapper
+from model.run_neural_net import RunNeuralNet
 from quantum_backends import QuantumBackends
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 from quantum_circuits.walker import Walker
@@ -180,8 +181,22 @@ def accuracy_quantum_computers_vs_simulators_different_steps(circuit: Implemente
     logging.info("Finished chart creation.")
 
 
+def save_neural_net(circuit: ImplementedQuantumCircuit):
+    data = []
+    for qc in QuantumBackends.get_quantum_computer_backends():
+        data.append(CircuitRunData(circuit, qc))
+    for s in QuantumBackends.get_simulator_backends():
+        data.append(CircuitRunData(circuit, s))
+
+    custom_dataset = CustomDataset(data, list(range(0, 9)), window_size=2000)
+    RunNeuralNet.save_model_after_training(custom_dataset)
+
+
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
+
+    save_neural_net(Walker())
+    exit(0)
 
     for ml_approach in [run_neural_net.RunNeuralNet(), run_cnn.RunCNN(), run_svm.RunSVM()]:
         window_sizes_vs_step_ranges_all_backends(Walker(), ml_approach)
