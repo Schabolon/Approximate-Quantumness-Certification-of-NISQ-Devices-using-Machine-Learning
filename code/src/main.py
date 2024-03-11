@@ -138,9 +138,9 @@ def exclude_multiple_quantum_computer_different_steps(circuit: ImplementedQuantu
             lists_with_qcs_excluded = generate_permutations_with_num_removed_elements(
                 QuantumBackends.get_quantum_computer_backends(), num_to_exclude)
             row_results = [num_to_exclude.__str__()]
-            accumulated_acc = 0.0
             steps = []
             for step in range(0, 9):
+                accumulated_acc = 0.0
                 steps.append(step)
                 logging.debug(f"Calculating for steps {steps}")
                 for qc_data_single_run in lists_with_qcs_excluded:
@@ -163,7 +163,7 @@ def exclude_multiple_quantum_computer_different_steps(circuit: ImplementedQuantu
                     accumulated_acc = accumulated_acc + acc
 
                 # store float as string with 3 decimal places
-                row_results.append("%.3f" % accumulated_acc / len(lists_with_qcs_excluded))
+                row_results.append("%.3f" % (accumulated_acc / len(lists_with_qcs_excluded)))
 
             csv_writer.writerow(row_results)
         logging.info("Finished chart creation.")
