@@ -40,22 +40,23 @@ Therefore, mitigating strategies should be devised to ensure transparency and tr
 This work provides a machine learning-based approach that allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
 
 == Related Work <related-work>
-Previous work has already shown that it is possible to generate a unique hardware fingerprint which is based on the qubit frequencies. The fingerprint is based on quantum computer calibration data which was made available by the cloud provider @smithFastFingerprintingCloudbased2022.
+Previous work has shown that it is possible to generate a unique hardware fingerprint based on the qubit frequencies. The fingerprint is based on quantum computer calibration data, which was made available by the cloud provider @smithFastFingerprintingCloudbased2022.
 A different research group has developed a Quantum Physically Unclonable Function (QuPUF).
 By utilizing the QuPUF, it is possible to identify the quantum computer the QuPUF was executed on @phalakQuantumPUFSecurity2021.
-Another approach uses a tomography-based fingerprinting method which is based on crosstalk-induced errors @miShortPaperDevice2021.
+Another approach uses a tomography-based fingerprinting method based on crosstalk-induced errors @miShortPaperDevice2021.
 
-The paper "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. distinguishes on which QC a specific quantum circuit has been executed by learning the error-fingerprint using a support vector machine @martinaLearningNoiseFingerprint2022.
+Martina et al.'s paper "Noise fingerprints in quantum computers: Machine learning software tools" distinguishes which QC a specific quantum circuit has been executed by learning the error fingerprint using a support vector machine @martinaLearningNoiseFingerprint2022.
 
-This paper takes a similar approach to "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. @martinaLearningNoiseFingerprint2022 and utilizes the same quantum circuit, but instead of differentiating between various quantum computers, this paper creates machine learning models which are capable of distinguishing whether a quantum circuit was executed by a QC or a simulator on a classical computer.
+This paper takes a similar approach to "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. @martinaLearningNoiseFingerprint2022 and utilizes the same quantum circuit.
+However, instead of differentiating between various quantum computers, this paper creates machine learning models that distinguish whether a quantum circuit was executed by a QC or a simulator on a classical computer.
 
 == Structure
-@terms-and-definitions gives a short overview about the most important concepts of quantum computing and machine learning used in this paper.
-In @approach the dataset used for training different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
-Additionally, a white-box adersarial attack is performed.
-After that in @evaluation the accuracies of the different machine learning algorithms are compared and limitations of this work are discussed, specifically with respect to the white-box adversarial attack.
+@terms-and-definitions gives a short overview of the most important concepts of quantum computing and machine learning used in this paper.
+In @approach, the dataset used for training different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
+Additionally, a white-box adversarial attack is performed.
+After that, in @evaluation, the accuracies of the different machine learning algorithms are compared, and the limitations of this work are discussed, specifically concerning the white-box adversarial attack.
 @future-work points out possible questions for further research.
-In the end @conclusion contains a short conclusion.
+At the end, @conclusion contains a short conclusion.
 
 
 = Terms and Definitions <terms-and-definitions>
