@@ -57,11 +57,10 @@ class RunSVM(MLWrapper):
         best_alg_name = ""
         for alg_num, (alg_name, alg_fun) in enumerate([
             ["Linear SVM (LinearSVC)", svm.LinearSVC()],
-            ["Linear SVM", svm.SVC(kernel='linear', decision_function_shape='ovr')],
-            ["Poly d.2 SVM", svm.SVC(kernel='poly', degree=2, decision_function_shape='ovr')],
-            ["Poly d.3 SVM", svm.SVC(kernel='poly', degree=3, decision_function_shape='ovr')],
-            ["Poly d.4 SVM", svm.SVC(kernel='poly', degree=4, decision_function_shape='ovr')],
-            ["RBF SVM", svm.SVC(kernel='rbf', decision_function_shape='ovr')],
+            ["Poly d.2 SVM", svm.SVC(kernel='poly', degree=2)],
+            ["Poly d.3 SVM", svm.SVC(kernel='poly', degree=3)],
+            ["Poly d.4 SVM", svm.SVC(kernel='poly', degree=4)],
+            ["RBF SVM", svm.SVC(kernel='rbf')],
         ]):
             # Uses the validation part of the dataset to find the algorithm which seems to fit best.
             acc_test, acc_train = RunSVM.__train_and_evaluate(alg_fun, val_features, val_labels, test_features, test_labels)

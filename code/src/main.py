@@ -8,6 +8,7 @@ from dataset import CustomDataset
 from model import run_svm, run_neural_net, run_cnn
 from model.ml_wrapper import MLWrapper
 from model.run_neural_net import RunNeuralNet
+from model.run_svm import RunSVM
 from quantum_backends import QuantumBackends
 from quantum_circuits.implemented_quantum_circuit import ImplementedQuantumCircuit
 from quantum_circuits.walker import Walker
@@ -31,7 +32,12 @@ def window_sizes_vs_step_ranges_all_backends(circuit: ImplementedQuantumCircuit,
         csv_writer.writerow(
             ['window size/step ranges', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]',
              '[1 ... 7]', '[1 ... 8]', '[1 ... 9]'])
-        for window_size in [50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]:  # removed: 5, 8, 10, 40
+        if ml_model.get_name() is RunSVM().get_name():
+            # SVM takes too long for small window sizes. They are therefore excluded.
+            window_sizes = [50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]
+        else:
+            window_sizes = [5, 8, 10, 40, 50, 80, 100, 200, 400, 800, 1000, 2000, 4000, 8000]
+        for window_size in window_sizes:
             logging.debug(f"Calculating with window size {window_size}.")
 
             steps = []
@@ -194,9 +200,6 @@ def save_neural_net(circuit: ImplementedQuantumCircuit):
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-
-    save_neural_net(Walker())
-    exit(0)
 
     for ml_approach in [run_neural_net.RunNeuralNet(), run_cnn.RunCNN(), run_svm.RunSVM()]:
         window_sizes_vs_step_ranges_all_backends(Walker(), ml_approach)
