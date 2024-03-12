@@ -67,20 +67,20 @@ A quantum computer leverages quantum bits (qubits).
 Qubits have two basis states $|0 angle.r = [1, 0]^top$ and $|1 angle.r = [0, 1]^top$.
 The notation with '$| med angle.r$' is called Dirac notation.
 Classical bits are either 0 or 1.
-Qubits on the other hand can be in states other than $|0 angle.r$ and $|1 angle.r$.
-A superposition is denoted as linear combination of states as seen in @superpositon-linear-combination.
+Conversely, qubits can be in states other than $|0 angle.r$ and $|1 angle.r$.
+A superposition is denoted as a linear combination of states, as in @superpositon-linear-combination.
 #figure(
   $ |psi angle.r = alpha|0 angle.r + beta|1 angle.r $,
-  caption: "Qubit state written as linear combination of the two basis states"
+  caption: "A qubit state is written as a linear combination of the two basis states."
 ) <superpositon-linear-combination>
 In @superpositon-linear-combination $alpha$ and $beta$ are complex values and describe probability amplitudes.
-The probabilities have to satisfy the normalization condition $|alpha|^2 + |beta|^2 = 1$.
-By leveraging quantum properties such as superposition, interference and entanglement, it is possible to solve a specific selection of problems with reduced time and space complexity.
-One example for such a quantum algorithm is Shor's algorithm @shorPolynomialTimeAlgorithmsPrime1997.
-In this paper circuit are made of the Pauli-X gate, the Hadamard gate, the Controlled not gate (CNOT) and the Toffoli gate. Their respective circuit representation can be seen in @quantum-gates.
+The probabilities must satisfy the normalization condition $|alpha|^2 + |beta|^2 = 1$.
+It is possible to solve a specific selection of problems with reduced time and space complexity by leveraging quantum properties such as superposition, interference, and entanglement.
+One example of such a quantum algorithm is Shor's algorithm @shorPolynomialTimeAlgorithmsPrime1997.
+This paper's circuits consist of the Pauli-X gate, the Hadamard gate, the Controlled not gate (CNOT), and the Toffoli gate. Their respective circuit representation can be seen in @quantum-gates.
 The Pauli-X gate performs a base flip on a single qubit.
 The CNOT gate performs a base flip on the target qubit, depending on the state of the control qubit.
-Similarly, the Toffoli gate has two control qubits which influence, whether the target qubit gets flipped.
+Similarly, the Toffoli gate has two control qubits, influencing whether the target qubit gets flipped.
 #figure(
   grid(
     columns: 4,
@@ -89,22 +89,22 @@ Similarly, the Toffoli gate has two control qubits which influence, whether the 
     align(horizon, image("images/gates/cnot.svg", width: 40%)),
     align(horizon, image("images/gates/ccx.svg", width: 30%))
   ),
-  caption: "Quantum gates (from left to right): Pauli-X gate, Hadamard gate, Controlled not gate, Toffoli gate"
+  caption: "Quantum gates (from left to right): Pauli-X gate, Hadamard gate, Controlled not gate, Toffoli gate."
 ) <quantum-gates>
-In quantum computing, the act of measuring a qubit yields a binary outcome: either a $0$ or a $1$.
+In quantum computing, measuring a qubit yields a binary outcome: either a $0$ or a $1$.
 This measurement process is a critical operation that leads to the collapse of the qubit's wave function, situating it into a definitive state of either $|0\rangle$ or $|1\rangle$, depending on the measured value.
-This collapse is a direct consequence of the quantum mechanical principle of wave function collapse, where the act of measurement forces a quantum system to 'choose' a state from among the probabilities described by its wave function prior to measurement.
+This collapse is a direct consequence of the quantum mechanical principle of wave function collapse, where measurement forces a quantum system to 'choose' a state from among the probabilities described by its wave function prior to measurement.
 Additionally, the concept of "shots" in quantum computing refers to the number of iterations a quantum algorithm is executed.
 The rationale behind multiple shots is to compile a statistical distribution of outcomes, which is instrumental in approximating the quantum state prior to measurement.
-This statistical approach is crucial due to the probabilistic nature of quantum measurements, where repeated executions help in accurately estimating the likelihood of each possible outcome, thereby providing insight into the quantum system's behavior before measurement @nielsenQuantumComputationQuantum2010.
+This statistical approach is crucial due to the probabilistic nature of quantum measurements, where repeated executions help accurately estimate the likelihood of each possible outcome, thereby providing insight into the quantum system's behavior before measurement @nielsenQuantumComputationQuantum2010.
 
-For building physical quantum computers, different approaches exist.
+Different approaches exist for building physical quantum computers.
 QCs built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
-Other architectures include trapped ions, photonics and nuclear magnetic resonance @laddQuantumComputers2010.
-Current quantum chips mainly suffer from decoherence, gate errors, readout errors and crosstalk.
-For a qubit the decoherence time refers to how long the qubit can contain its information.
-Decoherence can occur for example when a qubit interacts with the environment.
-When quantum computers are constructed from multiple qubits, unwanted interactions between these qubits is called crosstalk.
+Other architectures include trapped ions, photonics, and nuclear magnetic resonance @laddQuantumComputers2010.
+Current quantum chips mainly suffer from decoherence, gate errors, readout errors, and crosstalk.
+For a qubit, the decoherence time refers to how long the qubit can contain information.
+Decoherence can occur, for example, when a qubit interacts with the environment.
+When quantum computers are constructed from multiple qubits, unwanted interactions between these qubits are called crosstalk.
 
 == Machine Learning
 In this paper, the following supervised learning approaches are being utilized.
