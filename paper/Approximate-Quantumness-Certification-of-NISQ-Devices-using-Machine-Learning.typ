@@ -323,10 +323,14 @@ This second approach also examines whether the 8000 shots can be meaningfully di
 This has the advantage that more test and training data packages can be formed from the data available for this work.
 
 === Support Vector Machine
-- Use different svm algorithms (linear, poly 4, rbf, ...) as proposed in @martinaLearningNoiseFingerprint2022.
-TODO Verlinkung zu @terms-and-definitions.
 
-=== Artificial Neural Net
+To optimize the selection of the support vector machine algorithm for training, 20% of the dataset is allocated for preliminary evaluation.
+This evaluation process involves comparing the performance, specifically accuracy, of multiple potential SVM algorithms: linear, polynomial, and radial basis function.
+During this phase, the algorithm demonstrating superior accuracy is then selected for further training.
+The chosen algorithm undergoes training on 60% of the input data, and its performance is subsequently assessed using the remaining 20% of the data to ensure its efficacy and reliability.
+The selection process for the SVM algorithm is similar to @martinaLearningNoiseFingerprint2022.
+
+=== Feedforward Neural Net
 // TODO keras tuner not needed, hyperparameter due to data preprocessing really stable.
 TODO Verlinkung zu @terms-and-definitions.
 
@@ -387,7 +391,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   caption: ""
 )
 
-== Artificial Neural Net
+== Feedforward Neural Net
 #let ann_step_range_vs_window_size = csv("data/neural_net_window_sizes_vs_step_ranges_all_backends_combined.csv")
 #figure(
   tablex(
