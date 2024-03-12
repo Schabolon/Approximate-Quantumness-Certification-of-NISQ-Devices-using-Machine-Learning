@@ -143,19 +143,19 @@ A Support Vector Machine (SVM) is a machine learning algorithm primarily used fo
 It operates by constructing an optimal hyperplane in a high-dimensional space that separates different classes of data points.
 This optimal hyperplane is determined by the data points, referred to as support vectors, that lie closest to the decision boundary, see @svm.
 The hyperplane divides the input features into two distinct classes.
-Its position and orientation are determined to maximize the margin or distance between the hyperplane and the nearest data point from either class.
+Its position and orientation are determined to maximize the distance between the hyperplane and the nearest data point from either class.
 This approach ensures the best possible separation between classes and enhances the algorithm's generalization capabilities.
 // TODO eventuell kürzen??
 However, real-world data is often not linearly separable.
 To overcome this limitation, SVMs employ a technique known as the kernel trick.
 A linear decision boundary can be found by mapping the input features into a higher dimensional feature space.
-The kernel trick allows SVMs to construct a non-linear decision boundary in the original input space, thereby enabling the classification of complex datasets.
+The kernel trick allows SVMs to construct a non-linear decision boundary in the input space, thereby enabling the classification of complex datasets.
 As a result, SVMs are computationally efficient and particularly suited for handling high-dimensional data.
 See @cristianiniIntroductionSupportVector2000 for additional details.
 
 === Feedforward Neural Network
 A feedforward neural network (FNN) is an artificial neural network commonly used for various machine learning tasks, including classification, regression, and pattern recognition.
-It passes input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs and applies an activation function to produce an output, which can be written as @perceptron-math.
+It passes input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs combined with a bias and applies an activation function to produce an output, which can be written as @perceptron-math.
 
 #figure(
   $ y = f(sum_(i=1)^(n) w_i x_i + b) $,
@@ -189,8 +189,7 @@ Pooling layers downsample the feature maps, reducing the spatial dimensions of t
 Finally, fully connected layers process the extracted features to make predictions or classifications.
 During training, CNNs adjust the parameters of the filters through backpropagation, optimizing them to minimize the difference between predicted outputs and ground truth labels.
 This process enables CNNs to effectively learn and generalize from large datasets.
-CNNs have demonstrated remarkable performance in various applications, including image classification, object detection, and semantic segmentation.
-Their ability to automatically learn relevant features from raw input data and their hierarchical architecture make them well-suited for handling complex tasks.
+Their ability to learn relevant features from raw input data and their hierarchical architecture make them well-suited for handling complex tasks.
 For additional information see @russellArtificialIntelligenceModern2021.
 
 === Adversarial Attack
@@ -205,25 +204,25 @@ This method relies on the differentiability of the neural network to efficiently
 
 = Approach <approach>
 The methods mentioned in @related-work are used for fingerprinting, meaning they can predict which results originate from which quantum computer, but they cannot distinguish between a QC or a simulator.
-This work therefore attempts to develop an approach that performs this differentiation.
-In order to achieve this, only the measurement results of the quantum ciruits are considered.
-Therefore this paper uses machine learing techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the circuit's measurement results.
-The only precondition is that the data labels are correct (measurement results labeled as 'quantum computer data' have to be from an actual QC).
+This work, therefore, attempts to develop an approach that performs this differentiation.
+In order to achieve this, only the measurement results of the quantum circuits are considered.
+Therefore, this paper uses machine learning techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the circuit's measurement results.
+The only precondition is that the data labels are correct (measurement results labeled 'quantum computer data' must be from an actual QC).
 
 == Data for Training
-The measurement results from a quantum computer  are taken from @martinaLearningQuantumNoiseFingerprint2023.
-The reason being that no access to a quantum computer was available during the creation of this paper.
-The QC data is the result of running the circuit described in @circuit on up to 8 different IBM quantum machines.
-In the dataset it is clearly identifiable on which of the quantum computers the circuit was executed.
+The measurement results from a quantum computer are taken from @martinaLearningQuantumNoiseFingerprint2023.
+The reason is that no access to a quantum computer was available during the creation of this paper.
+The QC data has been obtained by running the circuit described in @circuit on up to 8 different IBM quantum machines.
+In the dataset, it is identifiable on which of the quantum computers the circuit was executed.
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 with Qiskit @Qiskit2024.
 
 === Circuit <circuit>
 The entire circuit looks like @circuit-complete.
-In order to measure the circuit at different points, this circuit is executed until different points (steps) and a measurement of the qubits $q_2$ and $q_3$ is carried out after each step.
+In order to measure the circuit at different points, this circuit is executed until different points (steps), and a measurement of the qubits $q_2$ and $q_3$ is carried out after each step.
 
 #figure(
   image("images/walker-step-9.svg"),
-  caption: "Complete circuit with 4 qubits. Only the lower two qubits are being measured at the end. Grey separators mark points at which measurements can take place."
+  caption: "Complete circuit with four qubits. Only the lower two qubits are being measured at the end. Grey separators mark points at which measurements can take place."
 ) <circuit-complete>
 
 Due to the wavefunction collapse, a new circuit has to be executed and measured for each measurement step.
@@ -241,12 +240,12 @@ The entire process is shown in @circuit-steps.
     image("images/walker-step-8.svg"),
     image("images/walker-step-9.svg"),
     ),
-  caption: "Circuit with different point at which they get measured."
+  caption: "Circuit with different points at which they get measured."
 ) <circuit-steps>
 
 This results in 9 measurement points for this circuit.
 Each circuit run has been performed with 8000 shots.
-For one circuit run with 8000 shots the measurement results look like @measurement-data-table.
+The measurement results of one circuit run with 8000 shots look like @measurement-data-table.
 
 #figure(
   table(
@@ -262,23 +261,23 @@ For one circuit run with 8000 shots the measurement results look like @measureme
 ) <measurement-data-table>
 
 === Executions on Simulator
-To obtain the simulated data, 7 different Qiskit simulators are utilized.
-Only one backend calculates a noise free result, because the variance is caused by the noise but different simulator implementations deliver very similar results.
-In order to obtain a comparable order of magnitude of simulated data to that of QC generated data, 6 additional simulators with noise are used.
-All of the 6 backends are each utilizing a different noise model which is based on calibration data from real IBM quantum computers @Fake_provider.
+Seven different Qiskit simulators are utilized to obtain the simulated data.
+Only one backend calculates a noise-free result because the noise causes the variance, but different simulator implementations deliver similar results.
+In order to obtain a comparable order of magnitude of simulated data to that of QC-generated data, six additional simulators with noise are used.
+All six backends are each utilizing a different noise model based on calibration data from real IBM quantum computers @Fake_provider.
 
 == Machine Learning Approaches
 The basic approach makes use of machine learning algorithms to distinguish whether a quantum circuit was executed on a QC or a simulator.
-As a first approach, different ML algorithms were trained with the unpreprocessed measurement data.
-In each case, the complete data set for a measurement point (step) over 8000 shots (i.e. 8000 individual values) was used as an input.
-The individual steps are considered completely independently of each other.
+Different ML algorithms were trained using raw measurement data as a first approach.
+The complete data set for a measurement point (step) over 8000 shots (i.e., 8000 individual values) was used as input in each case.
+The individual steps are considered entirely independently of each other.
 In particular, 8000 input neurons had to be used for the artificial neural net.
 
-As a second approach, the data has been preprocessed before machine learning algorithms were applied to it.
+As a second approach, the data was preprocessed before machine learning algorithms were applied.
 For this purpose, the probability values per step were calculated for the four possible result values ($00_2$, $01_2$, $10_2$, $11_2$).
 Only these probability values are used as input for the ML algorithms.
 When considering a step > 1, the probability values of the previous steps were also used.
-This means that step 1 has 4 input values, step 2 has 8 (the 4 unchanged values from step 1 and the 4 additional probabilities from step 2), step 3 has 12 and so on. (See @probability-calculation-table-step-1 and @probability-calculation-table-steps-1-and-2)
+This means that step 1 has four input values, step 2 has 8 (the four unchanged values from step 1 and the four additional probabilities from step 2), step 3 has 12, and so on. (See @probability-calculation-table-step-1 and @probability-calculation-table-steps-1-and-2)
 // TODO Figure schöner machen.
 #figure(
   grid(
