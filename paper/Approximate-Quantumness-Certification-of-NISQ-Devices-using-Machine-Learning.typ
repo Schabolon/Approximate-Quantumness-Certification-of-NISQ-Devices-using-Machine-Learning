@@ -8,16 +8,15 @@
 
 #pagebreak()
 
-// TODO at some places switch quantum computer with QC
 = Introduction and Motivation
 The quantum computing market is expected to grow from USD 866 million in 2023 to USD 4.375 million in 2030 @QuantumComputingMarket2023.
 Quantum computing is especially promising in the fields of simulations, drug development and cybersecurity @emilioCurrentStatusNext2022.
 Despite these positive prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
-Current quantum computers are provided as cloud based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
+Current quantum computers (QCs) are provided as cloud based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
 These services are mainly aimed at academics and researchers.
 As a first step for using such a cloud-based quantum computer, a user account needs to be registered.
 Afterwards, the user develops the quantum circuit (e.g. in IBM's Qiskit @Qiskit2024), uploads the quantum circuit and can choose a backend to execute the circuit on.
-In a next step, the request gets scheduled and executed on the quantum computer.
+In a next step, the request gets scheduled and executed on the QC.
 Finally, results are sent back to the user.
 #figure(
   image("images/quantum-based-cloud-provider-trust-left-to-right.svg"),
@@ -38,7 +37,7 @@ Therefore, mitigating strategies should be devised to ensure transparency and tr
 
 // TODO write in 3rd person?
 // TODO Paper Contributions mehr herausarbeiten.
-This work provides a machine learning based approach which allows the users of cloud-based quantum computers to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
+This work provides a machine learning based approach which allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
 
 == Related Work <related-work>
 Previous work has already shown that it is possible to generate a unique hardware fingerprint which is based on the qubit frequencies. The fingerprint is based on quantum computer calibration data which was made available by the cloud provider @smithFastFingerprintingCloudbased2022.
@@ -46,16 +45,15 @@ A different research group has developed a Quantum Physically Unclonable Functio
 By utilizing the QuPUF, it is possible to identify the quantum computer the QuPUF was executed on @phalakQuantumPUFSecurity2021.
 Another approach uses a tomography-based fingerprinting method which is based on crosstalk-induced errors @miShortPaperDevice2021.
 
-The paper "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. distinguishes on which quantum computer a specific quantum circuit has been executed by learning the error-fingerprint using a support vector machine @martinaLearningNoiseFingerprint2022.
+The paper "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. distinguishes on which QC a specific quantum circuit has been executed by learning the error-fingerprint using a support vector machine @martinaLearningNoiseFingerprint2022.
 
-This paper takes a similar approach to "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. @martinaLearningNoiseFingerprint2022 and utilizes the same quantum circuit, but instead of differentiating between various quantum computers, this paper creates machine learning models which are capable of distinguishing whether a quantum circuit was executed by a quantum computer or a simulator on a classical computer.
+This paper takes a similar approach to "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. @martinaLearningNoiseFingerprint2022 and utilizes the same quantum circuit, but instead of differentiating between various quantum computers, this paper creates machine learning models which are capable of distinguishing whether a quantum circuit was executed by a QC or a simulator on a classical computer.
 
 == Structure
 @terms-and-definitions gives a short overview about the most important concepts of quantum computing and machine learning used in this paper.
 In @approach the dataset used for training different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
-After that in @evaluation the accuracies of the different machine learning algorithms are compared and limitations of this work are discussed.
-// TODO und die Anwendbarkeit gezeigt.
-// TODO angreifbarkeit zeigen (adversarial attack)
+Additionally, a white-box adersarial attack is performed.
+After that in @evaluation the accuracies of the different machine learning algorithms are compared and limitations of this work are discussed, specifically with respect to the white-box adversarial attack.
 @future-work points out possible questions for further research.
 In the end @conclusion contains a short conclusion.
 
@@ -92,16 +90,15 @@ Similarly, the Toffoli gate has two control qubits which influence, whether the 
   ),
   caption: "Quantum gates (from left to right): Pauli-X gate, Hadamard gate, Controlled not gate, Toffoli gate"
 ) <quantum-gates>
-After performing a measurement on a qubit, the result is either a $0$ or a $1$.
-// TODO add reference to circuit design (reason, why these different circuits had to be created/run seperately and not measured in between)
-// TODO Erkläre wieso shots benötigt werden.
-After a measurement, the wave function collapses and the qubit remains in either the $|0 angle.r$ state (if $0$ has been measured) or in the $|1 angle.r$ state (if $1$ has been measured).
-The number of shots specifies how many times one algorithm is run on the quantum computer.
-As a result, the user receives a distribution of the different outcomes @nielsenQuantumComputationQuantum2010.
+In quantum computing, the act of measuring a qubit yields a binary outcome: either a $0$ or a $1$.
+This measurement process is a critical operation that leads to the collapse of the qubit's wave function, situating it into a definitive state of either $|0\rangle$ or $|1\rangle$, depending on the measured value.
+This collapse is a direct consequence of the quantum mechanical principle of wave function collapse, where the act of measurement forces a quantum system to 'choose' a state from among the probabilities described by its wave function prior to measurement.
+Additionally, the concept of "shots" in quantum computing refers to the number of iterations a quantum algorithm is executed.
+The rationale behind multiple shots is to compile a statistical distribution of outcomes, which is instrumental in approximating the quantum state prior to measurement.
+This statistical approach is crucial due to the probabilistic nature of quantum measurements, where repeated executions help in accurately estimating the likelihood of each possible outcome, thereby providing insight into the quantum system's behavior before measurement @nielsenQuantumComputationQuantum2010.
 
-// Current hardware (physical qubits)
 For building physical quantum computers, different approaches exist.
-Quantum computers built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
+QCs built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
 Other architectures include trapped ions, photonics and nuclear magnetic resonance @laddQuantumComputers2010.
 Current quantum chips mainly suffer from decoherence, gate errors, readout errors and crosstalk.
 For a qubit the decoherence time refers to how long the qubit can contain its information.
@@ -156,44 +153,54 @@ As a result, SVMs are computationally efficient and particularly suited for hand
 See @cristianiniIntroductionSupportVector2000 for additional details.
 
 === Feedforward Neural Network
-Each neural network consists of multiple neurons/perceptrons.
-These perceptrons are grouped in layers.
-The first layer is called input layer.
-After that come hidden layers.
-The results are taken from the last layer, the output layer.
-See @feedforward-net for a visualization.
-#figure(
-  image("images/feedforward-neural-network.svg", height: 25%),
-  caption: "Feed forward neural net"
-) <feedforward-net>
-
-For each neuron @perceptron-math is calculated.
+A feed-forward neural network (FNN) is a type of artificial neural network commonly used for various machine learning tasks, including classification, regression, and pattern recognition.
+It operates by passing input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs and applies an activation function to produce an output, which can be written as @perceptron-math.
 
 #figure(
   $ y = f(sum_(i=1)^(n) w_i x_i + b) $,
   caption: "Equation for a single perceptron. y: output, f: activation function, w_i: weights for each input x_i, b: bias, n: number of inputs"
 ) <perceptron-math>
 
+Each neural network consists of multiple neurons, which are grouped into layers.
+The first layer, known as the input layer, receives the initial input data.
+After the input layer, subsequent layers are known as hidden layers, where complex transformations of the input data occur.
+Finally, the results are taken from the last layer, the output layer, which provides the final output of the network.
+See @feedforward-net for a visualization.
+
+#figure(
+  image("images/feedforward-neural-network.svg", height: 25%),
+  caption: "Feed forward neural net"
+) <feedforward-net>
+
+During training, the network adjusts the weights of connections between neurons to minimize the difference between predicted outputs and actual targets, often using techniques such as backpropagation and gradient descent.
+FNNs are capable of learning complex patterns and relationships within data, making them suitable for a wide range of applications.
+However, they may suffer from overfitting if not properly regularized or if the training data is insufficient.
+Various techniques, such as dropout and weight decay, can be employed to mitigate this issue and improve the generalization performance of the network.
+Overall, FNNs offer flexibility and scalability, allowing them to handle diverse datasets and tasks effectively.
 For more details see @russellArtificialIntelligenceModern2021.
 
-// multiple neuron layers
-// hidden layer
-// connections have weights
-// bias
-// each neuron has activation function
-
 === Convolutional Neural Network
-- cnn
-(kein gradient descent erklären)
-
-// wenig detail, self contained
-// Grundkonzepte von Circuit darstellen (auf computer science ebene)
-Very short, reference other works whenever possible.
-// TODO add quantum computing fundamentals?
-// TODO add ml fundamentals (neural net, cnn?), (wenn dann extrem knapp)
+A Convolutional Neural Network (CNN) is a specialized type of artificial neural network primarily used for image recognition, classification, and computer vision tasks.
+It operates by employing convolutional layers that automatically learn hierarchical patterns and features from input images.
+These convolutional layers consist of filters or kernels that slide across the input image, performing convolutions to extract local features.
+CNNs typically consist of multiple layers, including convolutional layers, pooling layers, and fully connected layers.
+The convolutional layers detect low-level features like edges and textures, while subsequent layers combine these features to recognize higher-level patterns and objects.
+Pooling layers downsample the feature maps, reducing the spatial dimensions of the data and increasing computational efficiency.
+Finally, fully connected layers process the extracted features to make predictions or classifications.
+During training, CNNs adjust the parameters of the filters through backpropagation, optimizing them to minimize the difference between predicted outputs and ground truth labels.
+This process enables CNNs to effectively learn and generalize from large datasets.
+CNNs have demonstrated remarkable performance in various applications, including image classification, object detection, and semantic segmentation.
+Their ability to automatically learn relevant features from raw input data, coupled with their hierarchical architecture, makes them well-suited for handling complex tasks.
+For more details see @russellArtificialIntelligenceModern2021.
 
 === Adversarial Attack
-// TODO
+White-box adversarial attacks on neural networks operate under the premise that the attacker has complete knowledge of the model's architecture, weights, and training data.
+This transparency allows the attacker to exploit specific vulnerabilities of the neural network.
+The core idea behind these attacks is to craft input data that is only slightly modified from legitimate examples but is engineered in such a way that it causes the neural network to make incorrect predictions.
+This is achieved by using gradient-based optimization techniques to adjust the input data.
+The attacker calculates the gradient of the loss function with respect to the input data, which provides information on how slight changes to the input can lead to significant increases in the loss.
+By iteratively adjusting the input data in the direction of this gradient, the attacker can produce an adversarial example that is perceptually similar to the original data but results in a dramatically different and incorrect output when processed by the neural network.
+This method relies on the differentiability of the neural network to efficiently compute gradients and craft adversarial examples that exploit the model's weaknesses, demonstrating the intricate balance between model transparency and vulnerability in the context of security.
 
 
 = Approach <approach>
@@ -201,12 +208,12 @@ The methods mentioned in @related-work are used for fingerprinting, meaning they
 This work therefore attempts to develop an approach that performs this differentiation.
 In order to achieve this, only the measurement results of the quantum ciruits are considered.
 Therefore this paper uses machine learing techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the circuit's measurement results.
-The only precondition is that the data labels are correct (measurement results labeled as 'quantum computer data' have to be from an actual quantum computer).
+The only precondition is that the data labels are correct (measurement results labeled as 'quantum computer data' have to be from an actual QC).
 
 == Data for Training
 The measurement results from a quantum computer  are taken from @martinaLearningQuantumNoiseFingerprint2023.
 The reason being that no access to a quantum computer was available during the creation of this paper.
-The quantum computer data is the result of running the circuit described in @circuit on up to 8 different IBM quantum machines.
+The QC data is the result of running the circuit described in @circuit on up to 8 different IBM quantum machines.
 In the dataset it is clearly identifiable on which of the quantum computers the circuit was executed.
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 with Qiskit @Qiskit2024.
 
@@ -361,6 +368,26 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   caption: ""
 )
 
+#let svm_exclude_single = csv("data/svm_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
+#figure(
+  tablex(
+    columns: 10,
+    align: center,
+      map-cells: cell => {
+    if cell.x >= 1 and cell.y >= 2 {
+      cell.content = {
+        let value = float(cell.content.text)
+        let text-color = gradient.linear(red, green).sample(value * 100%)
+        return (..cell, fill: text-color)
+      }
+    }
+    return cell
+  },
+    [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..svm_exclude_single.flatten().slice(1,)
+  ),
+  caption: ""
+)
+
 == Artificial Neural Net
 #let ann_step_range_vs_window_size = csv("data/neural_net_window_sizes_vs_step_ranges_all_backends_combined.csv")
 #figure(
@@ -378,6 +405,26 @@ Describes why this thesis really solves the problem it claims to solve. (contain
     return cell
   },
     [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..ann_step_range_vs_window_size.flatten().slice(1,)
+  ),
+  caption: ""
+)
+
+#let ann_exclude_single = csv("data/neural_net_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
+#figure(
+  tablex(
+    columns: 10,
+    align: center,
+      map-cells: cell => {
+    if cell.x >= 1 and cell.y >= 2 {
+      cell.content = {
+        let value = float(cell.content.text)
+        let text-color = gradient.linear(red, green).sample(value * 100%)
+        return (..cell, fill: text-color)
+      }
+    }
+    return cell
+  },
+    [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..ann_exclude_single.flatten().slice(1,)
   ),
   caption: ""
 )
@@ -402,6 +449,28 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   ),
   caption: ""
 )
+
+#let cnn_exclude_single = csv("data/cnn_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
+#figure(
+  tablex(
+    columns: 10,
+    align: center,
+      map-cells: cell => {
+    if cell.x >= 1 and cell.y >= 2 {
+      cell.content = {
+        let value = float(cell.content.text)
+        let text-color = gradient.linear(red, green).sample(value * 100%)
+        return (..cell, fill: text-color)
+      }
+    }
+    return cell
+  },
+    [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..cnn_exclude_single.flatten().slice(1,)
+  ),
+  caption: ""
+)
+
+// TODO remove casablanca-bis from qc?
 
 // hier "beste" fälle zeigen
 // zeige sowohl "gemischtes ausschließen", als auch "mehrere Quantencomputer ausschließen"
