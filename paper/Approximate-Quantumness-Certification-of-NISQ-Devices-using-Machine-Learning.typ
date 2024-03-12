@@ -154,51 +154,50 @@ As a result, SVMs are computationally efficient and particularly suited for hand
 See @cristianiniIntroductionSupportVector2000 for additional details.
 
 === Feedforward Neural Network
-A feed-forward neural network (FNN) is a type of artificial neural network commonly used for various machine learning tasks, including classification, regression, and pattern recognition.
-It operates by passing input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs and applies an activation function to produce an output, which can be written as @perceptron-math.
+A feedforward neural network (FNN) is an artificial neural network commonly used for various machine learning tasks, including classification, regression, and pattern recognition.
+It passes input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs and applies an activation function to produce an output, which can be written as @perceptron-math.
 
 #figure(
   $ y = f(sum_(i=1)^(n) w_i x_i + b) $,
-  caption: "Equation for a single perceptron. y: output, f: activation function, w_i: weights for each input x_i, b: bias, n: number of inputs"
+  caption: "Equation for a single perceptron. y: output, f: activation function, w_i: weights for each input x_i, b: bias, n: number of inputs."
 ) <perceptron-math>
 
 Each neural network consists of multiple neurons, which are grouped into layers.
-The first layer, known as the input layer, receives the initial input data.
+The first layer, the input layer, receives the initial input data.
 After the input layer, subsequent layers are known as hidden layers, where complex transformations of the input data occur.
-Finally, the results are taken from the last layer, the output layer, which provides the final output of the network.
+Finally, the results are taken from the last layer, the output layer, which provides the network's final output.
 See @feedforward-net for a visualization.
 
 #figure(
   image("images/feedforward-neural-network.svg", height: 25%),
-  caption: "Feed forward neural net"
+  caption: "Feedforward neural net"
 ) <feedforward-net>
 
 During training, the network adjusts the weights of connections between neurons to minimize the difference between predicted outputs and actual targets, often using techniques such as backpropagation and gradient descent.
-FNNs are capable of learning complex patterns and relationships within data, making them suitable for a wide range of applications.
-However, they may suffer from overfitting if not properly regularized or if the training data is insufficient.
+FNNs can learn complex patterns and relationships within data, making them suitable for various applications.
 Various techniques, such as dropout and weight decay, can be employed to mitigate this issue and improve the generalization performance of the network.
-Overall, FNNs offer flexibility and scalability, allowing them to handle diverse datasets and tasks effectively.
-For more details see @russellArtificialIntelligenceModern2021.
+FNNs offer flexibility and scalability, allowing them to handle diverse datasets and tasks effectively.
+For additional information see @russellArtificialIntelligenceModern2021.
 
 === Convolutional Neural Network
-A Convolutional Neural Network (CNN) is a specialized type of artificial neural network primarily used for image recognition, classification, and computer vision tasks.
-It operates by employing convolutional layers that automatically learn hierarchical patterns and features from input images.
+A Convolutional Neural Network (CNN) is a specialized artificial neural network primarily used for image recognition, classification, and computer vision tasks.
+It employs convolutional layers that automatically learn hierarchical patterns and features from input images.
 These convolutional layers consist of filters or kernels that slide across the input image, performing convolutions to extract local features.
-CNNs typically consist of multiple layers, including convolutional layers, pooling layers, and fully connected layers.
+CNNs typically consist of multiple layers, including convolutional, pooling, and fully connected layers.
 The convolutional layers detect low-level features like edges and textures, while subsequent layers combine these features to recognize higher-level patterns and objects.
 Pooling layers downsample the feature maps, reducing the spatial dimensions of the data and increasing computational efficiency.
 Finally, fully connected layers process the extracted features to make predictions or classifications.
 During training, CNNs adjust the parameters of the filters through backpropagation, optimizing them to minimize the difference between predicted outputs and ground truth labels.
 This process enables CNNs to effectively learn and generalize from large datasets.
 CNNs have demonstrated remarkable performance in various applications, including image classification, object detection, and semantic segmentation.
-Their ability to automatically learn relevant features from raw input data, coupled with their hierarchical architecture, makes them well-suited for handling complex tasks.
-For more details see @russellArtificialIntelligenceModern2021.
+Their ability to automatically learn relevant features from raw input data and their hierarchical architecture make them well-suited for handling complex tasks.
+For additional information see @russellArtificialIntelligenceModern2021.
 
 === Adversarial Attack
 White-box adversarial attacks on neural networks operate under the premise that the attacker has complete knowledge of the model's architecture, weights, and training data.
 This transparency allows the attacker to exploit specific vulnerabilities of the neural network.
-The core idea behind these attacks is to craft input data that is only slightly modified from legitimate examples but is engineered in such a way that it causes the neural network to make incorrect predictions.
-This is achieved by using gradient-based optimization techniques to adjust the input data.
+The core idea behind these attacks is to craft input data that is only slightly modified from legitimate examples but is engineered to cause the neural network to make incorrect predictions.
+Achieving this involves using gradient-based optimization techniques to adjust the input data.
 The attacker calculates the gradient of the loss function with respect to the input data, which provides information on how slight changes to the input can lead to significant increases in the loss.
 By iteratively adjusting the input data in the direction of this gradient, the attacker can produce an adversarial example that is perceptually similar to the original data but results in a dramatically different and incorrect output when processed by the neural network.
 This method relies on the differentiability of the neural network to efficiently compute gradients and craft adversarial examples that exploit the model's weaknesses, demonstrating the intricate balance between model transparency and vulnerability in the context of security.
