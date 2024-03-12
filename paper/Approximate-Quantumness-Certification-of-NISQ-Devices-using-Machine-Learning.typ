@@ -9,35 +9,35 @@
 #pagebreak()
 
 = Introduction and Motivation
-The quantum computing market is expected to grow from USD 866 million in 2023 to USD 4.375 million in 2030 @QuantumComputingMarket2023.
-Quantum computing is especially promising in the fields of simulations, drug development and cybersecurity @emilioCurrentStatusNext2022.
-Despite these positive prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
-Current quantum computers (QCs) are provided as cloud based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
+Experts expect the quantum computing market to grow from USD 866 million in 2023 to USD 4.375 million in 2030 @QuantumComputingMarket2023.
+Quantum computing is especially promising in the fields of simulations, drug development, and cybersecurity @emilioCurrentStatusNext2022.
+Despite these optimistic prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
+Current quantum computers (QCs) are provided as cloud-based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
 These services are mainly aimed at academics and researchers.
-As a first step for using such a cloud-based quantum computer, a user account needs to be registered.
-Afterwards, the user develops the quantum circuit (e.g. in IBM's Qiskit @Qiskit2024), uploads the quantum circuit and can choose a backend to execute the circuit on.
-In a next step, the request gets scheduled and executed on the QC.
+As a first step, a user must register an account using such a cloud-based quantum computer.
+Afterward, the user develops the quantum circuit (e.g., in IBM's Qiskit @Qiskit2024), uploads the quantum circuit, and can choose a backend to execute the circuit on.
+Next, the request gets scheduled and executed on the QC.
 Finally, results are sent back to the user.
 #figure(
   image("images/quantum-based-cloud-provider-trust-left-to-right.svg"),
   caption: "The user is sending the quantum circuit to the cloud-based quantum computing provider and has to trust the provider that the circuit is executed on an actual quantum computer."
 ) <cloud-trust>
-In this cloud based scenario, the user has to trust the cloud-based quantum provider to execute the quantum circuit on the advertised quantum hardware.
-An adversarial cloud-provider could potentially claim to have a quantum computer backend, but in reality all circuits are just simulated on a classical computer.
+In this cloud-based scenario, the user has to trust the cloud-based quantum provider to execute the quantum circuit on the advertised quantum hardware.
+An adversarial cloud provider could claim to have a quantum computer backend, but all circuits are just simulated on a classical computer.
 This scenario primarily affects small circuits due to the exponential growth in dimensions, rendering larger circuits impractical for computation with classical hardware.
 // TODO quantum supremacy?? überhaupt wichtig?
 In 2020, a research team led by scientist Jian-Wei Pan at the University of Science and Technology of China (USTC) achieved quantum supremacy using 76 photons for the Gaussian boson sampling algorithm @garistoLightBasedQuantumComputer2021.
 The samples generated in the study required 200 seconds, a task estimated to take a classical supercomputer 2.5 billion years to complete, as detailed in the paper @zhongQuantumComputationalAdvantage2020.
-Quantum supremacy marks the point at which quantum computers can outperform classical computers in specific tasks.
-But apaprt from these highly specialized setups, it is still possible to simulate small quantum circuits.
+Quantum supremacy marks the point at which quantum computers outperform classical computers in specific tasks.
+However, apart from these highly specialized setups, it is still possible to simulate small quantum circuits.
 As of 2023, a rough cost estimate for a 9-qubit quantum computer from Rigetti stands at \$900,000 @mechanicRigettiLaunchesNovera2023.
 Conversely, simulators can execute small circuits on consumer hardware, drastically reducing the cost barrier for executing quantum computations.
-This cost consideration coupled with the scalability limitations of classical hardware underscores the significance of the threat posed by cloud quantum providers employing simulators, particularly in scenarios where the users are unaware of this substitution.
+This cost consideration, coupled with the scalability limitations of classical hardware, underscores the significance of the threat posed by cloud quantum providers employing simulators, particularly in scenarios where the users are unaware of this substitution.
 Therefore, mitigating strategies should be devised to ensure transparency and trust in quantum cloud services to safeguard against potential security breaches and ensure the integrity of quantum computations.
 
 // TODO write in 3rd person?
 // TODO Paper Contributions mehr herausarbeiten.
-This work provides a machine learning based approach which allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
+This work provides a machine learning-based approach that allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
 
 == Related Work <related-work>
 Previous work has already shown that it is possible to generate a unique hardware fingerprint which is based on the qubit frequencies. The fingerprint is based on quantum computer calibration data which was made available by the cloud provider @smithFastFingerprintingCloudbased2022.
