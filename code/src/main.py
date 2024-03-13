@@ -76,7 +76,7 @@ def exclude_multiple_quantum_computer_different_steps(circuit: ImplementedQuantu
         csv_writer.writerow(
             ['# of excluded QCs', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]', '[1 ... 7]',
              '[1 ... 8]', '[1 ... 9]'])
-        for num_to_exclude in range(2, 6):
+        for num_to_exclude in range(2, 5):
             lists_with_qcs_excluded = __generate_permutations_with_num_removed_elements(
                 QuantumBackends.get_quantum_computer_backends(), num_to_exclude)
             row_results = [num_to_exclude.__str__()]

@@ -21,13 +21,16 @@ class QuantumBackends(_QuantumBackend, Enum):
     IBMQ_ATHENS = "ibmq_athens", QuantumBackendType.QUANTUM_COMPUTER, None
     IMBQ_SANTIAGO = "ibmq_santiago", QuantumBackendType.QUANTUM_COMPUTER, None
     IBMQ_CASABLANCA = "ibmq_casablanca", QuantumBackendType.QUANTUM_COMPUTER, None
-    IBMQ_CASABLANCA_BIS = "ibmq_casablanca-bis", QuantumBackendType.QUANTUM_COMPUTER, None
     IBMQ_5_YORKTOWN = "ibmq_5_yorktown", QuantumBackendType.QUANTUM_COMPUTER, None
     IBMQ_BOGOTA = "ibmq_bogota", QuantumBackendType.QUANTUM_COMPUTER, None
     IBMQ_QUITO = "ibmq_quito", QuantumBackendType.QUANTUM_COMPUTER, None
     IBMQ_LIMA = "ibmq_lima", QuantumBackendType.QUANTUM_COMPUTER, None
+
     # ROME is only used for circuit "Ramsey"
     # IBMQ_ROME = "ibmq_rome", QuantumBackendType.QUANTUM_COMPUTER
+
+    # Is this a different quantum computer?
+    # IBMQ_CASABLANCA_BIS = "ibmq_casablanca-bis", QuantumBackendType.QUANTUM_COMPUTER, None
 
     # Quantum Computer split data:
     # 'ibmq_athens-splitA', 'ibmq_athens-splitB', 'ibmq_athens-split10A',
