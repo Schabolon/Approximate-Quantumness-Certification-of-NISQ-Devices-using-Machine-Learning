@@ -3,6 +3,7 @@
 
 #set heading(numbering: "1.1.")
 #set page(numbering: "1")
+#set par(justify: true)
 
 #outline()
 
@@ -212,7 +213,7 @@ The only precondition is that the data labels are correct (measurement results l
 == Data for Training
 The measurement results from a quantum computer are taken from @martinaLearningQuantumNoiseFingerprint2023.
 The reason is that no access to a quantum computer was available during the creation of this paper.
-The QC data has been obtained by running the circuit described in @circuit on up to 8 different IBM quantum machines.
+The QC data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines.
 In the dataset, it is identifiable on which of the quantum computers the circuit was executed.
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 with Qiskit @Qiskit2024.
 
@@ -331,15 +332,22 @@ The chosen algorithm undergoes training on 60% of the input data, and its perfor
 The selection process for the SVM algorithm is similar to @martinaLearningNoiseFingerprint2022.
 
 === Feedforward Neural Net
-// TODO keras tuner not needed, hyperparameter due to data preprocessing really stable.
-TODO Verlinkung zu @terms-and-definitions.
+A specific architecture and training protocol were employed to develop a neural network model to differentiate between simulator-generated data and quantum computer-generated data.
+The dataset was divided into 80% for training and 20% for testing purposes.
+The input layer of the neural network was designed to be variable, accommodating between 4 to 36 neurons, depending on the number of measurement steps that are included in the dataset.
+The architecture included two dense hidden layers containing 45 and 20 neurons, respectively, utilizing the hyperbolic tangent (tanh) activation function.
+The output layer was constructed with a single neuron, employing a sigmoid activation function to produce a probability output between 0 and 1, indicative of the data source being a simulator or a quantum computer, respectively.
+
+For the training process, the Adam optimizer was selected.
+The loss during training was quantified using Binary Crossentropy, a suitable choice for binary classification problems.
+The training was conducted over five epochs with a batch size of 32, striking a balance between computational efficiency and the model's ability to learn from the training data.
+Observations indicated that extending the training beyond five epochs did not significantly improve accuracy, suggesting an optimal learning plateau had been reached within the given epoch span.
+This configuration led to the model's successful differentiation between the two data sources, see @evaluation-ffnn.
 
 === Convolutional Neural Net
 
-TODO Verlinkung zu @terms-and-definitions.
 
 == Adversarial Machine Learning
-//TODO "angreiferseite": Adversarial Machine Learning manipulieren
 
 
 = Evaluation <evaluation>
@@ -391,7 +399,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   caption: ""
 )
 
-== Feedforward Neural Net
+== Feedforward Neural Net <evaluation-ffnn>
 #let ann_step_range_vs_window_size = csv("data/neural_net_window_sizes_vs_step_ranges_all_backends_combined.csv")
 #figure(
   tablex(
@@ -472,8 +480,6 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   ),
   caption: ""
 )
-
-// TODO remove casablanca-bis from qc?
 
 // hier "beste" fälle zeigen
 // zeige sowohl "gemischtes ausschließen", als auch "mehrere Quantencomputer ausschließen"
