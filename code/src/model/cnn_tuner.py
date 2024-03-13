@@ -3,18 +3,19 @@ from typing import Tuple
 import keras_tuner as kt
 import tensorflow as tf
 from tensorflow import keras
+from tensorflow.keras import layers, models
 
 from dataset import CustomDataset
 
 
-class NeuralNetTuner:
+class CNNTuner:
 
     dataset: CustomDataset
     input_shape: Tuple[any]
 
     def __init__(self, custom_dataset: CustomDataset):
         train_features, _, _, _ = custom_dataset.get_test_train_split()
-        self.input_shape = (train_features.shape[1],)
+        self.input_shape = (len(train_features[1]), 1)
         self.dataset = custom_dataset
 
     def __model_builder(self, hyperparameters):
@@ -22,6 +23,14 @@ class NeuralNetTuner:
 
         # input layer
         model.add(tf.keras.layers.InputLayer(input_shape=self.input_shape))
+
+        # convolutional layer
+        hp_conv_filters = hyperparameters.Int('conv_filters', min_value=1, max_value=50, step=1)
+        hp_conv_kernel_size = hyperparameters.Int('conv_kernel_size', min_value=2, max_value=4, step=1)
+        model.add(layers.Conv1D(hp_conv_filters, hp_conv_kernel_size, activation='relu'))
+        model.add(layers.MaxPooling1D())
+
+        model.add(layers.Flatten())
 
         # first layer
         hp_first_layer_units = hyperparameters.Int('first_layer_units', min_value=1, max_value=100, step=5)
@@ -59,7 +68,7 @@ class NeuralNetTuner:
                              objective='val_accuracy',
                              max_epochs=15,
                              directory='../hyperparameter-tuner',
-                             project_name='feedforward-net')
+                             project_name='cnn')
         stop_early = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
         tuner.search(train_features, train_labels, epochs=15, validation_split=0.2, callbacks=[stop_early])
 
@@ -68,6 +77,7 @@ class NeuralNetTuner:
 
         print(f"""
             The hyperparameter search is complete.
+            Number of convolutional filters {best_hps['conv_filters']} with kernel size {best_hps['conv_kernel_size']}.
             Number of units in the first densely-connected layer is {best_hps['first_layer_units']} with activation function {best_hps['first_layer_activation']}.
             Number of units in the second densely-connected layer is {best_hps['second_layer_units']} with activation function {best_hps['second_layer_activation']}.
             Best dropout rate is {best_hps['dropout_rate']}

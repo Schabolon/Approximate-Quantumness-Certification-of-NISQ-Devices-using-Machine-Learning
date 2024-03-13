@@ -6,7 +6,9 @@ from itertools import combinations
 from circuit_run_data import CircuitRunData
 from dataset import CustomDataset
 from model import run_svm, run_neural_net, run_cnn
+from model.cnn_tuner import CNNTuner
 from model.ml_wrapper import MLWrapper
+from model.neural_net_tuner import NeuralNetTuner
 from model.run_neural_net import RunNeuralNet
 from model.run_svm import RunSVM
 from quantum_backends import QuantumBackends
@@ -196,6 +198,33 @@ def save_neural_net(circuit: ImplementedQuantumCircuit):
 
     custom_dataset = CustomDataset(data, list(range(0, 9)), window_size=2000)
     RunNeuralNet.save_model_after_training(custom_dataset)
+
+
+def run_neural_net_tuner():
+    data = []
+    for qc in QuantumBackends.get_quantum_computer_backends():
+        data.append(CircuitRunData(Walker(), qc))
+    for s in QuantumBackends.get_simulator_backends():
+        data.append(CircuitRunData(Walker(), s))
+
+    custom_dataset = CustomDataset(data, list(range(0, 2)), window_size=2000)
+
+    n = NeuralNetTuner(custom_dataset)
+    n.tune_and_evaluate_model()
+
+
+
+def run_cnn_tuner():
+    data = []
+    for qc in QuantumBackends.get_quantum_computer_backends():
+        data.append(CircuitRunData(Walker(), qc))
+    for s in QuantumBackends.get_simulator_backends():
+        data.append(CircuitRunData(Walker(), s))
+
+    custom_dataset = CustomDataset(data, list(range(0, 2)), window_size=2000)
+
+    n = CNNTuner(custom_dataset)
+    n.tune_and_evaluate_model()
 
 
 if __name__ == '__main__':

@@ -26,9 +26,8 @@ class RunNeuralNet(MLWrapper):
 
         model = tf.keras.Sequential([
             layers.InputLayer(input_shape=(train_features.shape[1],)),
-            layers.Dense(10, activation='tanh'),
-            layers.Dense(5, activation='tanh'),
-            # layers.Dense(128, activation='relu'),
+            layers.Dense(45, activation='tanh'),
+            layers.Dense(20, activation='tanh'),
             # use 'sigmoid' for output activation, squishes the values between 0 and 1.
             layers.Dense(1, activation='sigmoid')
         ])

@@ -23,14 +23,14 @@ class RunCNN(MLWrapper):
 
         model = models.Sequential()
         model.add(layers.InputLayer(input_shape=(len(train_features[1]), 1)))
-        model.add(layers.Conv1D(32, 3, activation='relu'))
+        model.add(layers.Conv1D(40, 3, activation='relu'))
         model.add(layers.MaxPooling1D())
-        #model.add(layers.Conv1D(64, 3, activation='relu'))
-        #model.add(layers.MaxPooling1D())
-        #model.add(layers.Conv1D(64, 3, activation='relu'))
+
         # Dense Layer
         model.add(layers.Flatten())
+
         model.add(layers.Dense(64, activation='relu'))
+        model.add(layers.Dense(32, activation='relu'))
         model.add(layers.Dense(1, activation='sigmoid'))
 
         model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(from_logits=False), metrics=['accuracy'])
