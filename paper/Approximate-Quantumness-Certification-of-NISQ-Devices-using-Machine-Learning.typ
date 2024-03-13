@@ -331,7 +331,7 @@ During this phase, the algorithm demonstrating superior accuracy is then selecte
 The chosen algorithm undergoes training on 60% of the input data, and its performance is subsequently assessed using the remaining 20% of the data to ensure its efficacy and reliability.
 The selection process for the SVM algorithm is similar to @martinaLearningNoiseFingerprint2022.
 
-=== Feedforward Neural Net
+=== Feedforward Neural Net <approach-ffnn>
 A specific architecture and training protocol were employed to develop a neural network model to differentiate between simulator-generated data and quantum computer-generated data.
 The dataset was divided into 80% for training and 20% for testing purposes.
 The input layer of the neural network was designed to be variable, accommodating between 4 to 36 neurons, depending on the number of measurement steps that are included in the dataset.
@@ -339,12 +339,28 @@ The architecture included two dense hidden layers containing 45 and 20 neurons, 
 The output layer was constructed with a single neuron, employing a sigmoid activation function to produce a probability output between 0 and 1, indicative of the data source being a simulator or a quantum computer, respectively.
 
 For the training process, the Adam optimizer was selected.
-The loss during training was quantified using Binary Crossentropy, a suitable choice for binary classification problems.
+The loss during training was quantified using binary cross-entropy, a suitable choice for binary classification problems.
 The training was conducted over five epochs with a batch size of 32, striking a balance between computational efficiency and the model's ability to learn from the training data.
 Observations indicated that extending the training beyond five epochs did not significantly improve accuracy, suggesting an optimal learning plateau had been reached within the given epoch span.
+After training, the model's accuracy was evaluated by using the previously unseen test data.
 This configuration led to the model's successful differentiation between the two data sources, see @evaluation-ffnn.
 
 === Convolutional Neural Net
+A convolutional neural network model was developed to classify data into two distinct categories, utilizing a dataset divided into 80% for training and 20% for testing.
+The input layer of the model was designed to be adaptable, accommodating a variable number of neurons ranging from 4 to 36, depending on the number of measurement steps incorporated in the dataset, similar to @approach-ffnn.
+
+The first layer contains 30 1-dimensional convolutional filters, each with a kernel size of 3, using the Rectified Linear Unit (ReLU) activation function.
+Following the convolutional layer, a 1-dimensional max pooling operation was applied, reducing the dimensionality of the data.
+After the max pooling, the network architecture includes a flattening step, transforming the pooled feature maps into a single, linear vector.
+This flattened vector was then fed into two additional hidden layers, comprising 64 and 32 neurons, each employing the ReLU activation function to further process and refine the features extracted from the input data.
+The final stage of the model was an output layer consisting of a single neuron utilizing a sigmoid activation function.
+This setup is particularly suited for binary classification tasks, as it produces a probability output in the range of 0 to 1, indicative of the class membership of the input data.
+The Adam optimizer and binary cross-entropy were employed for optimization and loss calculation, respectively.
+Binary cross-entropy is a standard loss function for binary classification problems, measuring the discrepancy between the predicted probabilities and the actual class labels.
+
+The model underwent training spanning five epochs, with observations indicating that further extending the training duration beyond this period did not yield significant improvements in model accuracy.
+This suggests the model reached an optimal learning plateau within the specified epoch count.
+Post-training, the model's performance was evaluated using the previously unseen test data to measure its generalization capability and accuracy in classifying new instances according to the defined classes.
 
 
 == Adversarial Machine Learning
