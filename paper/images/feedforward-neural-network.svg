@@ -2,13 +2,13 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="93.303642mm"
-   height="119.22093mm"
-   viewBox="0 0 93.303642 119.22093"
+   width="145.25027mm"
+   height="148.91823mm"
+   viewBox="0 0 145.25027 148.91823"
    version="1.1"
    id="svg1"
    inkscape:version="1.3.2 (091e20ef0f, 2023-11-25, custom)"
-   sodipodi:docname="feed-forward-neural-network.svg"
+   sodipodi:docname="feedforward-neural-network-with-helpers-for-editing.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +58,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-15.8,-56.314066)">
+     transform="translate(-15.8,-41.010413)">
     <path
        style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker11)"
        d="M 34.775166,89.742179 26.328483,110.56146"
@@ -66,7 +66,10 @@
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="0"
        inkscape:connection-start="#path1"
-       inkscape:connection-end="#path1-7" />
+       inkscape:connection-end="#path1-7"
+       inkscape:export-filename="feedforward-neural-network.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <path
        style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#marker11);stop-color:#000000;stop-opacity:1"
        d="M 59.951692,89.811267 52.151957,110.49238"
@@ -251,6 +254,27 @@
        inkscape:connector-curvature="0"
        inkscape:connection-start="#path1-5-2-9-0"
        inkscape:connection-end="#path1-5-2-6" />
+    <circle
+       style="fill:none;fill-opacity:0.15067;stroke:none;stroke-width:0.449792;stroke-opacity:1"
+       id="path1-1"
+       cx="37.651825"
+       cy="48.662239"
+       r="7.6518245"
+       inkscape:label="1" />
+    <circle
+       style="fill:none;fill-opacity:0.15067;stroke:none;stroke-width:0.449792;stroke-opacity:1"
+       id="path1-5-05"
+       cx="62.651825"
+       cy="48.662239"
+       r="7.6518245"
+       inkscape:label="2" />
+    <circle
+       style="fill:none;fill-opacity:0.15067;stroke:none;stroke-width:0.449792;stroke-opacity:1"
+       id="path1-5-2-1"
+       cx="87.651825"
+       cy="48.662239"
+       r="7.6518245"
+       inkscape:label="3" />
     <path
        style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#marker11);stop-color:#000000;stop-opacity:1"
        d="M 37.651825,56.314064 V 75"
@@ -275,6 +299,27 @@
        inkscape:connector-curvature="0"
        inkscape:connection-start="#path1-5-2-1"
        inkscape:connection-end="#path1-5-2" />
+    <circle
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.449792;stroke-opacity:1"
+       id="path1-2-9"
+       cx="37.651825"
+       cy="182.27681"
+       r="7.6518245"
+       inkscape:label="1" />
+    <circle
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.449792;stroke-opacity:1"
+       id="path1-5-6-0"
+       cx="62.651825"
+       cy="182.27681"
+       r="7.6518245"
+       inkscape:label="2" />
+    <circle
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.449792;stroke-opacity:1"
+       id="path1-5-2-6-8"
+       cx="87.651825"
+       cy="182.27681"
+       r="7.6518245"
+       inkscape:label="3" />
     <path
        style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#marker11);stop-color:#000000;stop-opacity:1"
        d="m 37.651825,160.30365 v 14.32134"
@@ -384,5 +429,38 @@
          r="7.6518245"
          inkscape:label="input_3" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-size:4.9389px;font-family:monospace;-inkscape-font-specification:'monospace, Normal';text-align:center;text-anchor:middle;fill:#07c611;fill-opacity:1;stroke:none;stroke-width:0.7;-inkscape-stroke:none"
+       x="138.25591"
+       y="84.634789"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#07c611;fill-opacity:1;stroke:none;stroke-width:0.7"
+         x="138.25591"
+         y="84.634789">Input Layer</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.9389px;font-family:monospace;-inkscape-font-specification:'monospace, Normal';text-align:center;text-anchor:middle;fill:#074dc6;fill-opacity:1;stroke:none;stroke-width:0.7;-inkscape-stroke:none"
+       x="138.25591"
+       y="119.63478"
+       id="text1-2"><tspan
+         sodipodi:role="line"
+         id="tspan1-0"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#074dc6;fill-opacity:1;stroke:none;stroke-width:0.7"
+         x="138.25591"
+         y="119.63478">Hidden Layer</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.9389px;font-family:monospace;-inkscape-font-specification:'monospace, Normal';text-align:center;text-anchor:middle;fill:#bf480e;fill-opacity:1;stroke:none;stroke-width:0.7;-inkscape-stroke:none"
+       x="138.25591"
+       y="154.63478"
+       id="text1-26"><tspan
+         sodipodi:role="line"
+         id="tspan1-6"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.76111px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#bf480e;fill-opacity:1;stroke:none;stroke-width:0.7"
+         x="138.25591"
+         y="154.63478">Output Layer</tspan></text>
   </g>
 </svg>
