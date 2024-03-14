@@ -6,14 +6,6 @@ import numpy as np
 import numpy.typing as npt
 
 from circuit_run_data import CircuitRunData
-from quantum_backend_type import QuantumBackendType
-
-
-class NormalizationTechnique(Enum):
-    NONE = 0
-    MIN_MAX = 1
-    MEAN_STD = 2
-
 
 class CustomDataset:
     circuit_run_data: List[CircuitRunData]
@@ -21,19 +13,16 @@ class CustomDataset:
     labels: npt.NDArray[np.int8]
     features: npt.NDArray[np.float32]
 
-    def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1000,
-                 normalization_technique=NormalizationTechnique.NONE):
+    def __init__(self, circuit_run_data: List[CircuitRunData], steps: List[int], window_size=1000):
         """
         :param circuit_run_data:
         :param window_size: uses probability data for the dataset if window_size > 1. (otherwise the dataset encodes the qubit-results as "one-hot").
-        :param normalization_technique: not really needed, probabilities are already "normalized" to sum up to 1.
         """
         self.circuit_run_data = circuit_run_data
         self.labels = np.array([], dtype=np.int8)
         self.features = np.array([])
         self.steps = steps
         self.__load_probability_data(window_size)
-        self.__normalize_features(normalization_technique)
         self.__shuffle()
 
         # sanity checks
@@ -69,19 +58,6 @@ class CustomDataset:
         split_labels = np.split(self.labels, split_indices_labels[:-1])
 
         return split_features[0], split_labels[0], split_features[1], split_labels[1], split_features[2], split_labels[2]
-
-    def __normalize_features(self, normalization_technique: NormalizationTechnique):
-        match normalization_technique:
-            case NormalizationTechnique.MIN_MAX:
-                features_min = np.min(self.features)
-                features_max = np.max(self.features)
-                for i, feature in enumerate(self.features):
-                    self.features[i] = (feature - features_min) / (features_max - features_min)
-            case NormalizationTechnique.MEAN_STD:
-                features_mean = self.features.mean(axis=0)
-                features_std = self.features.mean(axis=0)
-                for i, feature in enumerate(self.features):
-                    self.features[i] = (feature - features_mean) / features_std
 
     def __load_probability_data(self, window_size: int):
         logging.info("Loading probability dataset ...")
