@@ -18,11 +18,14 @@ class RunNeuralNet(MLWrapper):
         super().__init__("neural_net")
 
     @staticmethod
-    def train_and_evaluate(custom_dataset: CustomDataset, additional_test_dataset: Optional[CustomDataset] = None):
-        train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
-        if additional_test_dataset is not None:
-            test_features = np.append(test_features, additional_test_dataset.features, axis=0)
-            test_labels = np.append(test_labels, additional_test_dataset.labels, axis=0)
+    def train_and_evaluate(custom_dataset: CustomDataset, test_dataset: Optional[CustomDataset] = None):
+        if test_dataset is not None:
+            test_features = test_dataset.features
+            test_labels = test_dataset.labels
+            train_features = custom_dataset.features
+            train_labels = custom_dataset.labels
+        else:
+            train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
         model = tf.keras.Sequential([
             layers.InputLayer(input_shape=(train_features.shape[1],)),
@@ -49,8 +52,8 @@ class RunNeuralNet(MLWrapper):
         train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
         model = tf.keras.Sequential([
             layers.InputLayer(input_shape=(train_features.shape[1],)),
-            layers.Dense(10, activation='tanh'),
-            layers.Dense(5, activation='tanh'),
+            layers.Dense(45, activation='tanh'),
+            layers.Dense(20, activation='tanh'),
             # use 'sigmoid' for output activation, squishes the values between 0 and 1.
             layers.Dense(1, activation='sigmoid')
         ])

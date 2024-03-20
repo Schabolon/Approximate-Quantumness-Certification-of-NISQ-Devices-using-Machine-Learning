@@ -12,7 +12,12 @@ class MLWrapper:
 
     @staticmethod
     @abstractmethod
-    def train_and_evaluate(custom_dataset: CustomDataset, additional_test_dataset: Optional[CustomDataset] = None):
+    def train_and_evaluate(custom_dataset: CustomDataset, test_dataset: Optional[CustomDataset] = None):
+        """
+        :param custom_dataset:
+        :param test_dataset: if this parameter is set, `custom_dataset` will be used for training only.
+        :return:
+        """
         pass
 
     def get_name(self) -> str:

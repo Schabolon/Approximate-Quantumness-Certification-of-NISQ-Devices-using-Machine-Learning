@@ -101,9 +101,9 @@ def exclude_multiple_quantum_computer_different_steps(circuit: ImplementedQuantu
                         if qc not in qc_data_single_run:
                             excluded_qcs.append(CircuitRunData(circuit, qc))
 
-                    additional_test_dataset = CustomDataset(excluded_qcs, steps, window_size=window_size)
+                    test_dataset = CustomDataset(excluded_qcs, steps, window_size=window_size)
                     custom_dataset = CustomDataset(data, steps, window_size=window_size)
-                    acc = ml_model.train_and_evaluate(custom_dataset, additional_test_dataset=additional_test_dataset)
+                    acc = ml_model.train_and_evaluate(custom_dataset, test_dataset=test_dataset)
                     accumulated_acc = accumulated_acc + acc
 
                 # store float as string with 3 decimal places
@@ -143,9 +143,9 @@ def exclude_single_quantum_computer_different_steps(circuit: ImplementedQuantumC
                 steps.append(step)
                 logging.debug(f"Calculating for steps {steps}")
                 custom_dataset = CustomDataset(data, steps, window_size=window_size)
-                additional_test_dataset = CustomDataset([CircuitRunData(circuit, qc_to_exclude)], steps,
+                test_dataset = CustomDataset([CircuitRunData(circuit, qc_to_exclude)], steps,
                                                         window_size=window_size)
-                acc = ml_model.train_and_evaluate(custom_dataset, additional_test_dataset=additional_test_dataset)
+                acc = ml_model.train_and_evaluate(custom_dataset, test_dataset=test_dataset)
                 # store float as string with 3 decimal places
                 row_results.append("%.3f" % acc)
             csv_writer.writerow(row_results)
@@ -213,7 +213,6 @@ def run_neural_net_tuner():
     n.tune_and_evaluate_model()
 
 
-
 def run_cnn_tuner():
     data = []
     for qc in QuantumBackends.get_quantum_computer_backends():
@@ -234,3 +233,6 @@ if __name__ == '__main__':
         window_sizes_vs_step_ranges_all_backends(Walker(), ml_approach)
         exclude_single_quantum_computer_different_steps(Walker(), ml_approach)
         exclude_multiple_quantum_computer_different_steps(Walker(), ml_approach)
+
+    # adversarial attack on neural net
+    # TODO

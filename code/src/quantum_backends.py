@@ -26,27 +26,10 @@ class QuantumBackends(_QuantumBackend, Enum):
     IBMQ_QUITO = "ibmq_quito", QuantumBackendType.QUANTUM_COMPUTER, None
     IBMQ_LIMA = "ibmq_lima", QuantumBackendType.QUANTUM_COMPUTER, None
 
-    # ROME is only used for circuit "Ramsey"
-    # IBMQ_ROME = "ibmq_rome", QuantumBackendType.QUANTUM_COMPUTER
-
-    # Is this a different quantum computer?
-    # IBMQ_CASABLANCA_BIS = "ibmq_casablanca-bis", QuantumBackendType.QUANTUM_COMPUTER, None
-
-    # Quantum Computer split data:
-    # 'ibmq_athens-splitA', 'ibmq_athens-splitB', 'ibmq_athens-split10A',
-    # 'ibmq_athens-split10B', 'ibmq_athens-split10C', 'ibmq_athens-split10D',
-    # 'ibmq_athens-split10E', 'ibmq_athens-split10F', 'ibmq_athens-split10G',
-    # 'ibmq_athens-split10H', 'ibmq_athens-split10I', 'ibmq_athens-split10J',
-
     # Simulators
     # Simulators *without* noise models
     AER_SIMULATOR = "aer_simulator", QuantumBackendType.SIMULATOR, None
     # Use only one simulator without noise (with noise is much more interesting)
-    # AER_SIMULATOR_DENSITY_MATRIX = "aer_simulator_density_matrix", QuantumBackendType.SIMULATOR, None
-    # AER_SIMULATOR_STATEVECTOR = "aer_simulator_statevector", QuantumBackendType.SIMULATOR, None
-    # AER_SIMULATOR_MATRIX_PRODUCT_STATE = "aer_simulator_matrix_product_state", QuantumBackendType.SIMULATOR, None
-    # STATEVECTOR_SIMULATOR = "statevector_simulator", QuantumBackendType.SIMULATOR, None
-    # QUASM_SIMULATOR = "qasm_simulator", QuantumBackendType.SIMULATOR, None
 
     # Simulators *with* noise models (use FakeProvider V2 Backends)
     # see https://docs.quantum.ibm.com/api/qiskit/qiskit.providers.fake_provider.FakeProviderForBackendV2

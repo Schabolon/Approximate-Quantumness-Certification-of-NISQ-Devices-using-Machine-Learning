@@ -15,11 +15,14 @@ class RunCNN(MLWrapper):
         super().__init__("cnn")
 
     @staticmethod
-    def train_and_evaluate(custom_dataset: CustomDataset, additional_test_dataset: Optional[CustomDataset] = None):
-        train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
-        if additional_test_dataset is not None:
-            test_features = np.append(test_features, additional_test_dataset.features, axis=0)
-            test_labels = np.append(test_labels, additional_test_dataset.labels, axis=0)
+    def train_and_evaluate(custom_dataset: CustomDataset, test_dataset: Optional[CustomDataset] = None):
+        if test_dataset is not None:
+            test_features = test_dataset.features
+            test_labels = test_dataset.labels
+            train_features = custom_dataset.features
+            train_labels = custom_dataset.labels
+        else:
+            train_features, train_labels, test_features, test_labels = custom_dataset.get_test_train_split()
 
         model = models.Sequential()
         model.add(layers.InputLayer(input_shape=(len(train_features[1]), 1)))

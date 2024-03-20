@@ -1,11 +1,11 @@
 import logging
-from enum import Enum
 from typing import List
 
 import numpy as np
 import numpy.typing as npt
 
 from circuit_run_data import CircuitRunData
+
 
 class CustomDataset:
     circuit_run_data: List[CircuitRunData]
@@ -26,8 +26,8 @@ class CustomDataset:
         self.__shuffle()
 
         # sanity checks
-        #assert np.count_nonzero(self.labels == QuantumBackendType.QUANTUM_COMPUTER.label) > 1
-        #assert np.count_nonzero(self.labels == QuantumBackendType.SIMULATOR.label) > 1
+        # assert np.count_nonzero(self.labels == QuantumBackendType.QUANTUM_COMPUTER.label) > 1
+        # assert np.count_nonzero(self.labels == QuantumBackendType.SIMULATOR.label) > 1
         assert len(self.labels) == len(self.features)
 
     def get_test_train_split(self, train_split=0.8):
@@ -36,7 +36,9 @@ class CustomDataset:
                             the test features/labels are (1-train_split) percent.
         :return: (train_features, train_labels, test_features, test_labels)
         """
-        train_f, train_l, _, _, test_f, test_l = self.get_test_train_validation_split(train_split=train_split, test_split=1 - train_split, validation_split=0)
+        train_f, train_l, _, _, test_f, test_l = self.get_test_train_validation_split(train_split=train_split,
+                                                                                      test_split=1 - train_split,
+                                                                                      validation_split=0)
         return train_f, train_l, test_f, test_l
 
     def get_test_train_validation_split(self, train_split=0.6, validation_split=0.2, test_split=0.2):
@@ -57,7 +59,8 @@ class CustomDataset:
         split_indices_labels = (self.labels.size * np.cumsum(split_ratios)).astype(int)
         split_labels = np.split(self.labels, split_indices_labels[:-1])
 
-        return split_features[0], split_labels[0], split_features[1], split_labels[1], split_features[2], split_labels[2]
+        return split_features[0], split_labels[0], split_features[1], split_labels[1], split_features[2], split_labels[
+            2]
 
     def __load_probability_data(self, window_size: int):
         logging.info("Loading probability dataset ...")
