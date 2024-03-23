@@ -76,12 +76,9 @@ if __name__ == '__main__':
     simulator_dataset = CustomDataset(simulator_data, list(range(0, 9)), window_size=window_size)
     _, _, test_features, test_labels = simulator_dataset.get_test_train_split()
 
-    test_features = test_features[0:5]
-    test_labels = test_labels[0:5]
-
     epsilon_with_num_of_correct_predictions = {}
     altered_input_values = {}
-    epsilons = np.arange(0.1, 0.07, 0.005)
+    epsilons = np.arange(0.00, 0.07, 0.005)
     for epsilon in epsilons:
         epsilon_with_num_of_correct_predictions.update({epsilon: 0})
         altered_input_values.update({epsilon: []})
