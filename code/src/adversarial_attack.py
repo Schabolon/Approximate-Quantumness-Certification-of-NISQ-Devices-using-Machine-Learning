@@ -18,6 +18,7 @@ from quantum_circuits.walker import Walker
 def create_adversarial_pattern(input_feature, input_label, trained_model):
     loss_object = tf.keras.losses.BinaryCrossentropy()
     input_feature = tf.convert_to_tensor(input_feature)
+    input_label = tf.convert_to_tensor(input_label)
     with tf.GradientTape() as tape:
         tape.watch(input_feature)
         prediction = trained_model(input_feature)
@@ -75,9 +76,12 @@ if __name__ == '__main__':
     simulator_dataset = CustomDataset(simulator_data, list(range(0, 9)), window_size=window_size)
     _, _, test_features, test_labels = simulator_dataset.get_test_train_split()
 
+    test_features = test_features[0:5]
+    test_labels = test_labels[0:5]
+
     epsilon_with_num_of_correct_predictions = {}
     altered_input_values = {}
-    epsilons = np.arange(0, 0.10, 0.01)
+    epsilons = np.arange(0.1, 0.07, 0.005)
     for epsilon in epsilons:
         epsilon_with_num_of_correct_predictions.update({epsilon: 0})
         altered_input_values.update({epsilon: []})

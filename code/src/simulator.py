@@ -2,8 +2,8 @@ import pickle
 import os
 import logging
 
-from qiskit_aer import AerSimulator
-from qiskit import transpile, Aer
+from qiskit_aer import AerSimulator, Aer
+from qiskit import transpile
 
 from quantum_backend_type import QuantumBackendType
 from quantum_backends import QuantumBackends
