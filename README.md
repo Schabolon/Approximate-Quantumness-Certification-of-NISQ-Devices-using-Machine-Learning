@@ -35,7 +35,3 @@ Install required packages: `pip install -r requirements.txt`
 ## Usage
 - (Activate virtual environment if necessary)
 - Execute `.py` files by entering the corresponding folder and running `python <filename>.py`
-
-## Roadmap
-- Exclude multiple quantum computers from training and add them only for testing.
-- Adversarial attack on the neural net.
