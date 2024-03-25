@@ -20,7 +20,7 @@ Afterward, the user develops the quantum circuit (e.g., in IBM's Qiskit @Qiskit2
 Next, the request gets scheduled and executed on the QC.
 Finally, results are sent back to the user.
 #figure(
-  image("images/quantum-based-cloud-provider-trust-left-to-right.svg"),
+  image("images/quantum-based-cloud-provider-trust-left-to-right.png"),
   caption: "The user is sending the quantum circuit to the cloud-based quantum computing provider and has to trust the provider that the circuit is executed on an actual quantum computer."
 ) <cloud-trust>
 In this cloud-based scenario, the user has to trust the cloud-based quantum provider to execute the quantum circuit on the advertised quantum hardware.
