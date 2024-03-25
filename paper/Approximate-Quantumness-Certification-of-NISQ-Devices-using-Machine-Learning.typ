@@ -211,7 +211,7 @@ This process enables CNNs to effectively learn and generalize from large dataset
 Their ability to learn relevant features from raw input data and their hierarchical architecture make them well-suited for handling complex tasks.
 For additional information see @russellArtificialIntelligenceModern2021.
 
-=== Adversarial Attack using Fast Gradient Sign Method
+=== Adversarial Attack using Fast Gradient Sign Method <terms-and-definitions-fgsm>
 The Fast Gradient Sign Method (FGSM) is a white-box adversarial attack.
 White-box adversarial attacks on neural networks operate under the premise that the attacker has complete knowledge of the model's architecture and weights.
 This method, introduced by Ian Goodfellow et al. @goodfellowExplainingHarnessingAdversarial2015, operates under the premise that by applying a small, carefully calculated change in the direction of the gradient of the loss with respect to the input data, one can generate a new adversarial sample which is almost indistinguishable from the original but is misclassified by the neural network.
@@ -248,7 +248,7 @@ Therefore, this paper uses machine learning techniques to decide whether a quant
 == Data for Training
 The measurement results from a quantum computer are taken from @martinaLearningQuantumNoiseFingerprint2023.
 The reason is that no access to a quantum computer was available during the creation of this paper.
-The QC measumerent data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines.
+The QC measumerent data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines (Athens, Santiago, Casablanca, Yorktown, Bogota, Quito, Lima).
 Each circuit measurement in the dataset can be trayced back to the quantum computer it was executed on.
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 with Qiskit @Qiskit2024.
 
@@ -279,6 +279,9 @@ The entire process is shown in @circuit-steps.
   caption: "Circuit with different points at which they get measured."
 ) <circuit-steps>
 
+// TODO: sollte erwähnt werden, dass q_0 und q_2 entanglet werden (bell state)?
+#text(blue)[TODO: sollte erwähnt werden, dass q_0 und q_2 entanglet werden (bell state)?]
+
 This results in 9 measurement points for this circuit.
 Each circuit run has been performed with 8000 shots.
 The measurement results of one circuit run with 8000 shots look like @measurement-data-table.
@@ -301,8 +304,11 @@ Seven different Qiskit simulators are utilized to obtain the simulated data.
 Only one backend calculates a noise-free result because the noise causes the variance, but different simulator implementations deliver similar results.
 In order to obtain a comparable order of magnitude of simulated data to that of QC-generated data, six additional simulators with noise are used.
 All six backends are each utilizing a different noise model based on calibration data from real IBM quantum computers @Fake_provider.
+The following fake backends were used: Vigo, Athens, Santiago, Lima, Belem, Cairo.
+// TODO ist das als Begründung ok?
+Three of these fake backends are based on configurations of quantum computers which were used for creating training data in order to account for a adversarial cloud provider trying to mimic some specific quantum computer.
 
-== Machine Learning Approaches
+== Machine Learning Approaches <machine-learning-approaches>
 The basic approach makes use of machine learning algorithms to distinguish whether a quantum circuit was executed on a QC or a simulator.
 Different ML algorithms were trained using raw measurement data as a first approach.
 The complete data set for a measurement point (step) over 8000 shots (i.e., 8000 individual values) was used as input in each case.
@@ -357,7 +363,7 @@ This second approach also examines whether the 8000 shots can be meaningfully di
 This has the advantage that more test and training data packages can be formed from the data available for this work.
 The number of shots which were combined into one package containing the probability shall be refered to as 'window size'.
 In the following machine learning approaches, in case no window size is mentioned, these models where trained and evaluated with data preprocessed with a window size of 2000.
-This value has been taken from @svm-window-size-vs-step-range, @fnn-window-size-vs-step-range, and @cnn-window-size-vs-step-range because it shows a high accuracy even with a low amount of measurement steps.
+This value has been taken from @svm-window-size-vs-step-range, @fnn-window-size-vs-step-range, and @cnn-window-size-vs-step-range because it shows a high accuracy even with a low amount of measurement steps accross models, allowing for an easier comparison.
 The three following machine learning models have been chosen because the SVM has used in @martinaLearningNoiseFingerprint2022 and had high accuracy distinguishing different quantum computers.
 The feedforward neural net is a standard neural net model which is simple but effective in learning patterns in data.
 The last model, the CNN, has been chosen due to its ability to recognize patterns with its sliding filters.
@@ -406,27 +412,39 @@ Post-training, the model's performance was evaluated using the previously unseen
 
 
 == Adversarial Machine Learning with Fast Gradient Sign Method
-// TODO accuracy vergleich.
-// TODO histogram plotten, nach der Attacke sollte histogramm ähnlich aussehen.
-// TODO verschiedene epsilons verwenden.
-
-// für jedes input sample eigenen gradienten berechnen.
-
-// ich habe mich dazu entschieden, alle measurement-steps (0-8) zu berücksichtigen, da dann besonders große epsilons benötigt werden.
-// z.B. bei steps (0-3) ist die accuracy bereits bei epsilon=0.04 bei 0 angelangt.
+For the adversarial attack the goal is to measurements from a simulator, perform the Fast Gradient Sign Method on them and show that they are classified as 'has been run on a quantum computer' afterwards.
+The model used was a feedforward neural net (as described in @approach-ffnn) which has been trained on 80% of all available simulator and quantum computer data, containing all 9 measurement steps.
+The remaining 20% were used for measuring the model accuracy beforehand.
+All 9 measurements were included to achieve the highest accuracy and robustness against unknown quantum computer inputs (see // TODO: add reference to table). 
+This was done by taking the gradient of the loss with respect to the input feature.
+The sign of the gradient is used to create a perturbation on the given input feature.
+In order to keep the perturbation small, it is multiplied by a small number $epsilon$ and added onto the original input (see @adversarial-sample-expression).
+In order to produce valid values, the adversarial sample gets clipped such that only values between 0 and 1 are allowed.
+Additionally, subsequent packs of four values each get normalized to sum up to 1, making sure they represent valid probabilistic distributions.
+Through this attack it was possible to get the model to label meusarements generated by a simulator as quantum computer generated.
+See @evaluation-fgsm for a detailed evaluation.
 
 = Evaluation <evaluation>
-// TODO motivation, wieso verwende ich diese messungen?
-Describes why this thesis really solves the problem it claims to solve. (contains results and measurements) 
+For each model, three different evaluations have been performed:
+1. an accuracy comparison for different window size and measurement step ranges.
+2. the impact of excluding one quantum computer and using only the excluded quantum computer as test data.
+3. excluding at least one and up to four quantum computers and using exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated.
 
-// TODO Tabellen erklären + zusammenfassen.
+// TODO: ist es ok, die Auswertung eher allgemein vor den einzelnen Auswertungen zu schreiben?
+#text(blue)[TODO: ist es ok, die Auswertung eher allgemein vor den einzelnen Auswertungen zu schreiben?]
 
-//TODO Komplette Quantencomputer aus dem trainingsset excludieren. (nur mit "optimaler" Window Size)
-// einmal jeden QC und einmal jeden Simulator im Training excludieren.
-// Tabelle ausgeschlossener QC oder Simulator (Zeile) vs step ranges
+The first comparison of accuracy for different window size and measurement step ranges shows how an increased number of measurement steps is increasing the accuracy.
+Especially when training only on a combination of the first three measurement steps and using window sizes of 2000, every model is able to reach an accuracy of 98% or above.
+As explained in @machine-learning-approaches for the rest of the evaluation a window size of 2000 was chosen.
+
+The second and third tables show how well the different models can generalize to unseen quantum computers, which would be their usecase when trying to safeguard against adversarial quantum cloud providers.
+Even when four different quantum computers are excluded from the training set, all three models achieve accuracy of more than 90% when taking all 9 measurement steps into account.
+When using only one measurement step, accuracy values are below 20% for all models, regardless of the number of excluded quantum computers.
+The classification task is only binary classification, meaning the models are performing worse than making random guesses.
+Therefore it seems especially crucial to have multiple measurement steps when dealing with unseen data.
 
 == Support Vector Machine
-// TODO mention that window sizes 5 to 40 have been excluded (too compute intensive)
+For the SVM, window sizes start from 50 (and not from 5 like the other models), because training the SVM with such small window sizes took too much time.
 #let svm_step_range_vs_window_size = csv("data/svm_window_sizes_vs_step_ranges_all_backends_combined.csv")
 #figure(
   tablex(
@@ -444,7 +462,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   },
     [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..svm_step_range_vs_window_size.flatten().slice(1,)
   ),
-  caption: ""
+  caption: "Support vector machine: Comparison of the accuracy for different window sizes and measurement step ranges. Circuit run-data from all quantum computers and all simulators was used."
 ) <svm-window-size-vs-step-range>
 
 #let svm_exclude_single = csv("data/svm_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
@@ -464,7 +482,27 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   },
     [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..svm_exclude_single.flatten().slice(1,)
   ),
-  caption: ""
+  caption: "A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used for evaluating the accuracy."
+)
+
+#let svm_exclude_multiple = csv("data/svm_exclude_multiple_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
+#figure(
+  tablex(
+    columns: 10,
+    align: center,
+      map-cells: cell => {
+    if cell.x >= 1 and cell.y >= 2 {
+      cell.content = {
+        let value = float(cell.content.text)
+        let text-color = gradient.linear(red, green).sample(value * 100%)
+        return (..cell, fill: text-color)
+      }
+    }
+    return cell
+  },
+    [],colspanx(9)[*Step Ranges*],[*\# of Excluded QCs*],..svm_exclude_multiple.flatten().slice(1,)
+  ),
+  caption: "Excludes at least one and up to four quantum computers and uses exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated."
 )
 
 == Feedforward Neural Net <evaluation-ffnn>
@@ -485,7 +523,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   },
     [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..ann_step_range_vs_window_size.flatten().slice(1,)
   ),
-  caption: ""
+  caption: "Feedforward neural net: Comparison of the accuracy for different window sizes and measurement step ranges. Circuit run-data from all quantum computers and all simulators was used."
 ) <fnn-window-size-vs-step-range>
 
 #let ann_exclude_single = csv("data/neural_net_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
@@ -505,7 +543,27 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   },
     [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..ann_exclude_single.flatten().slice(1,)
   ),
-  caption: ""
+  caption: "A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used for evaluating the accuracy."
+)
+
+#let ann_exclude_multiple = csv("data/neural_net_exclude_multiple_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
+#figure(
+  tablex(
+    columns: 10,
+    align: center,
+      map-cells: cell => {
+    if cell.x >= 1 and cell.y >= 2 {
+      cell.content = {
+        let value = float(cell.content.text)
+        let text-color = gradient.linear(red, green).sample(value * 100%)
+        return (..cell, fill: text-color)
+      }
+    }
+    return cell
+  },
+    [],colspanx(9)[*Step Ranges*],[*\# of Excluded QCs*],..ann_exclude_multiple.flatten().slice(1,)
+  ),
+  caption: "Excludes at least one and up to four quantum computers and uses exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated."
 )
 
 == Convolutional Neural Net <evaluation-cnn>
@@ -526,7 +584,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   },
     [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..cnn_step_range_vs_window_size.flatten().slice(1,)
   ),
-  caption: ""
+  caption: "Convolutional neural net: Comparison of the accuracy for different window sizes and measurement step ranges for the convolutional neural net. Circuit run-data from all quantum computers and all simulators was used."
 )
 
 #let cnn_exclude_single = csv("data/cnn_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
@@ -546,25 +604,99 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   },
     [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..cnn_exclude_single.flatten().slice(1,)
   ),
-  caption: ""
+  caption: "A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used for evaluating the accuracy."
 ) <cnn-window-size-vs-step-range>
 
-// hier "beste" fälle zeigen
-// zeige sowohl "gemischtes ausschließen", als auch "mehrere Quantencomputer ausschließen"
-// TODO ohne manche simulator trainieren (erkennt er einen unbekannten simulator)
+#let cnn_exclude_multiple = csv("data/cnn_exclude_multiple_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
+#figure(
+  tablex(
+    columns: 10,
+    align: center,
+      map-cells: cell => {
+    if cell.x >= 1 and cell.y >= 2 {
+      cell.content = {
+        let value = float(cell.content.text)
+        let text-color = gradient.linear(red, green).sample(value * 100%)
+        return (..cell, fill: text-color)
+      }
+    }
+    return cell
+  },
+    [],colspanx(9)[*Step Ranges*],[*\# of Excluded QCs*],..cnn_exclude_multiple.flatten().slice(1,)
+  ),
+  caption: "Excludes at least one and up to four quantum computers and uses exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated."
+)
 
-// TODO testset mit *nur* quantencomputer, der nicht im Trainingsset ist. (also testset nur unbekannte, auf denen nicht trainiert wurde.)
+// TODO Simulator aus Trainingsset excludieren -> wie gut wird ein unbekannter Simulator erkannt? (ist es sinnvoll dass auch zu untersuchen?)
+#text(blue)[TODO Simulator aus Trainingsset excludieren -> wie gut wird ein unbekannter Simulator erkannt? (ist es sinnvoll dass auch zu untersuchen?)]
+
+== Adversarial Machine Learning with Fast Gradient Sign Method <evaluation-fgsm>
+By converting 1400 features generated by simulators into adversarial samples in such a fasion that they are recognized as 'generated by a quantum computer'.
+The result can be seen in @adversarial-accuracy.
+When epsilon is zero the adversarial sample equals the original input feature.
+The graph shows that with increased $epsilon$ values, the accuracy gets worse due to the increased perturbation in the adversarial sample.
+
+#let adversarial_accuracy_data = csv("data/walker_adversarial_attack_simulator_to_quantum.csv")
+#figure(
+  cetz.canvas(length: 1.5cm, {
+    import cetz.draw: *
+    import cetz.plot
+    plot.plot(size: (10,5), x-tick-step: none, y-tick-step: none, 
+      x-ticks: (adversarial_accuracy_data.map(((epsilon,acc)) => float(epsilon))),
+      x-decimals: 3,
+      x-label: "Epsilon",
+      y-min: 0, y-max: 1,
+      y-ticks: (0, 0.25, 0.5, 0.75, 0.9, 1),
+      y-label: "Accuraccy",
+    {
+      plot.add(adversarial_accuracy_data.map(((epsilon,acc)) => (float(epsilon), float(acc))))
+    })
+  }),
+  caption: "Comparison of the models accuracy on adversarial samples with different epsilon values. 1400 features were converted to adversarial samples for this graph. The larger the epsilon value gets, the larger the perturbation in the adversarial sample."
+) <adversarial-accuracy>
+
+// TODO: alle histogramme zeigen, oder nur eine Auswahl?
+#text(blue)[TODO: alle histogramme zeigen, oder nur eine Auswahl?]
+#text(blue)[TODO: histogramme legende muss noch angepasst werden. Legende: Epsilon 0.00, Epsilon 0.03, Epsilon 0.06, quantum computers]
+#text(blue)[TODO: Überschriften (um welchen measurement step es sich handelt) zu den histogrammen hinzufügen.]
+
+The histograms in @adversarial-samples-histogram visualize the probabilities for each measurement result at different measurement steps in the quantum circuit.
+In most cases an increase of $epsilon$ leads to a probability distribution which is closer to the distribution of a quantum computer.
+
+#figure(
+  grid(
+    columns: 2,
+    image("images/adversarial_samples_histogram/hist_walker_step_0_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_1_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_2_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_3_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_4_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_5_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_6_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_7_adversarial.svg"),
+    image("images/adversarial_samples_histogram/hist_walker_step_8_adversarial.svg"),
+    ),
+  caption: "Comparison of different epsilon values. As a refference, the average of all quantum computer probability distributions is plotted as well."
+) <adversarial-samples-histogram>
 
 == Limitations
+The main limitation of this work is, that the classification can only be meaningful performed on measurements generated by the circuit in @circuit with which all three machine learning models where trained.
+This is due to the fact, that different quantum circuits result in different distributions of measurement results.
+// only works for this one circuit!!
+
+Additionally, as shown in @evaluation-fgsm, it is possible to forge adversarial samples which get classified with the incorrect label.
+
 // TODO nur eingeschränkt richtig
 // possible to detect the circuit and route it (maybe to another provider for correct results).
 // To counteract this: embed the circuit inside the "real circuit". (uses only 4 qubits of possibly larger quantum computer)
 
 = Future Work <future-work>
-Short, what would I improve if I had infinitely more time?
+#text(blue)[TODO]
+//Short, what would I improve if I had infinitely more time?
 
 = Conclusion <conclusion>
-Summary
+#text(blue)[TODO]
+//Summary
 
 #pagebreak()
 
