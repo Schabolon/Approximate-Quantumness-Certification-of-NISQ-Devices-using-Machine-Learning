@@ -2,6 +2,7 @@ numpy~=1.26.4
 tensorflow~=2.16.1
 scikit-learn~=1.4.1.post1
 keras~=3.1.1
+keras-tuner~=1.4.7
 qiskit~=1.0.2
 qiskit-aer~=0.13.3
 matplotlib~=3.8.3
