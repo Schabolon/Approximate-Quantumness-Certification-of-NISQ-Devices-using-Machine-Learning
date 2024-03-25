@@ -26,7 +26,10 @@ Finally, results are sent back to the user.
 In this cloud-based scenario, the user has to trust the cloud-based quantum provider to execute the quantum circuit on the advertised quantum hardware.
 An adversarial cloud provider could claim to have a quantum computer backend, but all circuits are just simulated on a classical computer.
 This scenario primarily affects small circuits due to the exponential growth in dimensions, rendering larger circuits impractical for computation with classical hardware.
-// TODO quantum supremacy?? überhaupt wichtig?
+
+// TODO
+#text(blue)[TODO ist quantum supremacy überhaupt relevant?]
+
 In 2020, a research team led by scientist Jian-Wei Pan at the University of Science and Technology of China (USTC) achieved quantum supremacy using 76 photons for the Gaussian boson sampling algorithm @garistoLightBasedQuantumComputer2021.
 The samples generated in the study required 200 seconds, a task estimated to take a classical supercomputer 2.5 billion years to complete, as detailed in the paper @zhongQuantumComputationalAdvantage2020.
 Quantum supremacy marks the point at which quantum computers outperform classical computers in specific tasks.
@@ -159,8 +162,23 @@ A feedforward neural network (FNN) is an artificial neural network commonly used
 It passes input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs combined with a bias and applies an activation function to produce an output, which can be written as @perceptron-math.
 
 #figure(
-  $ y = f(sum_(i=1)^(n) w_i x_i + b) $,
-  caption: "Equation for a single perceptron. y: output, f: activation function, w_i: weights for each input x_i, b: bias, n: number of inputs."
+  grid(
+    columns: 1,
+    gutter: 2mm,
+    $ y = f(sum_(i=1)^(n) w_i x_i + b) $,
+    v(1pt), // add space between math expression and explanation
+    (align(left, text[where:])),
+    (align(left, text[
+      - $y$: perceptron output
+      - $x$: input vector
+      - $f$: activation function
+      - $w_i$: weight for input $x_i$
+      - $b$: bias
+    ])),
+    v(1pt) // adds space between explanation and caption
+
+  ),
+  caption: "Equation for a single perceptron."
 ) <perceptron-math>
 
 Each neural network consists of multiple neurons, which are grouped into layers.
@@ -175,7 +193,7 @@ See @feedforward-net for a visualization.
 ) <feedforward-net>
 
 During training, the network adjusts the weights of connections between neurons to minimize the difference between predicted outputs and actual targets, often using techniques such as backpropagation and gradient descent.
-FNNs can learn complex patterns and relationships within data, making them suitable for various applications.
+FNNs can learn complex patterns and relationships within data.
 Various techniques, such as dropout and weight decay, can be employed to mitigate this issue and improve the generalization performance of the network.
 FNNs offer flexibility and scalability, allowing them to handle diverse datasets and tasks effectively.
 For additional information see @russellArtificialIntelligenceModern2021.
@@ -183,9 +201,9 @@ For additional information see @russellArtificialIntelligenceModern2021.
 === Convolutional Neural Network
 A Convolutional Neural Network (CNN) is a specialized artificial neural network primarily used for image recognition, classification, and computer vision tasks.
 It employs convolutional layers that automatically learn hierarchical patterns and features from input images.
-These convolutional layers consist of filters or kernels that slide across the input image, performing convolutions to extract local features.
+These convolutional layers consist of filters with a specific kernel size that slide across the input image, performing convolutions to extract local features.
 CNNs typically consist of multiple layers, including convolutional, pooling, and fully connected layers.
-The convolutional layers detect low-level features like edges and textures, while subsequent layers combine these features to recognize higher-level patterns and objects.
+The convolutional layers detect low-level features, while subsequent layers combine these features to recognize higher-level patterns.
 Pooling layers downsample the feature maps, reducing the spatial dimensions of the data and increasing computational efficiency.
 Finally, fully connected layers process the extracted features to make predictions or classifications.
 During training, CNNs adjust the parameters of the filters through backpropagation, optimizing them to minimize the difference between predicted outputs and ground truth labels.
@@ -193,28 +211,45 @@ This process enables CNNs to effectively learn and generalize from large dataset
 Their ability to learn relevant features from raw input data and their hierarchical architecture make them well-suited for handling complex tasks.
 For additional information see @russellArtificialIntelligenceModern2021.
 
-=== Adversarial Attack
-White-box adversarial attacks on neural networks operate under the premise that the attacker has complete knowledge of the model's architecture, weights, and training data.
-This transparency allows the attacker to exploit specific vulnerabilities of the neural network.
-The core idea behind these attacks is to craft input data that is only slightly modified from legitimate examples but is engineered to cause the neural network to make incorrect predictions.
-Achieving this involves using gradient-based optimization techniques to adjust the input data.
-The attacker calculates the gradient of the loss function with respect to the input data, which provides information on how slight changes to the input can lead to significant increases in the loss.
-By iteratively adjusting the input data in the direction of this gradient, the attacker can produce an adversarial example that is perceptually similar to the original data but results in a dramatically different and incorrect output when processed by the neural network.
-This method relies on the differentiability of the neural network to efficiently compute gradients and craft adversarial examples that exploit the model's weaknesses, demonstrating the intricate balance between model transparency and vulnerability in the context of security.
+=== Adversarial Attack using Fast Gradient Sign Method
+The Fast Gradient Sign Method (FGSM) is a white-box adversarial attack.
+White-box adversarial attacks on neural networks operate under the premise that the attacker has complete knowledge of the model's architecture and weights.
+This method, introduced by Ian Goodfellow et al. @goodfellowExplainingHarnessingAdversarial2015, operates under the premise that by applying a small, carefully calculated change in the direction of the gradient of the loss with respect to the input data, one can generate a new adversarial sample which is almost indistinguishable from the original but is misclassified by the neural network.
+The perturbation is determined by taking the sign of the gradient of the loss with respect to the input features and then multiplying it by a small scalar $epsilon$ (epsilon) to ensure the modification is subtle.
+Mathmatically this results in the expression in @adversarial-sample-expression:
 
+#figure(
+  grid(
+    columns: 1,
+    gutter: 2mm,
+    $ "adversarial_sample" = x + epsilon dot "sign"(nabla_x J(Theta, x, y)) $,
+    v(1pt), // add space between math expression and explanation
+    (align(left, text[where:])),
+    (align(left, text[
+      - $x$: original input
+      - $y$: original input label
+      - $epsilon$: keeps perturbations small
+      - $J$: Loss function
+      - $Theta$: Model parameters
+    ])),
+    v(1pt) // adds space between explanation and caption
+  ),
+  caption: "Creating an adversarial sapmle."
+) <adversarial-sample-expression>
+
+The FGSM is designed to be fast and computationally efficient, making it not only a powerful tool for analyzing the robustness of neural networks but also a significant concern for applications reliant on machine learning for security-sensitive tasks.
 
 = Approach <approach>
 The methods mentioned in @related-work are used for fingerprinting, meaning they can predict which results originate from which quantum computer, but they cannot distinguish between a QC or a simulator.
-This work, therefore, attempts to develop an approach that performs this differentiation.
+This work, attempts to develop an approach that performs this differentiation.
 In order to achieve this, only the measurement results of the quantum circuits are considered.
 Therefore, this paper uses machine learning techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the circuit's measurement results.
-The only precondition is that the data labels are correct (measurement results labeled 'quantum computer data' must be from an actual QC).
 
 == Data for Training
 The measurement results from a quantum computer are taken from @martinaLearningQuantumNoiseFingerprint2023.
 The reason is that no access to a quantum computer was available during the creation of this paper.
-The QC data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines.
-In the dataset, it is identifiable on which of the quantum computers the circuit was executed.
+The QC measumerent data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines.
+Each circuit measurement in the dataset can be trayced back to the quantum computer it was executed on.
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 with Qiskit @Qiskit2024.
 
 === Circuit <circuit>
@@ -284,7 +319,6 @@ This means that step 1 has four input values, step 2 has 8 (the four unchanged v
   grid(
     columns: 1,
     gutter: 5mm,
-    // TODO add after update align: (center, center, center, center),
     table(
       columns: (auto, auto, auto),
       align: horizon,
@@ -304,7 +338,6 @@ This means that step 1 has four input values, step 2 has 8 (the four unchanged v
   grid(
     columns: 1,
     gutter: 5mm,
-    // TODO add after update align: (center, center, center, center),
     table(
       columns: (auto, auto, auto, auto),
       align: horizon,
@@ -322,52 +355,71 @@ This means that step 1 has four input values, step 2 has 8 (the four unchanged v
 
 This second approach also examines whether the 8000 shots can be meaningfully divided into smaller packages.
 This has the advantage that more test and training data packages can be formed from the data available for this work.
+The number of shots which were combined into one package containing the probability shall be refered to as 'window size'.
+In the following machine learning approaches, in case no window size is mentioned, these models where trained and evaluated with data preprocessed with a window size of 2000.
+This value has been taken from @svm-window-size-vs-step-range, @fnn-window-size-vs-step-range, and @cnn-window-size-vs-step-range because it shows a high accuracy even with a low amount of measurement steps.
+The three following machine learning models have been chosen because the SVM has used in @martinaLearningNoiseFingerprint2022 and had high accuracy distinguishing different quantum computers.
+The feedforward neural net is a standard neural net model which is simple but effective in learning patterns in data.
+The last model, the CNN, has been chosen due to its ability to recognize patterns with its sliding filters.
 
 === Support Vector Machine
 
 To optimize the selection of the support vector machine algorithm for training, 20% of the dataset is allocated for preliminary evaluation.
 This evaluation process involves comparing the performance, specifically accuracy, of multiple potential SVM algorithms: linear, polynomial, and radial basis function.
 During this phase, the algorithm demonstrating superior accuracy is then selected for further training.
+This makes it possible to achieve high accuracies even for complicated input data while trying to keep the computational cost low.
 The chosen algorithm undergoes training on 60% of the input data, and its performance is subsequently assessed using the remaining 20% of the data to ensure its efficacy and reliability.
 The selection process for the SVM algorithm is similar to @martinaLearningNoiseFingerprint2022.
 
 === Feedforward Neural Net <approach-ffnn>
-A specific architecture and training protocol were employed to develop a neural network model to differentiate between simulator-generated data and quantum computer-generated data.
-The dataset was divided into 80% for training and 20% for testing purposes.
+The feedforward neural net was trained on 80% of the dataset, 20% were used for evaluationg the accuracy of the model.
 The input layer of the neural network was designed to be variable, accommodating between 4 to 36 neurons, depending on the number of measurement steps that are included in the dataset.
+This flexibility was needed to be able to compare different amounts of measurement steps, see @fnn-window-size-vs-step-range.
 The architecture included two dense hidden layers containing 45 and 20 neurons, respectively, utilizing the hyperbolic tangent (tanh) activation function.
+Increasing the amount of neurons didn't yield any noticable increase in accuracy, the number of neurons was determined by utilizing the keras tuner and manual trial and error afterwards.
 The output layer was constructed with a single neuron, employing a sigmoid activation function to produce a probability output between 0 and 1, indicative of the data source being a simulator or a quantum computer, respectively.
 
 For the training process, the Adam optimizer was selected.
-The loss during training was quantified using binary cross-entropy, a suitable choice for binary classification problems.
-The training was conducted over five epochs with a batch size of 32, striking a balance between computational efficiency and the model's ability to learn from the training data.
+The loss during training was quantified using binary cross-entropy, the standard choice for binary classification problems.
+Training was conducted over five epochs with a batch size of 32, balancing computational efficiency and the model's ability to learn from the training data.
 Observations indicated that extending the training beyond five epochs did not significantly improve accuracy, suggesting an optimal learning plateau had been reached within the given epoch span.
 After training, the model's accuracy was evaluated by using the previously unseen test data.
 This configuration led to the model's successful differentiation between the two data sources, see @evaluation-ffnn.
 
 === Convolutional Neural Net
-A convolutional neural network model was developed to classify data into two distinct categories, utilizing a dataset divided into 80% for training and 20% for testing.
+A convolutional neural network model was developed, utilizing a dataset divided into 80% for training and 20% for testing.
 The input layer of the model was designed to be adaptable, accommodating a variable number of neurons ranging from 4 to 36, depending on the number of measurement steps incorporated in the dataset, similar to @approach-ffnn.
-
 The first layer contains 30 1-dimensional convolutional filters, each with a kernel size of 3, using the Rectified Linear Unit (ReLU) activation function.
 Following the convolutional layer, a 1-dimensional max pooling operation was applied, reducing the dimensionality of the data.
 After the max pooling, the network architecture includes a flattening step, transforming the pooled feature maps into a single, linear vector.
 This flattened vector was then fed into two additional hidden layers, comprising 64 and 32 neurons, each employing the ReLU activation function to further process and refine the features extracted from the input data.
+Increasing the amount of neurons or the number of convolutional filters didn't result in a noticable increase in accuracy.
+For finding a general structure, the keras tuner was utilized.
+Afterwards the values where finally adjusted by hand per trial and error.
 The final stage of the model was an output layer consisting of a single neuron utilizing a sigmoid activation function.
 This setup is particularly suited for binary classification tasks, as it produces a probability output in the range of 0 to 1, indicative of the class membership of the input data.
 The Adam optimizer and binary cross-entropy were employed for optimization and loss calculation, respectively.
 Binary cross-entropy is a standard loss function for binary classification problems, measuring the discrepancy between the predicted probabilities and the actual class labels.
-
-The model underwent training spanning five epochs, with observations indicating that further extending the training duration beyond this period did not yield significant improvements in model accuracy.
+The model underwent training in five epochs, with observations indicating that further extending the training duration beyond this period did not yield significant improvements in model accuracy.
 This suggests the model reached an optimal learning plateau within the specified epoch count.
-Post-training, the model's performance was evaluated using the previously unseen test data to measure its generalization capability and accuracy in classifying new instances according to the defined classes.
+Post-training, the model's performance was evaluated using the previously unseen test data to measure its generalization capability, see @evaluation-cnn.
 
 
-== Adversarial Machine Learning
+== Adversarial Machine Learning with Fast Gradient Sign Method
+// TODO accuracy vergleich.
+// TODO histogram plotten, nach der Attacke sollte histogramm ähnlich aussehen.
+// TODO verschiedene epsilons verwenden.
 
+// für jedes input sample eigenen gradienten berechnen.
+
+// ich habe mich dazu entschieden, alle measurement-steps (0-8) zu berücksichtigen, da dann besonders große epsilons benötigt werden.
+// z.B. bei steps (0-3) ist die accuracy bereits bei epsilon=0.04 bei 0 angelangt.
 
 = Evaluation <evaluation>
+// TODO motivation, wieso verwende ich diese messungen?
 Describes why this thesis really solves the problem it claims to solve. (contains results and measurements) 
+
+// TODO Tabellen erklären + zusammenfassen.
 
 //TODO Komplette Quantencomputer aus dem trainingsset excludieren. (nur mit "optimaler" Window Size)
 // einmal jeden QC und einmal jeden Simulator im Training excludieren.
@@ -393,7 +445,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
     [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..svm_step_range_vs_window_size.flatten().slice(1,)
   ),
   caption: ""
-)
+) <svm-window-size-vs-step-range>
 
 #let svm_exclude_single = csv("data/svm_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
@@ -434,7 +486,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
     [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..ann_step_range_vs_window_size.flatten().slice(1,)
   ),
   caption: ""
-)
+) <fnn-window-size-vs-step-range>
 
 #let ann_exclude_single = csv("data/neural_net_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
@@ -456,7 +508,7 @@ Describes why this thesis really solves the problem it claims to solve. (contain
   caption: ""
 )
 
-== Convolutional Neural Net
+== Convolutional Neural Net <evaluation-cnn>
 #let cnn_step_range_vs_window_size = csv("data/cnn_window_sizes_vs_step_ranges_all_backends_combined.csv")
 #figure(
   tablex(
@@ -495,11 +547,13 @@ Describes why this thesis really solves the problem it claims to solve. (contain
     [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..cnn_exclude_single.flatten().slice(1,)
   ),
   caption: ""
-)
+) <cnn-window-size-vs-step-range>
 
 // hier "beste" fälle zeigen
 // zeige sowohl "gemischtes ausschließen", als auch "mehrere Quantencomputer ausschließen"
 // TODO ohne manche simulator trainieren (erkennt er einen unbekannten simulator)
+
+// TODO testset mit *nur* quantencomputer, der nicht im Trainingsset ist. (also testset nur unbekannte, auf denen nicht trainiert wurde.)
 
 == Limitations
 // TODO nur eingeschränkt richtig
