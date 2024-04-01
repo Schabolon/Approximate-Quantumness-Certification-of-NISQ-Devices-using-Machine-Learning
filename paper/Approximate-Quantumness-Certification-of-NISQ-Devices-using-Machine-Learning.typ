@@ -1,4 +1,4 @@
-#import "@local/cetz:0.2.0"
+#import "@preview/cetz:0.2.2"
 #import "@preview/tablex:0.0.8": tablex, rowspanx, colspanx
 
 #set heading(numbering: "1.1.")
@@ -6,6 +6,11 @@
 #set par(justify: true)
 
 #outline()
+
+// Fragen:
+// - Braucht die Bibliography eine Überschriften-Nummer?
+// - Soll Figure 1 noch weitere Schritte bekommen? (Result -> User)
+// - write in 3rd person?
 
 #pagebreak()
 
@@ -15,7 +20,7 @@ Quantum computing is especially promising in the fields of simulations, drug dev
 Despite these optimistic prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
 Current quantum computers (QCs) are provided as cloud-based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
 These services are mainly aimed at academics and researchers.
-As a first step, a user must register an account using such a cloud-based quantum computer.
+As a first step, a user must register an account to use such a cloud-based quantum computer.
 Afterward, the user develops the quantum circuit (e.g., in IBM's Qiskit @Qiskit2024), uploads the quantum circuit, and can choose a backend to execute the circuit on.
 Next, the request gets scheduled and executed on the QC.
 Finally, results are sent back to the user.
@@ -39,8 +44,6 @@ Conversely, simulators can execute small circuits on consumer hardware, drastica
 This cost consideration, coupled with the scalability limitations of classical hardware, underscores the significance of the threat posed by cloud quantum providers employing simulators, particularly in scenarios where the users are unaware of this substitution.
 Therefore, mitigating strategies should be devised to ensure transparency and trust in quantum cloud services to safeguard against potential security breaches and ensure the integrity of quantum computations.
 
-// TODO write in 3rd person?
-// TODO Paper Contributions mehr herausarbeiten.
 This work provides a machine learning-based approach that allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
 
 == Related Work <related-work>
@@ -56,10 +59,11 @@ However, instead of differentiating between various quantum computers, this pape
 
 == Structure
 @terms-and-definitions gives a short overview of the most important concepts of quantum computing and machine learning used in this paper.
-In @approach, the dataset used for training different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
+In @approach, an explanation for the dataset based on the circuit measurements is provided.
+These are used for training different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
 Additionally, a white-box adversarial attack is performed.
 After that, in @evaluation, the accuracies of the different machine learning algorithms are compared, and the limitations of this work are discussed, specifically concerning the white-box adversarial attack.
-@future-work points out possible questions for further research.
+@future-work points out possible areas for further research.
 At the end, @conclusion contains a short conclusion.
 
 
@@ -159,7 +163,7 @@ See @cristianiniIntroductionSupportVector2000 for additional details.
 
 === Feedforward Neural Network
 A feedforward neural network (FNN) is an artificial neural network commonly used for various machine learning tasks, including classification, regression, and pattern recognition.
-It passes input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs combined with a bias and applies an activation function to produce an output, which can be written as @perceptron-math.
+It passes input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs combined with a bias and applies an activation function to produce an output, which can be written as seen in @perceptron-math.
 
 #figure(
   grid(
@@ -192,11 +196,10 @@ See @feedforward-net for a visualization.
   caption: "Feedforward neural net"
 ) <feedforward-net>
 
-During training, the network adjusts the weights of connections between neurons to minimize the difference between predicted outputs and actual targets, often using techniques such as backpropagation and gradient descent.
-FNNs can learn complex patterns and relationships within data.
-Various techniques, such as dropout and weight decay, can be employed to mitigate this issue and improve the generalization performance of the network.
-FNNs offer flexibility and scalability, allowing them to handle diverse datasets and tasks effectively.
-For additional information see @russellArtificialIntelligenceModern2021.
+During training, the network adjusts the weights of connections between neurons to minimize the loss function, which quantifies the difference between predicted outputs and actual targets.
+This process often involves techniques such as backpropagation and gradient descent to iteratively reduce the loss.
+By doing so, FNNs can learn complex patterns and relationships within data, enabling them to perform a wide range of tasks with high accuracy.
+For additional information, see @russellArtificialIntelligenceModern2021.
 
 === Convolutional Neural Network
 A Convolutional Neural Network (CNN) is a specialized artificial neural network primarily used for image recognition, classification, and computer vision tasks.
@@ -223,7 +226,7 @@ Mathmatically this results in the expression in @adversarial-sample-expression:
     columns: 1,
     gutter: 2mm,
     $ "adversarial_sample" = x + epsilon dot "sign"(nabla_x J(Theta, x, y)) $,
-    v(1pt), // add space between math expression and explanation
+    v(1pt), // adds space between math expression and explanation
     (align(left, text[where:])),
     (align(left, text[
       - $x$: original input
@@ -241,7 +244,7 @@ The FGSM is designed to be fast and computationally efficient, making it not onl
 
 = Approach <approach>
 The methods mentioned in @related-work are used for fingerprinting, meaning they can predict which results originate from which quantum computer, but they cannot distinguish between a QC or a simulator.
-This work, attempts to develop an approach that performs this differentiation.
+This work attempts to develop an approach that performs this differentiation.
 In order to achieve this, only the measurement results of the quantum circuits are considered.
 Therefore, this paper uses machine learning techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the circuit's measurement results.
 
@@ -266,7 +269,8 @@ The entire process is shown in @circuit-steps.
 #figure(
   grid(
     columns: 2,
-    image("images/walker-step-1.svg", width: auto, height: auto),
+    // TODO add heading for each picture
+    grid("Measurement Step 1:", image("images/walker-step-1.svg", width: auto, height: auto)),
     image("images/walker-step-2.svg"),
     image("images/walker-step-3.svg"),
     image("images/walker-step-4.svg"),
@@ -278,9 +282,6 @@ The entire process is shown in @circuit-steps.
     ),
   caption: "Circuit with different points at which they get measured."
 ) <circuit-steps>
-
-// TODO: sollte erwähnt werden, dass q_0 und q_2 entanglet werden (bell state)?
-#text(blue)[TODO: sollte erwähnt werden, dass q_0 und q_2 entanglet werden (bell state)?]
 
 This results in 9 measurement points for this circuit.
 Each circuit run has been performed with 8000 shots.
@@ -319,7 +320,8 @@ As a second approach, the data was preprocessed before machine learning algorith
 For this purpose, the probability values per step were calculated for the four possible result values ($00_2$, $01_2$, $10_2$, $11_2$).
 Only these probability values are used as input for the ML algorithms.
 When considering a step > 1, the probability values of the previous steps were also used.
-This means that step 1 has four input values, step 2 has 8 (the four unchanged values from step 1 and the four additional probabilities from step 2), step 3 has 12, and so on. (See @probability-calculation-table-step-1 and @probability-calculation-table-steps-1-and-2)
+This means that step 1 has four input values, step 2 has 8 (the four unchanged values from step 1 and the four additional probabilities from step 2), step 3 has 12, and so on (see @probability-calculation-table-step-1 and @probability-calculation-table-steps-1-and-2).
+This preprocessing approach is based on the data preparation in @martinaLearningQuantumNoiseFingerprint2023.
 // TODO Figure schöner machen.
 #figure(
   grid(
@@ -415,7 +417,7 @@ Post-training, the model's performance was evaluated using the previously unseen
 For the adversarial attack the goal is to measurements from a simulator, perform the Fast Gradient Sign Method on them and show that they are classified as 'has been run on a quantum computer' afterwards.
 The model used was a feedforward neural net (as described in @approach-ffnn) which has been trained on 80% of all available simulator and quantum computer data, containing all 9 measurement steps.
 The remaining 20% were used for measuring the model accuracy beforehand.
-All 9 measurements were included to achieve the highest accuracy and robustness against unknown quantum computer inputs (see // TODO: add reference to table). 
+All 9 measurements were included to achieve the highest accuracy and robustness against unknown quantum computer inputs (see @adversarial-accuracy). 
 This was done by taking the gradient of the loss with respect to the input feature.
 The sign of the gradient is used to create a perturbation on the given input feature.
 In order to keep the perturbation small, it is multiplied by a small number $epsilon$ and added onto the original input (see @adversarial-sample-expression).
@@ -663,9 +665,11 @@ The graph shows that with increased $epsilon$ values, the accuracy gets worse du
 The histograms in @adversarial-samples-histogram visualize the probabilities for each measurement result at different measurement steps in the quantum circuit.
 In most cases an increase of $epsilon$ leads to a probability distribution which is closer to the distribution of a quantum computer.
 
+// TODO: Bildüberschriften, nur eine Legende, je ein Bild pro "Zeile"
+
 #figure(
   grid(
-    columns: 2,
+    columns: 1,
     image("images/adversarial_samples_histogram/hist_walker_step_0_adversarial.svg"),
     image("images/adversarial_samples_histogram/hist_walker_step_1_adversarial.svg"),
     image("images/adversarial_samples_histogram/hist_walker_step_2_adversarial.svg"),
@@ -679,24 +683,28 @@ In most cases an increase of $epsilon$ leads to a probability distribution which
   caption: "Comparison of different epsilon values. As a refference, the average of all quantum computer probability distributions is plotted as well."
 ) <adversarial-samples-histogram>
 
+It is possible for a malevolent quantum cloud provider to perform such an adversarial attack.
+Even though, it is quite hard to pull off due to the fact, that FGSM is a white-box attack.
+As a result, the neural net which should differenciate between simulator and quantum computer has to be known by the malevorent quantum cloud provider.
+
 == Limitations
-The main limitation of this work is, that the classification can only be meaningful performed on measurements generated by the circuit in @circuit with which all three machine learning models where trained.
+The main limitation of this work is, that classification can only be performed with the circuit from  @circuit.
 This is due to the fact, that different quantum circuits result in different distributions of measurement results.
-// only works for this one circuit!!
+Despite this limitation, it is possible to utilize this approach for simulator detection.
+In order to achieve this, the circuit from @circuit gets sent to the (possibly adversarial) quantum cloud provider.
+The results get classified in order to determine whether the circuit has been run on a quantum computer or simulated on a classical computer.
+It would be possible for the quantum cloud provider to recognize this specific circuit and route the circuit to a legit quantum computer provider and forward the results to the end user.
+To prevent this, the circuit could be embedded into the circuit which the user wants to execute.
 
 Additionally, as shown in @evaluation-fgsm, it is possible to forge adversarial samples which get classified with the incorrect label.
 
-// TODO nur eingeschränkt richtig
-// possible to detect the circuit and route it (maybe to another provider for correct results).
-// To counteract this: embed the circuit inside the "real circuit". (uses only 4 qubits of possibly larger quantum computer)
-
 = Future Work <future-work>
-#text(blue)[TODO]
-//Short, what would I improve if I had infinitely more time?
+One possible improvement would be to showcase that this approach can distinguish between simulators and quantum computers for other quantum circuits than the one used in this work (@circuit).
+Moreover would it be interesting to explore, how adding additional samples from different (and possibly more modern) quantum computers would influence the accuracy.
+Also, it could be interesting to perferm further, more advanced adversarial attacks on the neural net, such as a trying to perform a adversarial patch attack @brownAdversarialPatch2018.
 
 = Conclusion <conclusion>
-#text(blue)[TODO]
-//Summary
+
 
 #pagebreak()
 
