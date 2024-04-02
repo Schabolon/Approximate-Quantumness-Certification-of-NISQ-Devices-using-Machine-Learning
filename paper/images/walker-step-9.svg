@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   width="1610pt"
-   height="325.07999pt"
-   viewBox="0 0 1609.9999 325.07999"
+   width="1251.8505pt"
+   height="214.23463pt"
+   viewBox="0 0 1251.8504 214.23464"
    version="1.1"
    id="svg197"
    sodipodi:docname="walker-step-9.svg"
@@ -68,7 +68,7 @@
   </defs>
   <g
      id="figure_1"
-     transform="translate(-202.92867,-95.509795)">
+     transform="translate(-415.27604,-151.7598)">
     <g
        id="axes_1"
        transform="translate(181.5,55.5)">
@@ -163,13 +163,7 @@
       <g
          id="patch_3" />
       <g
-         id="patch_4">
-        <path
-           d="M 255.70246,96.259799 H -903.14752 V 374.3838 H 255.70246 Z"
-           clip-path="url(#p6ba37a93ec)"
-           style="fill:#ffffff;stroke:#ffffff;stroke-width:1.5;stroke-linejoin:miter"
-           id="path20" />
-      </g>
+         id="patch_4" />
       <g
          id="patch_5" />
       <g

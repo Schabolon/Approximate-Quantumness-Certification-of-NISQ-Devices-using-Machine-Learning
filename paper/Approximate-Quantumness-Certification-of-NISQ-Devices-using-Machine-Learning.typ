@@ -44,7 +44,7 @@ Conversely, simulators can execute small circuits on consumer hardware, drastica
 This cost consideration, coupled with the scalability limitations of classical hardware, underscores the significance of the threat posed by cloud quantum providers employing simulators, particularly in scenarios where the users are unaware of this substitution.
 Therefore, mitigating strategies should be devised to ensure transparency and trust in quantum cloud services to safeguard against potential security breaches and ensure the integrity of quantum computations.
 
-This work provides a machine learning-based approach that allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer (and not simulated on a classical computer).
+This work provides a machine learning-based approach that allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer and not simulated on a classical computer.
 
 == Related Work <related-work>
 Previous work has shown that it is possible to generate a unique hardware fingerprint based on the qubit frequencies. The fingerprint is based on quantum computer calibration data, which was made available by the cloud provider @smithFastFingerprintingCloudbased2022.
@@ -256,32 +256,46 @@ Each circuit measurement in the dataset can be trayced back to the quantum compu
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 with Qiskit @Qiskit2024.
 
 === Circuit <circuit>
-The entire circuit looks like @circuit-complete.
+The entire circuit looks like @circuit-measurement-step-9.
 In order to measure the circuit at different points, this circuit is executed until different points (steps), and a measurement of the qubits $q_2$ and $q_3$ is carried out after each step.
-
+Due to the wavefunction collapse, a new circuit has to be executed and measured for each measurement step.
+The entire process is shown in @circuit-measurement-step-1 up to @circuit-measurement-step-9.
+#figure(
+  image("images/walker-step-1.svg"),
+  caption: "Circuit which corresponds to measurement step 1."
+) <circuit-measurement-step-1>
+#figure(
+  image("images/walker-step-2.svg"),
+  caption: "Circuit which corresponds to measurement step 2."
+) <circuit-measurement-step-2>
+#figure(
+  image("images/walker-step-3.svg"),
+  caption: "Circuit which corresponds to measurement step 3."
+) <circuit-measurement-step-3>
+#figure(
+  image("images/walker-step-4.svg"),
+  caption: "Circuit which corresponds to measurement step 4."
+) <circuit-measurement-step-4>
+#figure(
+  image("images/walker-step-5.svg"),
+  caption: "Circuit which corresponds to measurement step 5."
+) <circuit-measurement-step-5>
+#figure(
+  image("images/walker-step-6.svg"),
+  caption: "Circuit which corresponds to measurement step 6."
+) <circuit-measurement-step-6>
+#figure(
+  image("images/walker-step-7.svg"),
+  caption: "Circuit which corresponds to measurement step 7."
+) <circuit-measurement-step-7>
+#figure(
+  image("images/walker-step-8.svg"),
+  caption: "Circuit which corresponds to measurement step 8."
+) <circuit-measurement-step-8>
 #figure(
   image("images/walker-step-9.svg"),
-  caption: "Complete circuit with four qubits. Only the lower two qubits are being measured at the end. Grey separators mark points at which measurements can take place."
-) <circuit-complete>
-
-Due to the wavefunction collapse, a new circuit has to be executed and measured for each measurement step.
-The entire process is shown in @circuit-steps.
-#figure(
-  grid(
-    columns: 2,
-    // TODO add heading for each picture
-    grid("Measurement Step 1:", image("images/walker-step-1.svg", width: auto, height: auto)),
-    image("images/walker-step-2.svg"),
-    image("images/walker-step-3.svg"),
-    image("images/walker-step-4.svg"),
-    image("images/walker-step-5.svg"),
-    image("images/walker-step-6.svg"),
-    image("images/walker-step-7.svg"),
-    image("images/walker-step-8.svg"),
-    image("images/walker-step-9.svg"),
-    ),
-  caption: "Circuit with different points at which they get measured."
-) <circuit-steps>
+  caption: "Circuit which corresponds to measurement step 9. Complete circuit with four qubits. Only the lower two qubits are being measured at the end. Grey separators mark points at which measurements can take place."
+) <circuit-measurement-step-9>
 
 This results in 9 measurement points for this circuit.
 Each circuit run has been performed with 8000 shots.
@@ -633,9 +647,9 @@ For the SVM, window sizes start from 50 (and not from 5 like the other models), 
 #text(blue)[TODO Simulator aus Trainingsset excludieren -> wie gut wird ein unbekannter Simulator erkannt? (ist es sinnvoll dass auch zu untersuchen?)]
 
 == Adversarial Machine Learning with Fast Gradient Sign Method <evaluation-fgsm>
-By converting 1400 features generated by simulators into adversarial samples in such a fasion that they are recognized as 'generated by a quantum computer'.
+By converting 1400 samples generated by simulators into adversarial samples in such a fasion that they are recognized as 'generated by a quantum computer'.
 The result can be seen in @adversarial-accuracy.
-When epsilon is zero the adversarial sample equals the original input feature.
+When epsilon is zero the adversarial sample equals the original input sample.
 The graph shows that with increased $epsilon$ values, the accuracy gets worse due to the increased perturbation in the adversarial sample.
 
 #let adversarial_accuracy_data = csv("data/walker_adversarial_attack_simulator_to_quantum.csv")
@@ -654,7 +668,7 @@ The graph shows that with increased $epsilon$ values, the accuracy gets worse du
       plot.add(adversarial_accuracy_data.map(((epsilon,acc)) => (float(epsilon), float(acc))))
     })
   }),
-  caption: "Comparison of the models accuracy on adversarial samples with different epsilon values. 1400 features were converted to adversarial samples for this graph. The larger the epsilon value gets, the larger the perturbation in the adversarial sample."
+  caption: "Comparison of the models accuracy on adversarial samples with different epsilon values. 1400 samples were converted to adversarial samples for this graph. The larger the epsilon value gets, the larger the perturbation in the adversarial sample."
 ) <adversarial-accuracy>
 
 // TODO: alle histogramme zeigen, oder nur eine Auswahl?
@@ -693,18 +707,22 @@ This is due to the fact, that different quantum circuits result in different dis
 Despite this limitation, it is possible to utilize this approach for simulator detection.
 In order to achieve this, the circuit from @circuit gets sent to the (possibly adversarial) quantum cloud provider.
 The results get classified in order to determine whether the circuit has been run on a quantum computer or simulated on a classical computer.
-It would be possible for the quantum cloud provider to recognize this specific circuit and route the circuit to a legit quantum computer provider and forward the results to the end user.
+It would be possible for the quantum cloud provider to recognize this specific circuit, route the circuit to a legit quantum computer provider, and forward the results to the end user.
 To prevent this, the circuit could be embedded into the circuit which the user wants to execute.
 
 Additionally, as shown in @evaluation-fgsm, it is possible to forge adversarial samples which get classified with the incorrect label.
+One way to prevent such a white-box adversarial attack is to keep the trained neural net hidden.
 
 = Future Work <future-work>
 One possible improvement would be to showcase that this approach can distinguish between simulators and quantum computers for other quantum circuits than the one used in this work (@circuit).
-Moreover would it be interesting to explore, how adding additional samples from different (and possibly more modern) quantum computers would influence the accuracy.
-Also, it could be interesting to perferm further, more advanced adversarial attacks on the neural net, such as a trying to perform a adversarial patch attack @brownAdversarialPatch2018.
+Moreover it would be interesting to explore how adding additional samples from different (and possibly more modern) quantum computers would influence the accuracy.
+Also, it could be interesting to perform further, more advanced adversarial attacks on the neural net, such as a trying to perform a adversarial patch attack @brownAdversarialPatch2018.
 
 = Conclusion <conclusion>
-
+//in dieser arbeit wurde gezeigt, dass mit aktuellen mitteln des machine learnings es möglich ist, für einen bestehenden quantum circuit es mit hoher wahrcsheinlcihket zu unterscheiden, ob qc oder simulator.
+// eine direkte Anwendbarkeit der hier erstellten netze für andere quantum circuits ist nicht möglich.
+// der gezeigte lösungsweg kann jedoch wahrcsheinlcih (see @future-work) für andere circuits angewandt werden.
+// wenn die in @limitations gezeigten grenzen beachtet werden, erscheint der hier gezeigte weg als praktikabler indikator, für die Art der Circuit ausführung.
 
 #pagebreak()
 
