@@ -857,7 +857,7 @@ It is possible for a malevolent quantum cloud provider to perform such an advers
 Even though, it is quite hard to pull off due to the fact, that FGSM is a white-box attack.
 As a result, the neural net which should differenciate between simulator and quantum computer has to be known by the malevorent quantum cloud provider.
 
-== Limitations
+== Limitations <limitations>
 The main limitation of this work is, that classification can only be performed with the circuit from  @circuit.
 This is due to the fact, that different quantum circuits result in different distributions of measurement results.
 Despite this limitation, it is possible to utilize this approach for simulator detection.
@@ -875,10 +875,10 @@ Moreover it would be interesting to explore how adding additional samples from d
 Also, it could be interesting to perform further, more advanced adversarial attacks on the neural net, such as a trying to perform a adversarial patch attack @brownAdversarialPatch2018.
 
 = Conclusion <conclusion>
-//in dieser arbeit wurde gezeigt, dass mit aktuellen mitteln des machine learnings es möglich ist, für einen bestehenden quantum circuit es mit hoher wahrcsheinlcihket zu unterscheiden, ob qc oder simulator.
-// eine direkte Anwendbarkeit der hier erstellten netze für andere quantum circuits ist nicht möglich.
-// der gezeigte lösungsweg kann jedoch wahrcsheinlcih (see @future-work) für andere circuits angewandt werden.
-// wenn die in @limitations gezeigten grenzen beachtet werden, erscheint der hier gezeigte weg als praktikabler indikator, für die Art der Circuit ausführung.
+This paper goes to show that it is possible, with current machine learning algorithms, to predict with a high probability for an existing quantum circuit whether it was executed by a quantum computer or by a simulator backend.
+The machine learning models proposed in this paper can not generalize to other arbitrary quantum circuits.
+Despite that, it is probably possible to use the proposed approach in this paper for classifying the results from different quantum circuits (see @future-work).
+When taking the limitations shown in @limitations into account, this approach can be used as a usefull indicator for validating that the correct backend types has been used for executing a quantum circuit. 
 
 #pagebreak()
 
