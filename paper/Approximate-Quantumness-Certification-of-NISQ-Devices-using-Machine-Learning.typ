@@ -799,29 +799,50 @@ The graph shows that with increased $epsilon$ values, the accuracy gets worse du
 
 // TODO: alle histogramme zeigen, oder nur eine Auswahl?
 #text(blue)[TODO: alle histogramme zeigen, oder nur eine Auswahl?]
-#text(blue)[TODO: histogramme legende muss noch angepasst werden. Legende: Epsilon 0.00, Epsilon 0.03, Epsilon 0.06, quantum computers]
-#text(blue)[TODO: Überschriften (um welchen measurement step es sich handelt) zu den histogrammen hinzufügen.]
 
-The histograms in @adversarial-samples-histogram visualize the probabilities for each measurement result at different measurement steps in the quantum circuit.
+The histograms in @adversarial-samples-histogram-measurement-step-1 to  @adversarial-samples-histogram-measurement-step-8 visualize the probabilities for each measurement result at different measurement steps in the quantum circuit.
 In most cases an increase of $epsilon$ leads to a probability distribution which is closer to the distribution of a quantum computer.
 
-// TODO: Bildüberschriften, nur eine Legende, je ein Bild pro "Zeile"
-
 #figure(
-  grid(
-    columns: 1,
-    image("images/adversarial_samples_histogram/hist_walker_step_0_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_1_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_2_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_3_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_4_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_5_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_6_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_7_adversarial.svg"),
-    image("images/adversarial_samples_histogram/hist_walker_step_8_adversarial.svg"),
-    ),
-  caption: "Comparison of different epsilon values. As a refference, the average of all quantum computer probability distributions is plotted as well."
-) <adversarial-samples-histogram>
+  image("images/adversarial_samples_histogram/legend.svg"),
+  caption: "Legend for the following figures depicting histograms."
+) <adversarial-samples-histogram-legend>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_0_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the first measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-1>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_1_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the second measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-2>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_2_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the third measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-3>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_3_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the fourth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-4>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_4_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the fifth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-5>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_5_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the sixth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-6>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_6_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the seventh measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-7>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_7_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the eighth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-8>
+#figure(
+  image("images/adversarial_samples_histogram/hist_walker_step_8_adversarial.svg"),
+  caption: [Comparison of different epsilon values for the ninth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+) <adversarial-samples-histogram-measurement-step-9>
 
 It is possible for a malevolent quantum cloud provider to perform such an adversarial attack.
 Even though, it is quite hard to pull off due to the fact, that FGSM is a white-box attack.
