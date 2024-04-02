@@ -10,7 +10,10 @@
 // Fragen:
 // - Braucht die Bibliography eine Überschriften-Nummer?
 // - Soll Figure 1 noch weitere Schritte bekommen? (Result -> User)
-// - write in 3rd person?
+// - write in 3rd person? 
+// - wird der Code mitbewertet?
+// - Ressourcen für die Präsentation (einfach Arbeit vorstellen + Fragen?)
+// - In welcher Sprache sollte die Präsentation gehalten werden?
 
 #pagebreak()
 
@@ -462,9 +465,15 @@ The first comparison of accuracy for different window size and measurement step 
 Especially when training only on a combination of the first three measurement steps and using window sizes of 2000, every model is able to reach an accuracy of 98% or above.
 As explained in @machine-learning-approaches for the rest of the evaluation a window size of 2000 was chosen.
 
-The second and third tables show how well the different models can generalize to unseen quantum computers, which would be their usecase when trying to safeguard against adversarial quantum cloud providers.
+The second and third tables show how well the different models can generalize to unseen quantum computers.
 Even when four different quantum computers are excluded from the training set, all three models achieve accuracy of more than 90% when taking all 9 measurement steps into account.
-When using only one measurement step, accuracy values are below 20% for all models, regardless of the number of excluded quantum computers.
+The fourth and fifth tables display the accuracy when excluding different simulator backends.
+When including measurement steps 1 up to 3, all three models are classifying more than 93% of test samples correctly.  
+The tables excluding the quantum computers or simulator backends are relevant for the usecase when trying to safeguard against adversarial quantum cloud providers.
+In this case, most of the simulators and quantum computers will be unknown.
+When using only one measurement step, accuracy values are on average below 20% for all models, regardless of the number of excluded quantum computers.
+When excluding simulators, the number of excluded simulator backends has a greater influence on the output accuracy, compared to excluded quantum computers. 
+Excluding only one simulator backend results in at least 30% accuracy accross all models at measurement step one.
 The classification task is only binary classification, meaning the models are performing worse than making random guesses.
 Therefore it seems especially crucial to have multiple measurement steps when dealing with unseen data.
 
