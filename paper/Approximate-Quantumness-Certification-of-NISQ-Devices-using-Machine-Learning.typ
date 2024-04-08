@@ -26,17 +26,23 @@
 //TODO: mehr margin am Rand (orientirung am Deckblatt).
 //TODO: Deckblatt hinzufügen
 
-// TODOs für Pascal:
-// - TUM logos schicken (nicht mehr auf Mytum)
-// - add abstract in beginning? (mit "zusammenfassung?")
-// - spezielle schriftart? (allgemein infos zu formalitäten vorhanden wie bei anderen lehrstühlen?)
-
 #show outline.entry.where(
   level: 1
 ): it => {
   v(14pt, weak: true)
   strong(it)
 }
+
+#align(center, text("Abstract", weight:"bold"))
+//TODO: add abstract
+
+#v(30pt)
+
+#align(center, text("Zusammenfassung", weight:"bold"))
+//TODO: add zusammenfassung
+
+#pagebreak()
+
 #outline(indent: auto)
 
 #pagebreak()
