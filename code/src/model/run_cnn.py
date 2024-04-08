@@ -2,10 +2,12 @@ import logging
 from typing import Optional
 
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
 from dataset import CustomDataset
+from model.early_stop_callback import EarlyStopCallback
 from model.ml_wrapper import MLWrapper
 
 
@@ -39,7 +41,17 @@ class RunCNN(MLWrapper):
         model.compile(optimizer='adam', loss=tf.keras.losses.BinaryCrossentropy(from_logits=False), metrics=['accuracy'])
 
         logging.debug("Training CNN ...")
-        model.fit(train_features, train_labels, epochs=5, validation_data=(test_features, test_labels), verbose=1)
+        history = model.fit(train_features, train_labels, epochs=100, validation_data=(test_features, test_labels),
+                            verbose=1, callbacks=[EarlyStopCallback()])
+
+        # Save history to file:
+        # convert the history.history dict to a pandas DataFrame:
+        #hist_df = pd.DataFrame(history.history)
+        # save to csv:
+        #hist_csv_file = 'history_cnn.csv'
+        #with open(hist_csv_file, mode='w') as f:
+        #    hist_df.to_csv(f)
+
         logging.debug("Evaluating CNN ...")
         test_loss, test_acc = model.evaluate(test_features, test_labels, verbose=2)
         logging.info(test_acc)

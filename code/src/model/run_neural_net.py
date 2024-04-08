@@ -2,6 +2,7 @@
 Neural Net: a simple feed-forward-network.
 """
 import logging
+import pandas as pd
 from typing import Optional
 
 import numpy as np
@@ -10,6 +11,7 @@ from keras import Sequential
 
 from tensorflow.keras import layers
 from dataset import CustomDataset
+from model.early_stop_callback import EarlyStopCallback
 from model.ml_wrapper import MLWrapper
 
 
@@ -44,8 +46,16 @@ class RunNeuralNet(MLWrapper):
 
         model = RunNeuralNet.__get_model__((train_features.shape[1],))
 
-        model.fit(train_features, train_labels, epochs=5, verbose=1, batch_size=32,
-                  validation_data=(test_features, test_labels))
+        history = model.fit(train_features, train_labels, epochs=100, verbose=1, batch_size=32,
+                  validation_data=(test_features, test_labels), callbacks=[EarlyStopCallback()])
+
+        # Save history to file:
+        # convert the history.history dict to a pandas DataFrame:
+        #hist_df = pd.DataFrame(history.history)
+        # save to csv:
+        #hist_csv_file = 'history_fnn.csv'
+        #with open(hist_csv_file, mode='w') as f:
+        #    hist_df.to_csv(f)
 
         test_loss, test_acc = model.evaluate(test_features, test_labels, verbose=1)
 
