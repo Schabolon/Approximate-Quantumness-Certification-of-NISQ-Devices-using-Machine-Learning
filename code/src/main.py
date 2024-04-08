@@ -1,6 +1,7 @@
 import csv
 import logging
 import os
+import pickle
 from itertools import combinations
 
 from circuit_run_data import CircuitRunData
@@ -143,7 +144,96 @@ def exclude_single_quantum_computer_different_steps(circuit: ImplementedQuantumC
                 logging.debug(f"Calculating for steps {steps}")
                 custom_dataset = CustomDataset(data, steps, window_size=window_size)
                 test_dataset = CustomDataset([CircuitRunData(circuit, qc_to_exclude)], steps,
-                                                        window_size=window_size)
+                                             window_size=window_size)
+                acc = ml_model.train_and_evaluate(custom_dataset, test_dataset=test_dataset)
+                # store float as string with 3 decimal places
+                row_results.append("%.3f" % acc)
+            csv_writer.writerow(row_results)
+        logging.info("Finished chart creation.")
+
+
+def exclude_multiple_simulators_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper,
+                                                window_size=2000):
+    logging.info(
+        "Creating table with multiple excluded simulators vs step ranges for all other backends combined ...")
+    path = "../results"
+    os.makedirs(path, exist_ok=True)
+    with (open(
+            f"{path}/{ml_model.get_name()}_exclude_multiple_simulators_vs_step_ranges_all_other_backends_combined.csv",
+            'w',
+            newline='') as csvfile):
+        csv_writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(
+            ['# of excluded Simulators', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]', '[1 ... 7]',
+             '[1 ... 8]', '[1 ... 9]'])
+        for num_to_exclude in range(2, 5):
+            lists_with_simulators_excluded = __generate_permutations_with_num_removed_elements(
+                QuantumBackends.get_simulator_backends(), num_to_exclude)
+            row_results = [num_to_exclude.__str__()]
+            steps = []
+            for step in range(0, 9):
+                accumulated_acc = 0.0
+                steps.append(step)
+                logging.debug(f"Calculating for steps {steps}")
+                for simulator_data_single_run in lists_with_simulators_excluded:
+                    logging.debug(f"Calculating with excluded #{num_to_exclude}.")
+
+                    data = []
+                    for qc in QuantumBackends.get_quantum_computer_backends():
+                        data.append(CircuitRunData(circuit, qc))
+                    for s in simulator_data_single_run:
+                        data.append(CircuitRunData(circuit, s))
+
+                    excluded_simulators = []
+                    for s in QuantumBackends.get_simulator_backends():
+                        if s not in simulator_data_single_run:
+                            excluded_simulators.append(CircuitRunData(circuit, s))
+
+                    test_dataset = CustomDataset(excluded_simulators, steps, window_size=window_size)
+                    custom_dataset = CustomDataset(data, steps, window_size=window_size)
+                    acc = ml_model.train_and_evaluate(custom_dataset, test_dataset=test_dataset)
+                    accumulated_acc = accumulated_acc + acc
+
+                # store float as string with 3 decimal places
+                row_results.append("%.3f" % (accumulated_acc / len(lists_with_simulators_excluded)))
+
+            csv_writer.writerow(row_results)
+        logging.info("Finished chart creation.")
+
+
+def exclude_single_simulator_different_steps(circuit: ImplementedQuantumCircuit, ml_model: MLWrapper,
+                                             window_size=2000):
+    logging.info("Creating table with excluded simulator vs step ranges for all other backends combined ...")
+    path = "../results"
+    os.makedirs(path, exist_ok=True)
+    with (open(f"{path}/{ml_model.get_name()}_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv",
+               'w',
+               newline='') as csvfile):
+        csv_writer = csv.writer(csvfile, delimiter=',',
+                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+
+        csv_writer.writerow(
+            ['excluded Simulator', '[1]', '[1 ... 2]', '[1 ... 3]', '[1 ... 4]', '[1 ... 5]', '[1 ... 6]',
+             '[1 ... 7]', '[1 ... 8]', '[1 ... 9]'])
+        for simulator_to_exclude in QuantumBackends.get_simulator_backends():
+            logging.debug(f"Calculating with excluded {simulator_to_exclude}.")
+
+            data = []
+            for qc in QuantumBackends.get_quantum_computer_backends():
+                data.append(CircuitRunData(circuit, qc))
+            for s in QuantumBackends.get_simulator_backends():
+                if s != simulator_to_exclude:
+                    data.append(CircuitRunData(circuit, s))
+
+            steps = []
+            row_results = [simulator_to_exclude]
+            for step in range(0, 9):
+                steps.append(step)
+                logging.debug(f"Calculating for steps {steps}")
+                custom_dataset = CustomDataset(data, steps, window_size=window_size)
+                test_dataset = CustomDataset([CircuitRunData(circuit, simulator_to_exclude)], steps,
+                                             window_size=window_size)
                 acc = ml_model.train_and_evaluate(custom_dataset, test_dataset=test_dataset)
                 # store float as string with 3 decimal places
                 row_results.append("%.3f" % acc)
@@ -219,5 +309,7 @@ if __name__ == '__main__':
 
     for ml_approach in [run_neural_net.RunNeuralNet(), run_cnn.RunCNN(), run_svm.RunSVM()]:
         window_sizes_vs_step_ranges_all_backends(Walker(), ml_approach)
+        exclude_single_simulator_different_steps(Walker(), ml_approach)
+        exclude_multiple_simulators_different_steps(Walker(), ml_approach)
         exclude_single_quantum_computer_different_steps(Walker(), ml_approach)
         exclude_multiple_quantum_computer_different_steps(Walker(), ml_approach)
