@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+import keras
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -42,7 +43,7 @@ class RunCNN(MLWrapper):
 
         logging.debug("Training CNN ...")
         history = model.fit(train_features, train_labels, epochs=100, validation_data=(test_features, test_labels),
-                            verbose=1, callbacks=[EarlyStopCallback()])
+                            verbose=1, callbacks=[EarlyStopCallback(), keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)])
 
         # Save history to file:
         # convert the history.history dict to a pandas DataFrame:

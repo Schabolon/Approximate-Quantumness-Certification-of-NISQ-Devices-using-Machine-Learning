@@ -2,6 +2,8 @@
 Neural Net: a simple feed-forward-network.
 """
 import logging
+
+import keras
 import pandas as pd
 from typing import Optional
 
@@ -47,7 +49,7 @@ class RunNeuralNet(MLWrapper):
         model = RunNeuralNet.__get_model__((train_features.shape[1],))
 
         history = model.fit(train_features, train_labels, epochs=100, verbose=1, batch_size=32,
-                  validation_data=(test_features, test_labels), callbacks=[EarlyStopCallback()])
+                  validation_data=(test_features, test_labels), callbacks=[EarlyStopCallback(), keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)])
 
         # Save history to file:
         # convert the history.history dict to a pandas DataFrame:
