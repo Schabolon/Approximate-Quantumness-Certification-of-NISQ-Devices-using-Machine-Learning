@@ -1,6 +1,7 @@
 #import "@preview/cetz:0.2.2"
 #import "@preview/tablex:0.0.8": tablex, rowspanx, colspanx
 #import "@preview/lovelace:0.2.0": *
+#import "@preview/diagraph:0.2.2": *
 
 #show: setup-lovelace
 
@@ -18,19 +19,16 @@
 )
 #set math.equation(numbering: "(1)")
 
-//TODO: make figure start (Figure 1:) bold.
-//#set figure(
-//  numbering : it => text(weight:"bold")[#it],
-//)
-
 //TODO: übergänge zwischen den einzelnen sektionen, sollte am stück gelesen werden können?
 
-//TODO: mehr margin am Rand (orientirung am Deckblatt).
-//TODO: Deckblatt hinzufügen
+//TODO: Deckblatt hinzufügen (+ check margin am rand)
 
-//TODO: bei graphen die Ticks nach außen richten?
+//Optional: bei graphen die Ticks nach außen richten?
 
 //TODO: note: idea is to classify noise model of simulator vs noise model of quantum computer (in a general fashion)
+
+//Optional: perform Feature importance visualization??
+//Optional: add confustion matrix?
 
 #show outline.entry.where(
   level: 1
@@ -39,6 +37,8 @@
   strong(it)
 }
 
+//TODO: add pagebreaks before next "large" heading (new chapter)
+//TODO: add more margin for abstract
 #align(center, text("Abstract", weight:"bold"))
 //TODO: add abstract
 
@@ -54,6 +54,7 @@
 #pagebreak()
 
 = Introduction and Motivation
+// Quantum computing is an emerging field, gaining attention.
 Experts expect the quantum computing market to grow from USD 866 million in 2023 to USD 4.375 million in 2030 @QuantumComputingMarket2023.
 Quantum computing is especially promising in the fields of simulations, drug development, and cybersecurity @emilioCurrentStatusNext2022.
 Despite these optimistic prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
@@ -397,14 +398,15 @@ This is an inherent problem to cloud infrastructure not limited to quantum compu
 // Why this specific quantum circuit has been chosen is being detailed in @circuit.
 
 == Data for Training
-The measurement results from a quantum computer are taken from @martinaLearningQuantumNoiseFingerprint2023.
-The reason is that no access to a quantum computer was available during the creation of this thesis.
-// as mentioned in @structure ...
-//TODO: expensice, challenging to perform measurement with in qc calibration -> out of scope
+The measurement outcomes obtained from quantum computational operations are derived from the dataset provided by @martinaLearningQuantumNoiseFingerprint2023.
+As mentioned in @related-work, the main reasons for this choice were high costs for running the circuit on multiple quantum computers, and designing a specific circuit with the capability of creating measurements that allow for classification based on the noise in the measurements.
+//TODO: challenging to perform measurement with in qc calibration -> out of scope (is calibration even important?)
 The QC measumerent data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines (Athens, Santiago, Casablanca, Yorktown, Bogota, Quito, Lima).
-//TODO: The chips differ by two main aspects. The first is the architecture (or connectivity) of the qubits, which ranges from a simple line topology to a ladder or a star topology. The second important difference is the so-called quantum volume [36] (8, 16, 32 for the machines used in our experiments) that quantifies the maximum dimension of a circuit that can be effectively executed, and is correlated also with the noise affecting each device.
-// source for [36]: Validating quantum computers using randomized model circuits.
-// Indeed, some quantum machines are inherently noisier than other, and even single qubits inside a machine can have a distinctive noise profile. All these peculiar differences in noise and topology represent the fingerprint that we aim to exploit using our method.
+The quantum chips vary in their connectivity between qubits, from linear topology to a star topology @martinaLearningQuantumNoiseFingerprint2023.
+The chips vary primarily in their qubit architecture, from simple linear to complex star topologies, and in their quantum volume (8, 16, 32 in our tests), which measures the largest circuit size they can efficiently run and reflects device noise.
+Each quantum machine has different noise parameters for their qubits (T1, T2 error, readout error), and quantum gates.
+The noise fingerprint learned by the machine learning model is based on these differences.
+
 Each circuit measurement in the dataset can be traced back to the quantum computer it was executed on.
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 both with and without noise.
 The simulators provided by the Qiskit SDK @Qiskit2024 were used.
@@ -605,7 +607,9 @@ For $k=3$, each ordered tuple $x in X$ would contain 3 different sub-tuples such
 $X$ can contain the probability distribution-data accumulated from multiple runs from different quantum computers or simulators.
 
 In the following machine learning approaches, in case no window size is mentioned, these models where trained and evaluated with data preprocessed with a window size of 2000.
-This value has been taken from @svm-window-size-vs-step-range, @fnn-window-size-vs-step-range, and @cnn-window-size-vs-step-range because it shows a high accuracy even with a low amount of measurement steps accross models, allowing for an easier comparison.
+This value has been taken from @evaluation because it shows a high accuracy even with a low amount of measurement steps accross models, allowing for an easier comparison. //TODO reference to @evaluation good/correct?
+
+//TODO: grid with 3 different charts, each depicting the step size vs window size (only 5 window sizes each)
 
 === Support Vector Machine
 
@@ -622,8 +626,39 @@ The selection process for the SVM algorithm is similar to @martinaLearningNoiseF
 //TODO: mention keras + tensorflow used
 The feedforward neural net was trained on 80% of the dataset, 20% were used for evaluationg the accuracy of the model.
 The input layer of the neural network was designed to be variable, accommodating between 4 to 36 neurons, depending on the number of measurement steps that are included in the dataset.
-This flexibility was needed to be able to compare different amounts of measurement steps, see @fnn-window-size-vs-step-range.
+This flexibility was needed to be able to compare different amounts of measurement steps, see @evaluation. //TODO: is this reference usefull?
 The architecture included two dense hidden layers containing 45 and 20 neurons, respectively, utilizing the hyperbolic tangent (tanh) activation function.
+
+#figure(
+  raw-render(
+    width: 30%,
+    ```dot
+    digraph NeuralNetwork {
+      node [shape=record];
+      rankdir=TD;
+      
+      // Define nodes
+      input [label=<{<B>Input Layer</B>| Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
+      hidden1 [label=<{<B>Hidden Dense Layer 1</B>| Output shape: (45) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
+      hidden2 [label=<{<B>Hidden Dense Layer 2</B>| Output shape: (20) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
+      output [label=<{<B>Output Layer</B>| Output shape: (1) | Activation function: sigmoid}>, fillcolor="#ea9397", style=filled];
+      
+      // Define connections
+      input -> hidden1;
+      hidden1 -> hidden2;
+      hidden2 -> output;
+      
+      // Additional styling
+      edge [color=gray];
+      ranksep="0.5 equally";
+      nodesep="0.5";
+    }
+
+    ```
+  ),
+  caption: [Architecture diagram for feedforward neural net. In the input layer, $k$ refers to the measurement step.] //TODO: improve
+)
+
 //TODO: used relu function because it yielded higher accuracy when comparing between relu, sigmoid and than with keras tuner.
 Increasing the amount of neurons didn't yield any noticable increase in accuracy, the number of neurons was determined by utilizing the keras tuner and manual trial and error afterwards.
 The output layer was constructed with a single neuron, employing a sigmoid activation function to produce a probability output between 0 and 1, indicative of the data source being a simulator or a quantum computer, respectively.
@@ -641,7 +676,7 @@ The loss during training was quantified using binary cross-entropy, the standard
 
       let fnn_val_acc = csv("data/training_history/history_fnn_step_1_val_accuracy.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: none, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: 0.4, y-max: 1.05,
@@ -658,7 +693,7 @@ The loss during training was quantified using binary cross-entropy, the standard
 
       let fnn_val_acc = csv("data/training_history/history_fnn_step_1_val_loss.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: none, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: 0.25, y-max: 0.75,
@@ -685,7 +720,7 @@ The loss during training was quantified using binary cross-entropy, the standard
 
       let fnn_val_acc = csv("data/training_history/history_fnn_step_5_val_accuracy.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: none, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: 0.9, y-max: 1.05,
@@ -702,7 +737,7 @@ The loss during training was quantified using binary cross-entropy, the standard
 
       let fnn_val_acc = csv("data/training_history/history_fnn_step_5_val_loss.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: 0.01, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: 0.01, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: -0.003, y-max: 0.04,
@@ -747,7 +782,7 @@ This setup is particularly suited for binary classification tasks, as it produce
 
       let fnn_val_acc = csv("data/training_history/history_cnn_step_1_val_accuracy.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: none, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: 0.4, y-max: 1.05,
@@ -764,7 +799,7 @@ This setup is particularly suited for binary classification tasks, as it produce
 
       let fnn_val_acc = csv("data/training_history/history_cnn_step_1_val_loss.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: none, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: 0.25, y-max: 0.75,
@@ -791,7 +826,7 @@ This setup is particularly suited for binary classification tasks, as it produce
 
       let fnn_val_acc = csv("data/training_history/history_cnn_step_5_val_accuracy.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: none, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: 0.9, y-max: 1.05,
@@ -808,7 +843,7 @@ This setup is particularly suited for binary classification tasks, as it produce
 
       let fnn_val_acc = csv("data/training_history/history_cnn_step_5_val_loss.csv")
 
-      plot.plot(size: (5,5), x-tick-step: 50, y-tick-step: 0.01, 
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: 0.01, 
         x-min: -5,
         x-label: "Epoch no.",
         y-min: -0.003, y-max: 0.04,
@@ -871,29 +906,96 @@ Therefore it seems especially crucial to have multiple measurement steps when de
 //TODO: combine data into single diagram for easier comparison? -> only show window sizes 5, 50 and 2000 (but for each approach).
 // maybe add tables for step range vs window size only to appendix?
 
-== Support Vector Machine
-For the SVM, window sizes start from 50 (and not from 5 like the other models), because training the SVM with such small window sizes took too much time.
-#let svm_step_range_vs_window_size = csv("data/svm_window_sizes_vs_step_ranges_all_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..svm_step_range_vs_window_size.flatten().slice(1,)
-  ),
-  caption: "Support vector machine: Comparison of the accuracy for different window sizes and measurement step ranges. Circuit run-data from all quantum computers and all simulators was used.",
-  kind: table,
-) <svm-window-size-vs-step-range>
+//TODO: adjust colors for graphs (same window size should have same color accross graphs)
+#grid(
+  gutter: 20pt,
+  grid(
+    columns: 2,
+    gutter: 20pt,
+    figure(
+      cetz.canvas(length: 1cm, {
+        import cetz.draw: *
+        import cetz.plot
 
+        let window_size_50 = ((1, 0.597), (2, 0.621),(3, 0.845), (4, 0.933), (5, 0.944), (6, 0.954), (7, 0.958), (8, 0.974), (9, 0.980))
+        let window_size_100 = ((1, 0.623), (2, 0.648), (3, 0.904), (4, 0.974), (5, 0.981), (6, 0.986),(7, 0.988), (8, 0.994), (9, 0.996))
+        let window_size_2000 = ((1, 0.694), (2, 0.815), (3, 0.997), (4, 1.000), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
+
+        plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
+          x-min: 0, x-max: 9,
+          x-label: "Measurement steps",
+          y-min: 0.45, y-max: 1.05,
+          y-ticks: (0, 0.25, 0.5, 0.7, 0.9, 1),
+          y-label: "Accuraccy",
+          legend: "legend.inner-south-east", //TODO: ist die legende im inneren gut?
+        {
+          plot.add(window_size_50, label: [w = 50])
+          plot.add(window_size_100, label: [w = 100])
+          plot.add(window_size_2000, label: [w = 2000])
+        })
+      }),
+      caption: [SVM] //TODO: improve (mention no w=5, took too long)
+    ),
+
+    figure(
+      cetz.canvas(length: 1cm, {
+        import cetz.draw: *
+        import cetz.plot
+
+        let window_size_5 = ((1, 0.549), (2, 0.565), (3, 0.670), (4, 0.737), (5, 0.751), (6, 0.760), (7, 0.767), (8, 0.796), (9, 0.808))
+        let window_size_50 = ((1, 0.586), (2, 0.642), (3, 0.848), (4, 0.941), (5, 0.955), (6, 0.961),(7, 0.963), (8, 0.978), (9, 0.982))
+        let window_size_100 = ((1, 0.629), (2, 0.679), (3, 0.897), (4, 0.978), (5, 0.986), (6, 0.987), (7, 0.986), (8, 0.995), (9, 0.996))
+        let window_size_2000 = ((1, 0.773), (2, 0.868), (3, 0.993), (4, 0.999), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
+
+        plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
+          x-min: 0, x-max: 9,
+          x-label: "Measurement steps",
+          y-min: 0.45, y-max: 1.05,
+          y-ticks: (0, 0.25, 0.5, 0.7, 0.9, 1),
+          y-label: "Accuraccy",
+          legend: "legend.inner-south-east", //TODO: ist die legende im inneren gut?
+        {
+          plot.add(window_size_5, label: [w = 5])
+          plot.add(window_size_50, label: [w = 50])
+          plot.add(window_size_100, label: [w = 100])
+          plot.add(window_size_2000, label: [w = 2000])
+        })
+      }),
+      caption: [FNN] //TODO: improve
+    ),
+  ),
+
+  figure(
+    cetz.canvas(length: 1cm, {
+      import cetz.draw: *
+      import cetz.plot
+
+      let window_size_5 = ((1, 0.549), (2, 0.568), (3, 0.669), (4, 0.738), (5, 0.750), (6, 0.760), (7, 0.767), (8, 0.795), (9, 0.807))
+      let window_size_50 = ((1, 0.558), (2, 0.642), (3, 0.848), (4, 0.937), (5, 0.953), (6, 0.958), (7, 0.965), (8, 0.977), (9, 0.980))
+      let window_size_100 = ((1, 0.639), (2, 0.682), (3, 0.903), (4, 0.979), (5, 0.984), (6, 0.983), (7, 0.990), (8, 0.995), (9, 0.997))
+      let window_size_2000 = ((1, 0.642), (2, 0.856), (3, 0.990), (4, 0.999), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
+
+      plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
+        x-min: 0, x-max: 9,
+        x-label: "Measurement steps",
+        y-min: 0.45, y-max: 1.05,
+        y-ticks: (0, 0.25, 0.5, 0.7, 0.9, 1),
+        y-label: "Accuraccy",
+        legend: "legend.inner-south-east", //TODO: ist die legende im inneren gut?
+      {
+        plot.add(window_size_5, label: [w = 5])
+        plot.add(window_size_50, label: [w = 50])
+        plot.add(window_size_100, label: [w = 100])
+        plot.add(window_size_2000, label: [w = 2000])
+      })
+    }),
+    caption: [CNN] //TODO: improve
+  ),
+) <window-size-vs-step-ranges-plots>
+
+//TODO: create plot with windowsize 2000 for all 3 approaches (for comparison).
+
+== Support Vector Machine
 #let svm_exclude_single_qc = csv("data/svm_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   tablex(
@@ -979,27 +1081,6 @@ For the SVM, window sizes start from 50 (and not from 5 like the other models), 
 )
 
 == Feedforward Neural Net <evaluation-ffnn>
-#let ann_step_range_vs_window_size = csv("data/neural_net_window_sizes_vs_step_ranges_all_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..ann_step_range_vs_window_size.flatten().slice(1,)
-  ),
-  caption: "Feedforward neural net: Comparison of the accuracy for different window sizes and measurement step ranges. Circuit run-data from all quantum computers and all simulators was used.",
-  kind: table,
-) <fnn-window-size-vs-step-range>
-
 #let ann_exclude_single = csv("data/neural_net_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   tablex(
@@ -1085,27 +1166,6 @@ For the SVM, window sizes start from 50 (and not from 5 like the other models), 
 )
 
 == Convolutional Neural Net <evaluation-cnn>
-#let cnn_step_range_vs_window_size = csv("data/cnn_window_sizes_vs_step_ranges_all_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*Window Sizes*],..cnn_step_range_vs_window_size.flatten().slice(1,)
-  ),
-  caption: "Convolutional neural net: Comparison of the accuracy for different window sizes and measurement step ranges for the convolutional neural net. Circuit run-data from all quantum computers and all simulators was used.",
-  kind: table,
-)
-
 #let cnn_exclude_single = csv("data/cnn_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   tablex(
