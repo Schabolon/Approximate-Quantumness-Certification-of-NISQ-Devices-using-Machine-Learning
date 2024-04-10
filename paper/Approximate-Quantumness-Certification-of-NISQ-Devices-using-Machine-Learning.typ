@@ -23,8 +23,14 @@
 //  numbering : it => text(weight:"bold")[#it],
 //)
 
+//TODO: übergänge zwischen den einzelnen sektionen, sollte am stück gelesen werden können?
+
 //TODO: mehr margin am Rand (orientirung am Deckblatt).
 //TODO: Deckblatt hinzufügen
+
+//TODO: bei graphen die Ticks nach außen richten?
+
+//TODO: note: idea is to classify noise model of simulator vs noise model of quantum computer (in a general fashion)
 
 #show outline.entry.where(
   level: 1
@@ -205,6 +211,7 @@ Similarly, the Toffoli gate has two control qubits, influencing whether the targ
 ) <quantum-gates>
 In quantum computing, measuring a qubit yields a binary outcome: either a $0$ or a $1$.
 //TODO: add image of measurement-circuit part.
+//TODO: explain bell state (used in circuit).
 This measurement process is a critical operation that leads to the collapse of the qubit's wave function, situating it into a definitive state of either $|0 angle.r$ or $|1 angle.r$, depending on the measured value.
 This collapse is a direct consequence of the quantum mechanical principle of wave function collapse, where measurement forces a quantum system to 'choose' a state from among the probabilities described by its wave function prior to measurement.
 Additionally, the concept of "shots" in quantum computing refers to the number of times a quantum algorithm is executed and measured.
@@ -214,8 +221,14 @@ This statistical approach is crucial due to the probabilistic nature of quantum 
 Different approaches exist for building physical quantum computers.
 QCs built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
 Other architectures include trapped ions, photonics, and nuclear magnetic resonance @laddQuantumComputers2010.
+//the main issue to be still solved is the unavoidable presence of external noise sources that dramatically
+// limit the accuracy of quantum computations, as well as the large-scale realization of quantum circuits and algorithms.
+//TODO: mention NISQ? (reference to introduction?)
+
 //TODO: explain that computers can have different topologies?
 Current quantum chips mainly suffer from decoherence, gate errors, readout errors, and crosstalk.
+//TODO: explain errors better and more in detail T1 and T2 Times, Readout Error, ...
+// readout error and gate error relevant for simulator. 
 For a qubit, the decoherence time refers to how long the qubit can contain information.
 Decoherence can occur, for example, when a qubit interacts with the environment.
 When quantum computers are constructed from multiple qubits, unwanted interactions between these qubits are called crosstalk.
@@ -300,7 +313,7 @@ Finally, the results are taken from the last layer, the output layer, which prov
 See @feedforward-net for a visualization.
 
 #figure(
-  image("images/feedforward-neural-network.svg", height: 25%),
+  image("images/feedforward-neural-network.svg", height: 25%), //TODO: adujust image colors, maybe: #72be90, #6a6ca4, #ea9397
   caption: [Feedforward neural net consisting of input layer, hidden layer and output layer. When evaluating, the value for each neuron gets calculated by @perceptron-math.]
 ) <feedforward-net>
 
@@ -356,13 +369,17 @@ The FGSM is designed to be fast and computationally efficient, making it not onl
 
 = Approach <approach>
 The methods mentioned in @related-work are used for fingerprinting, meaning they can predict which results originate from which quantum computer, but most of them cannot distinguish between a QC or a simulator with a noise model.
-//TODO: is "most of them" correct? heding needed, maybe formulate in another way?
+//TODO: is "most of them" correct? hedging needed, maybe formulate in another way?
 This work attempts to develop an approach that performs this differentiation.
 In order to achieve this, only the measurement results of the quantum circuits are considered.
 Therefore, this thesis uses machine learning techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the circuit's measurement results.
 
-As threat model we assume the adversary cloud provider is interested in making profit and therefore accepts circuits with 1 up to 35 qubits, needing up to approximately 256 GB of RAM (see @memory-needed-for-simulating-n-qubits for visualization).
-Allowing for quantum circuits with more qubits would require exponentialy more RAM and increased amounts of computing power, which would in turn reduce profit.
+As a threat model, we assume the adversary cloud provider is interested in making a profit and therefore accepts circuits with one up to 35 qubits, needing up to approximately 256 GB of RAM (see @memory-needed-for-simulating-n-qubits for visualization).
+Allowing for quantum circuits with more qubits would require exponentially more RAM and increased amounts of computing power, which would, in turn, reduce profit.
+When a user sends a quantum circuit to a quantum cloud provider for execution, the user cannot easily validate that the circuit runs on the advertised quantum hardware.
+This is due to the fact that the cloud provider can shedule the circuit on any hardware without giving notice to the client.
+This is an inherent problem to cloud infrastructure not limited to quantum computing. //TODO: add source?
+
 
 // user has no influence over "sheduling", no access to hardware (cloud computing). only passing a different circuit to the cloud quantum provider.
 // -> use circuit to detect whether quantum backend or simulator has been used.
@@ -377,10 +394,12 @@ Allowing for quantum circuits with more qubits would require exponentialy more R
 //TODO: motivate approach -> why not exactly provable? verification?
 //TODO: why ml?
 //TODO: what is the motivation in @martinaLearningQuantumNoiseFingerprint2023 for picking these circuits?
+// Why this specific quantum circuit has been chosen is being detailed in @circuit.
 
 == Data for Training
 The measurement results from a quantum computer are taken from @martinaLearningQuantumNoiseFingerprint2023.
 The reason is that no access to a quantum computer was available during the creation of this thesis.
+// as mentioned in @structure ...
 //TODO: expensice, challenging to perform measurement with in qc calibration -> out of scope
 The QC measumerent data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines (Athens, Santiago, Casablanca, Yorktown, Bogota, Quito, Lima).
 //TODO: The chips differ by two main aspects. The first is the architecture (or connectivity) of the qubits, which ranges from a simple line topology to a ladder or a star topology. The second important difference is the so-called quantum volume [36] (8, 16, 32 for the machines used in our experiments) that quantifies the maximum dimension of a circuit that can be effectively executed, and is correlated also with the noise affecting each device.
@@ -391,21 +410,27 @@ The simulation data for this work was created by simulating the identical quantu
 The simulators provided by the Qiskit SDK @Qiskit2024 were used.
 
 === Circuit <circuit>
+//The circuits used in this thesis are taken from Martina et al. in _Noise Fingerprints in Quantum Computers_, 2022. 
+The circuit designs implemented within this thesis are derived from the work of Martina et al., as documented in their 2022 publication, "Noise Fingerprints in Quantum Computers".//TODO: correct citation?
+The different circuits get generated by the algorithm described in @circuit-algorithm.
+The idea behind the quantum circuit is to simulate quantum transport dynamics in a quantum computer.
+A quantum particle is initiated in state $|0000 angle.r$ and "flows" through the circuit via the influence of various quantum gates, including CNOT and Toffoli gates @martinaLearningQuantumNoiseFingerprint2023.
+After the first two Hadamard gates and the CNOT gate, qubits $q_0$ and $q_2$ are entangled in the bell state.
+Qubits $q_2$ and $q_3$ are used to track the particle's position.
+They can return binary pairs of $00_2$, $01_2$, $10_2$, and $11_2$ first bit corresponding to $q_2$ and second bit to $q_3$ when measured. //TODO: use 00_2 or (0,0)?
+Qubits $q_0$ and $q_1$ are ancilla qubits, with the only purpose of controlling the other qubits.
 
-//TODO: wrap in #figure?
-//TODO: stress that the circuit was taken from another paper, not my own work.
 #algorithm(
-  caption: [Generation of quantum circuts for different measurement steps.],
+  caption: [Generation of quantum circuts for different measurement steps. Code for circuit generation stems from Martina et al. in _Noise Fingerprints in Quantum Computers_, 2022], //TODO: correctly cited?
   pseudocode(
     line-numbering: false,
-    //TODO: Require IBM-Q backend or simulator?
     [*Ensure:* $|0 angle.r_i forall i in 0,...,3$], ind,
-      [*for* steps *do*], ind,
-        [*if* step mod 3 is 0 *then*], ind, //TODO: wie schreibt man das korrekt?
+      [*for* step from 0 to $k$ *do* #comment[$k$ is the measurement step. (e.g. $k=1$ creates circuit in @circuit-measurement-step-1)]], ind, 
+        [*if* $"step" mod 3 = 0$ *then*], ind,
           [$0 arrow.l H$ #comment[Hadamard gate on the $0^"th"$ qubit]],
           [$1 arrow.l H$],
           [$"CNOT"(0 arrow.r 2)$ #comment[Controlled NOT gate on the $2^"nd"$ qubit conditioned on the qubit 0]], ded,
-        [*else if* step mod 3 is 1 *then*], ind,
+        [*else if* $"step" mod 3 = 1$ *then*], ind,
           [$"CNOT"(1 arrow.r 3)$],
           [$0 arrow.l X$ #comment[X gate on the $0^"th"$ qubit]], ded,
         [*else*], ind,
@@ -413,17 +438,28 @@ The simulators provided by the Qiskit SDK @Qiskit2024 were used.
           [$"Toffoli"(0,1 arrow.r 2)$ #comment[Toffoli gate on the $2^"nd"$ qubit conditioned on the qubits 0,1]], ded,
         [*end if*], ded,
       [*end for*],
-      [Measure(2) #comment[Projective measurement of the $2^"nd"$ qubit]],
+      [Measure(2) #comment[Projective measurement of the $2^"nd"$ qubit]], 
       [Measure(3)],
       [*return* 8000 shots from the measurements],
   )
 ) <circuit-algorithm>
 
-The entire circuit looks like @circuit-measurement-step-9.
-In order to measure the circuit at different points, this circuit is executed until different points (steps), and a measurement of the qubits $q_2$ and $q_3$ is carried out after each step.
-Due to the wavefunction collapse, a new circuit has to be executed and measured for each measurement step.
+In order to measure the circuit at different points, @circuit-algorithm is executed with $k=1$ up to $k=9$, which results in 9 measurement points for this ciruit.
 The circuit corresponding to the first measurement step can be seen in @circuit-measurement-step-1. 
-The circuit used for the last measurement step (step 9) can be seen in @circuit-measurement-step-9. 
+The entire circuit, corresponding to measurement step 9, is depicted in @circuit-measurement-step-9.
+Measurements are performed by applying the Pauli Z operator on qubits $q_2$ and $q_3$ after each execution, see the end section of @circuit-algorithm.
+Due to the wavefunction collapse, the circuit has to be regenerated, reexecuted, and measured for each measurement step $k$.
+Consequently, this approach does not employ repeated measurements as utilized in a quantum monitoring protocol or within the framework of Zeno quantum dynamics @gherardiniErgodicityRandomlyPerturbed2017 @fischerObservationQuantumZeno2001 @schaferExperimentalRealizationQuantum2014.
+For a single measurement step with $k=1$, all four qubits ($q_0$, $q_1$, $q_2$, and $q_3$) are each initialized in state $|0 angle.r$.
+Measuring the circuit in this state would result in $00_2$.
+Upon initialization, two Hadamard gates are applied to qubits $q_0$ and $q_1$, as documented by @circuit-measurement-step-1.
+Following this, a CNOT gate operation is executed with $q_0$ as controll qubit, operating on $q_2$.
+Subsequently, the measurement of qubit $q_2$ yields a binary outcome of 0 or 1 with equal probability, reflecting a 50% chance for each outcome, while the measurement of $q_3$ still returns 0.
+Of course, these results will only occur under ideal circumstances.
+On current NISQ devices noise falsifies these measurement outcomes.
+The goal of the approach in this thesis is to make use of this noise in order to distinguish between quantum computers and simulators based on their noise profile.
+With an increasing number of gates, the amount of noise slowly accumulates. //TODO: add more information? this is one of the reasons, why we measure at different steps in the circuit.
+
 All circuits for measurement steps in between are in the appendix (see @appendix).
 #figure(
   image("images/walker-step-1.svg", height: 20%),
@@ -435,98 +471,141 @@ All circuits for measurement steps in between are in the appendix (see @appendix
   caption: "Circuit which corresponds to measurement step 9. Complete circuit with four qubits. Only the lower two qubits are being measured at the end. Grey separators mark points at which measurements can take place."
 ) <circuit-measurement-step-9>
 #v(10pt)
-
-This results in 9 measurement points for this circuit.
 Each circuit run has been performed with 8000 shots.
-The measurement results of one circuit run with 8000 shots look like @measurement-data-table.
+The data gathered from measuring one circuit run at 9 different steps with 8000 shots look like @measurement-data-table.
 
 #figure(
   table(
     columns: (auto, auto, auto, auto, auto, auto),
     align: horizon,
-    [*Shot*], [*Step 1*], [*step 2*], [*step 3*], [*...*], [*step 9*],
+    [*Shot*], [*Step 1*], [*Step 2*], [*Step 3*], [*...*], [*Step 9*],
     [1], [$10_2$], [$00_2$], [$11_2$], [...], [$00_2$],
     [2], [$11_2$], [$01_2$], [$10_2$], [...], [$11_2$],
     [...], [...], [...], [...], [...], [...],
     [8000], [$01_2$], [$00_2$], [$00_2$], [...], [$10_2$]
   ), 
-  caption: "Measurement examples for one run with 8000 shots. There exist 250 measurement tables for each quantum computer."
+  caption: "Measurement examples for one run with 8000 shots. There exist 250 measurement tables for each quantum computer and simulator used in this thesis." //TODO: improve caption
 ) <measurement-data-table>
 
 === Executions on Simulator
 Seven different Qiskit simulators are utilized to obtain the simulated data.
-//TODO: more details on noise -> what noise, which magnitude
-Only one backend calculates a noise-free result because the noise causes the variance, but different simulator implementations deliver similar results.
+Only one backend calculates a noise-free result because different simulator implementations without noise deliver similar results.
 In order to obtain a comparable order of magnitude of simulated data to that of QC-generated data, six additional simulators with noise are used.
-All six backends are each utilizing a different noise model based on calibration data from real IBM quantum computers @Fake_provider.
+All six backends are each utilizing a different noise model based on calibration data collected from real IBM quantum computers @Fake_provider.
 The following fake backends were used: Vigo, Athens, Santiago, Lima, Belem, Cairo.
-// TODO ist das als Begründung ok?
 Three of these fake backends are based on configurations of quantum computers which were used for creating training data in order to account for a adversarial cloud provider trying to mimic some specific quantum computer.
+The noise introduced in these simulators accumulates from different factors.
+The probability for a readout error for each simulator is visualized in @simulator-readout-error.
+These errors vary even within the same simulator for different qubits.
+#figure(
+ cetz.canvas({
+  import cetz.chart
+
+  let simulator_readout_error_data = (
+    ([0],0.010099999999999998,0.04139999999999999,0.008499999999999952,0.026100000000000012,0.013299999999999979,0.07509999999999994),
+    ([1],0.011700000000000044,0.03200000000000003,0.007299999999999973,0.020000000000000018,0.014399999999999968,0.022499999999999964),
+    ([2],0.02429999999999999,0.02400000000000002,0.007900000000000018,0.016599999999999948,0.018000000000000016,0.014599999999999946),
+    ([3],0.01529999999999998,0.03400000000000003,0.007099999999999995,0.0515000000000001,0.015600000000000058,0.021500000000000075),
+    ([4],0.02190000000000003,0.02059999999999995,0.012199999999999989,0.057499999999999996,0.009600000000000053,0.033299999999999996)
+  )
+
+  cetz.draw.set-style(legend: (fill: white))
+  chart.barchart(mode: "clustered",
+                y-label: [Qubit],
+                x-label: [Probability for readout error],
+                size: (10, 12),
+                label-key: 0,
+                value-key: (..range(1, 7)),
+                bar-width: 1,
+                x-tick-step: 0.01,
+                bar-style: cetz.palette.new(colors: (rgb("#41bfaa"), rgb("#466eb4"), rgb("#00a0e1"), rgb("#e6a532"), rgb("#d7642c"), rgb("#af4b91"))),
+                simulator_readout_error_data,
+                labels: ([Athens], [Belem], [Cairo], [Lima], [Santiago], [Vigo]),
+                legend: "legend.east")
+}),
+    caption: [Readout error rates for different simulators at their respective qubits. The Cairo simulator has calibration data for 27 qubits, but only 5 are shown to be able to compare the different simulators.]
+) <simulator-readout-error>
+
+Each gate has its own error probabilities as well.
+The error rates of the CNOT gate for each simulator are listed in @simulator-cnot-error-rate.
+
+#figure(
+ cetz.canvas({
+  import cetz.chart
+
+  let simulator_cx_gate_error = (
+  ([Athens],0.011112942844963669),
+  ([Belem],0.016558485595031758),
+  ([Cairo],0.025727626602790654),
+  ([Lima],0.008339674869236618),
+  ([Santiago],0.006299998381426697),
+  ([Vigo],0.012012477900732316),
+  )
+
+  cetz.draw.set-style(legend: (fill: white))
+  chart.barchart(mode: "basic",
+                y-label: [Simulator],
+                x-label: [Probability for CNOT gate error],
+                size: (10, 5),
+                label-key: 0,
+                value-key: 1,
+                x-decimals: 3,
+                x-tick-step: 0.005,
+                bar-style: cetz.palette.new(colors: (rgb("#41bfaa"), rgb("#466eb4"), rgb("#00a0e1"), rgb("#e6a532"), rgb("#d7642c"), rgb("#af4b91"))),
+                simulator_cx_gate_error,
+                )
+}),
+    caption: [Error rates for the CNOT gate in different simulators. Qubit $q_0$ is the controll and $q_1$ is the target qubit for the error rates.]
+) <simulator-cnot-error-rate>
+
+All these different errors accumulate when simulating a quantum circuit.
+Due to the fact, that these error rates stem from the calibration data of actual quantum computers, the overall noise-model is quite complex, but within the error range of real quantum computers. //TODO: is this last sentence good?
 
 == Machine Learning Approaches <machine-learning-approaches>
-//TODO: why machine learning? why not another approach to distinguish between simulator and qc?
-The basic approach makes use of machine learning algorithms to distinguish whether a quantum circuit was executed on a QC or a simulator.
-Different ML algorithms were trained using raw measurement data as a first approach.
-The complete data set for a measurement point (step) over 8000 shots (i.e., 8000 individual values) was used as input in each case.
-The individual steps are considered entirely independently of each other.
-In particular, 8000 input neurons had to be used for the artificial neural net.
+Machine learning stands out as the preferred approach for distinguishing between simulators and quantum computers primarily because it does not necessitate quantum noise modeling nor the control of the quantum circuit with time-dependent pulses @mullerInformationTheoreticalLimits2022.
+This characteristic makes machine learning approaches exceptionally well suited for this task, offering a "black-box" model that can effectively classify based on measurement results without intricate details of the underlying processes.
+Quantum systems have already been succesfully analyzed by machine learning methods .
+Machine learning has already been succesfully utilized to analyze quantum systems @youssryQuantumNoiseSpectroscopy2020 and to efficiently learn quantum noise @harperEfficientLearningQuantum2020.
 
-As a second approach, the data was preprocessed before machine learning algorithms were applied.
-For this purpose, the probability values per step were calculated for the four possible result values ($00_2$, $01_2$, $10_2$, $11_2$).
-Only these probability values are used as input for the ML algorithms.
-When considering a step > 1, the probability values of the previous steps were also used.
-This means that step 1 has four input values, step 2 has 8 (the four unchanged values from step 1 and the four additional probabilities from step 2), step 3 has 12, and so on (see @probability-calculation-table-step-1 and @probability-calculation-table-steps-1-and-2).
-This preprocessing approach is based on the data preparation in @martinaLearningQuantumNoiseFingerprint2023.
+The three machine learning methods used in this thesis are used as classifiers
+$ "Classifier" f: X -> C $
+where $f$ is the machine learning method used.
+The output $C$ consists of two different classes:
+$ C = {0, 1} = {`"Quantum Computer"`, `"Simulator"`} $
+The input data $X$ has been preprocessed to contain the probability distributions per step for the four possible measurement result values ($0$, $1$, $2$, $3$). //TODO: use 00_2, 01_2, ... as measurement results?
+How exactly the input $X$ gets prepared is detailed in the following:
+Three different variables influence the input data, the number of shots $s in NN$ (in this thesis $s = 8000$), the measurement step $k = [1, 9]$, and the window size $w in {t in NN | s mod t = 0}$.
+The measurement step $k$ corresponds with the measurements taken on the $k^"th"$ circuit (for $k=1$, see @circuit-measurement-step-1, etc.) //TODO: etc. ok?
+Initially, the preliminary input data consists of a matrix $M$ containing all measurements at specific measuremnt steps (for one quantum computer/simulator with all measurement steps from 1 up to $k$ performed).
+The matrix row accounts for the shots and the column for the measurement step $k$.
+Therefore, the matrix $M$ has dimension $s times k$.
+The window size $w$ defines, how many rows of $M$ get aggregated together into one row.
+Aggregation is performed by counting, how often each value of $m_(i,j)$ occurs in $w$ rows.
+The resulting matrix $D$ has dimension $s/w times k$.
+Elements in $D$ are ordered tuples consisting of four elements:
+$ d_(i,j) = (c_1, c_2, c_3, c_4) $
+where $c_q$ represents, how often the measurement result $q$ has been counted.
+$ "For" d_(i,j) in.rev c_q = sum_(l = i)^(i + w) bb(1)_q (m_(l,j)) $
+where $bb(1)_q$ is the indicatior function with $bb(1)_q (n) = 1$ and otherwise $bb(1)_q = 0$.
+Afterwards, every value in $D$ gets divided by $w$ for normalization which improves the training of the feedforward neural net and the convolutional neural net due to the smaller numbers: //TODO: improve + add reference?
+$ d_(i,j) = (c_1/w, c_2/w, c_3/w, c_4/w) $
+As last step, each row in the matrix $D$ gets converted into a ordered tuple and added to $X$, the set of inputs:
+$ X = {(d_(i,1), d_(i,2), dots , d_(i,k)) | 1 <= i <= s} $
+Therefore, $X$ is a set of ordered tuples, each consisting of 1 up to 9 orderdt tuples with four values each.
 
-//TODO: formalisieren!! (siehe Feedback)
+The following example with $s = 6$ and $k = 2$ depicts the complete conversion from initial measurement data ($M$) to the input data for the classifier ($X$):
+$ M = mat(1, 2; 1, 1; 3, 3; 1, 0; 1, 2; 1, 1) $
+With $w = 3$ we get: (aggregation and normalization in one step)
+$ D = mat((0, 2/3, 0, 1/3), (0, 1/3, 1/3, 1/3); (0, 1, 0, 0), (1/3, 1/3, 1/3, 0)) $ //TODO: maybe highlight with color what gets aggregated to what.
+In the tuple $d_(1,1) = (0, 2/3, 0, 1/3)$, the first $0$ means "zero of the first $w$ (in this case 3) shots contained the measurement result of $0$". \
+This results in:
+$ X = {((0, 2/3, 0, 1/3), (0, 1/3, 1/3, 1/3)), ((0, 1, 0, 0), (1/3, 1/3, 1/3, 0))} $
 
-// TODO Figure schöner machen.
-#figure(
-  grid(
-    columns: 1,
-    gutter: 5mm,
-    table(
-      columns: (auto, auto, auto),
-      align: horizon,
-      [*Shot*], [*Step 1*], [*...*],
-      [1], [$10_2$], [...], 
-      [2], [$11_2$], [...], 
-      [3], [$11_2$], [...],
-      [4], [$01_2$], [...], 
-      [5], [$11_2$], [...], 
-    ), 
-    $ text("Extracted:") [ overbrace([ underbrace(0.0, "Probability for " 00_2 "in Step 1"), 0.2, 0.2, 0.6], "Probabilities for Step 1"), ...] $,
-  ),
-  caption: "Visualization how the probabilities used as input for the machine learning algorithms are getting extracted from the measurements, including only the first measurement step."
-) <probability-calculation-table-step-1>
+For $k=3$, each ordered tuple $x in X$ would contain 3 different sub-tuples such that $x = (x_1, x_2, x_3)$.
+$X$ can contain the probability distribution-data accumulated from multiple runs from different quantum computers or simulators.
 
-#figure(
-  grid(
-    columns: 1,
-    gutter: 5mm,
-    table(
-      columns: (auto, auto, auto, auto),
-      align: horizon,
-      [*Shot*], [*Step 1*], [*Step 2*], [*...*],
-      [1], [$10_2$], [$00_2$], [...], 
-      [2], [$11_2$], [$00_2$], [...], 
-      [3], [$11_2$], [$11_2$], [...],
-      [4], [$01_2$], [$01_2$], [...], 
-      [5], [$11_2$], [$11_2$], [...], 
-    ), 
-    $ text("Extracted:") [overbrace([ underbrace(0.0, "Probability for " 00_2 "in Step 1"), 0.2, 0.2, 0.6], "Probabilities for Step 1"), overbrace([0.4, 0.2, 0.0, 0.4], "Probabilities for Step 2"), ...] $,
-  ),
-  caption: "Visualization how the probabilities used as input for the machine learning algorithms are getting extracted from the measurements, including the first and the second measurement steps."
-) <probability-calculation-table-steps-1-and-2>
-
-This second approach also examines whether the 8000 shots can be meaningfully divided into smaller packages.
-This has the advantage that more test and training data packages can be formed from the data available for this work.
-The number of shots which were combined into one package containing the probability shall be refered to as 'window size'.
 In the following machine learning approaches, in case no window size is mentioned, these models where trained and evaluated with data preprocessed with a window size of 2000.
 This value has been taken from @svm-window-size-vs-step-range, @fnn-window-size-vs-step-range, and @cnn-window-size-vs-step-range because it shows a high accuracy even with a low amount of measurement steps accross models, allowing for an easier comparison.
-The three following machine learning models have been chosen because the SVM has been used in @martinaLearningNoiseFingerprint2022 and had high accuracy distinguishing different quantum computers.
-The feedforward neural net is a standard neural net model which is simple but effective in learning patterns in data.
-The last model, the CNN, has been chosen due to its ability to recognize patterns with its sliding filters.
 
 === Support Vector Machine
 
@@ -540,6 +619,7 @@ The selection process for the SVM algorithm is similar to @martinaLearningNoiseF
 === Feedforward Neural Net <approach-ffnn>
 //TODO: add architecture diagram
 //TODO: add training curves.
+//TODO: mention keras + tensorflow used
 The feedforward neural net was trained on 80% of the dataset, 20% were used for evaluationg the accuracy of the model.
 The input layer of the neural network was designed to be variable, accommodating between 4 to 36 neurons, depending on the number of measurement steps that are included in the dataset.
 This flexibility was needed to be able to compare different amounts of measurement steps, see @fnn-window-size-vs-step-range.
@@ -593,6 +673,7 @@ The loss during training was quantified using binary cross-entropy, the standard
 )
 
 //TODO: mention early stop (after epoch 5 when acc over 99.9%)
+//TODO: mention early stop after no improvement in val_loss for 3 epochs
 
 #figure(
   grid(
@@ -644,6 +725,7 @@ A convolutional neural network model was developed, utilizing a dataset divided 
 The input layer of the model was designed to be adaptable, accommodating a variable number of neurons ranging from 4 to 36, depending on the number of measurement steps incorporated in the dataset, similar to @approach-ffnn.
 The first layer contains 30 1-dimensional convolutional filters, each with a kernel size of 3, using the Rectified Linear Unit (ReLU) activation function.
 //TODO: used relu function because it yielded higher accuracy when comparing between relu, sigmoid and than with keras tuner.
+//TODO: better explain, how the keras tuner was used.
 Following the convolutional layer, a 1-dimensional max pooling operation was applied, reducing the dimensionality of the data.
 After the max pooling, the network architecture includes a flattening step, transforming the pooled feature maps into a single, linear vector.
 This flattened vector was then fed into two additional hidden layers, comprising 64 and 32 neurons, each employing the ReLU activation function to further process and refine the features extracted from the input data.
@@ -697,6 +779,7 @@ This setup is particularly suited for binary classification tasks, as it produce
 )
 
 //TODO: mention early stop (after epoch 5 when acc over 99.9%)
+//TODO: mention early stop after no improvement in val_loss for 3 epochs
 
 #figure(
   grid(
@@ -784,6 +867,9 @@ When excluding simulators, the number of excluded simulator backends has a great
 Excluding only one simulator backend results in at least 30% accuracy accross all models at measurement step one.
 The classification task is only binary classification, meaning the models are performing worse than making random guesses.
 Therefore it seems especially crucial to have multiple measurement steps when dealing with unseen data.
+
+//TODO: combine data into single diagram for easier comparison? -> only show window sizes 5, 50 and 2000 (but for each approach).
+// maybe add tables for step range vs window size only to appendix?
 
 == Support Vector Machine
 For the SVM, window sizes start from 50 (and not from 5 like the other models), because training the SVM with such small window sizes took too much time.
@@ -1215,37 +1301,37 @@ When taking the limitations shown in @limitations into account, this approach ca
 
 = Appendix <appendix>
 #figure(
-  image("images/walker-step-2.svg"),
+  image("images/walker-step-2.svg", width: 40%),
   caption: "Circuit which corresponds to measurement step 2."
 ) <circuit-measurement-step-2>
 #v(10pt)
 #figure(
-  image("images/walker-step-3.svg"),
+  image("images/walker-step-3.svg", width: 45%),
   caption: "Circuit which corresponds to measurement step 3."
 ) <circuit-measurement-step-3>
 #v(10pt)
 #figure(
-  image("images/walker-step-4.svg"),
+  image("images/walker-step-4.svg", width: 50%),
   caption: "Circuit which corresponds to measurement step 4."
 ) <circuit-measurement-step-4>
 #v(10pt)
 #figure(
-  image("images/walker-step-5.svg"),
+  image("images/walker-step-5.svg", width: 60%),
   caption: "Circuit which corresponds to measurement step 5."
 ) <circuit-measurement-step-5>
 #v(10pt)
 #figure(
-  image("images/walker-step-6.svg"),
+  image("images/walker-step-6.svg", width: 70%),
   caption: "Circuit which corresponds to measurement step 6."
 ) <circuit-measurement-step-6>
 #v(10pt)
 #figure(
-  image("images/walker-step-7.svg"),
+  image("images/walker-step-7.svg", width: 80%),
   caption: "Circuit which corresponds to measurement step 7."
 ) <circuit-measurement-step-7>
 #v(10pt)
 #figure(
-  image("images/walker-step-8.svg"),
+  image("images/walker-step-8.svg", width: 90%),
   caption: "Circuit which corresponds to measurement step 8."
 ) <circuit-measurement-step-8>
 #v(10pt)
