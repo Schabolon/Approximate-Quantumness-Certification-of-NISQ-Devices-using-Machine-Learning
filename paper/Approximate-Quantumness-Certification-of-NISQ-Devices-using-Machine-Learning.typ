@@ -37,6 +37,9 @@
 //Optional: perform Feature importance visualization??
 //Optional: add confustion matrix?
 //Optional: additionally add training curves to trainings performance of fnn and cnn.
+//Optional: have a look, how well the adversarial samples perform on the two other classifiers
+//Optional: Perturbation Magnitude (e.g., L0, L2, or L∞ norms) 
+//Optional: Confidence Score Changes
 
 #align(center, text("Abstract", weight:"bold"))
 #pad(left: 1.1cm, right: 1.1cm, [
@@ -563,7 +566,7 @@ Seven different Qiskit simulators are utilized to obtain the simulated data.
 Only one backend calculates a noise-free result because different simulator implementations without noise deliver similar results.
 In order to obtain a comparable order of magnitude of simulated data to that of QC-generated data, six additional simulators with noise are used.
 All six backends are each utilizing a different noise model based on calibration data collected from real IBM quantum computers @Fake_provider.
-The following fake backends were used: Vigo, Athens, Santiago, Lima, Belem, Cairo.
+The following fake backends were used: Fake_Vigo, Fake_Athens, Fake_Santiago, Fake_Lima, Fake_Belem, and Fake_Cairo.
 Three of these fake backends are based on configurations of quantum computers which were used for creating training data in order to account for a adversarial cloud provider trying to mimic some specific quantum computer.
 The noise introduced in these simulators accumulates from different factors.
 The probability for a readout error for each simulator is visualized in @simulator-readout-error.
@@ -591,7 +594,7 @@ These errors vary even within the same simulator for different qubits.
                 x-tick-step: 0.01,
                 bar-style: cetz.palette.new(colors: (rgb("#41bfaa"), rgb("#466eb4"), rgb("#00a0e1"), rgb("#e6a532"), rgb("#d7642c"), rgb("#af4b91"))),
                 simulator_readout_error_data,
-                labels: ([Athens], [Belem], [Cairo], [Lima], [Santiago], [Vigo]),
+                labels: ([Fake_Athens], [Fake_Belem], [Fake_Cairo], [Fake_Lima], [Fake_Santiago], [Fake_Vigo]),
                 legend: "legend.east")
 }),
     caption: [Readout error rates for different simulators at their respective qubits. The Cairo simulator has calibration data for 27 qubits, but only 5 are shown to be able to compare the different simulators.]
@@ -605,12 +608,12 @@ The error rates of the CNOT gate for each simulator are listed in @simulator-cno
   import cetz.chart
 
   let simulator_cx_gate_error = (
-  ([Athens],0.011112942844963669),
-  ([Belem],0.016558485595031758),
-  ([Cairo],0.025727626602790654),
-  ([Lima],0.008339674869236618),
-  ([Santiago],0.006299998381426697),
-  ([Vigo],0.012012477900732316),
+  ([Fake_Athens],0.011112942844963669),
+  ([Fake_Belem],0.016558485595031758),
+  ([Fake_Cairo],0.025727626602790654),
+  ([Fake_Lima],0.008339674869236618),
+  ([Fake_Santiago],0.006299998381426697),
+  ([Fake_Vigo],0.012012477900732316),
   )
 
   cetz.draw.set-style(legend: (fill: white))
@@ -739,7 +742,7 @@ In order to reduce training time, after 5 consecutive epochs with no improvement
 Especially when training with measurement steps $k >= 3$, this early stopping was important, because the highest accuracy has been reached almost after the first epoch, see @fnn-training-step-5.
 Extending the training beyond 100 epochs did not significantly improve accuracy as can be seen in @fnn-training-step-1.
 After training, the model's accuracy was evaluated by using the previously unseen test data.
-This configuration led to the model's successful differentiation between the two backend types, see @evaluation-ffnn.
+This configuration led to the model's successful differentiation between the two backend types, see @evaluation.
 
 #figure(
   grid(
@@ -884,7 +887,7 @@ The model was trained for a maximum of 100 epochs, with further epochs skipped a
 Early stopping was essential when training with measurement steps $k >= 3$, as the highest accuracy was usually achieved after the first epoch, see @cnn-training-step-5.
 Extending training beyond 100 epochs did not significantly improve accuracy, see @cnn-training-step-1.
 After training, the model's accuracy was assessed using previously unseen validation data.
-This setup enabled successful differentiation between the two backend types, as described in @evaluation-cnn.
+This setup enabled successful differentiation between the two backend types, as described in @evaluation.
 
 #figure(
   grid(
@@ -1150,7 +1153,7 @@ Overall, all three models reach high accuracies when using all 9 measurement ste
 #let svm_exclude_single_qc = csv("data/svm_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 10pt,
+    size: 9pt,
     tablex(
       columns: 10,
       align: center,
@@ -1174,7 +1177,7 @@ Overall, all three models reach high accuracies when using all 9 measurement ste
 #let ann_exclude_single = csv("data/neural_net_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 10pt,
+    size: 9pt,
     tablex(
       columns: 10,
       align: center,
@@ -1198,7 +1201,7 @@ Overall, all three models reach high accuracies when using all 9 measurement ste
 #let cnn_exclude_single = csv("data/cnn_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 10pt,
+    size: 9pt,
     tablex(
       columns: 10,
       align: center,
@@ -1252,34 +1255,48 @@ This high level of accuracy, despite the exclusion of multiple QCs, underscores 
       plot.add(cnn, label: [CNN])
     })
   }),
-  caption: [Dataset with a specific number of QCs excluded. The accuracy depicted is for models trained on data consisting of all 9 measurement steps.] //TODO:
+  caption: [Dataset with the given number of QCs excluded. Only the measurements from the excluded QCs were used as testset. The accuracy depicted is for models trained on data consisting of all 9 measurement steps.]
 ) <accuracy-multiple-excluded-qcs>
 
-The first comparison of accuracy for different window size and measurement step ranges shows how an increased number of measurement steps is increasing the accuracy.
-Especially when training only on a combination of the first three measurement steps and using window sizes of 2000, every model is able to reach an accuracy of 98% or above.
-As explained in @machine-learning-approaches for the rest of the evaluation a window size of 2000 was chosen.
+When excluding only a single simulator from the training dataset and using exclusively the measurements generated by the excluded simulator as testset, the performance for only the first measurement step is highly variable, similar to the exclusion of one quantum computer. 
+The Aer Simulator, Fake Santiago, and Fake Cairo get misclassified when using only one measurement step accross all three models.
+This could be because these simulators have a small (or in case of the Aer Simulator no) noise perturbation.
+The Fake Santiago and Fake Cairo simulators for example have quite low qubit readout errors (see @simulator-readout-error).
+The models have an almost perfect accuracy when using the first four measurement steps or more.
+Overall, all three models reach perfect accuracies of 1.0 when using all 9 measurement steps (@svm-single-simulator-excluded, @fnn-single-simulator-excluded, @cnn-single-simulator-excluded).
 
-The second and third tables show how well the different models can generalize to unseen quantum computers.
-Even when four different quantum computers are excluded from the training set, all three models achieve accuracy of more than 90% when taking all 9 measurement steps into account.
-The fourth and fifth tables display the accuracy when excluding different simulator backends.
-When including measurement steps 1 up to 3, all three models are classifying more than 93% of test samples correctly.  
-The tables excluding the quantum computers or simulator backends are relevant for the usecase when trying to safeguard against adversarial quantum cloud providers.
-In this case, most of the simulators and quantum computers will be unknown.
-When using only one measurement step, accuracy values are on average below 20% for all models, regardless of the number of excluded quantum computers.
-When excluding simulators, the number of excluded simulator backends has a greater influence on the output accuracy, compared to excluded quantum computers. 
-Excluding only one simulator backend results in at least 30% accuracy accross all models at measurement step one.
-The classification task is only binary classification, meaning the models are performing worse than making random guesses.
-Therefore it seems especially crucial to have multiple measurement steps when dealing with unseen data.
-
-
-
-== Support Vector Machine
-#let svm_exclude_single_qc = csv("data/svm_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
+#let svm_exclude_single_simulator = csv("data/svm_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
-  tablex(
-    columns: 10,
-    align: center,
-    map-cells: cell => {
+  text(
+    size: 9pt,
+    tablex(
+      columns: 10,
+      align: center,
+      map-cells: cell => {
+        if cell.x >= 1 and cell.y >= 2 {
+          cell.content = {
+            let value = float(cell.content.text)
+            let text-color = gradient.linear(red, green).sample(value * 100%)
+            return (..cell, fill: text-color)
+          }
+        }
+        return cell
+      },
+      [],colspanx(9)[*Measurement Step Ranges*],[*Excluded Simulator*],..svm_exclude_single_simulator.flatten().slice(1,)
+    )
+  ),
+  caption: "Accuracy for the SVM. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used as testset.",
+  kind: table,
+) <svm-single-simulator-excluded>
+
+#let fnn_exclude_single_simulator = csv("data/neural_net_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
+#figure(
+  text(
+    size: 9pt,
+    tablex(
+      columns: 10,
+      align: center,
+        map-cells: cell => {
       if cell.x >= 1 and cell.y >= 2 {
         cell.content = {
           let value = float(cell.content.text)
@@ -1289,209 +1306,68 @@ Therefore it seems especially crucial to have multiple measurement steps when de
       }
       return cell
     },
-    [],colspanx(9)[*Step Ranges*],[*Excluded QC*],..svm_exclude_single_qc.flatten().slice(1,)
+    [],colspanx(9)[*Measurement Step Ranges*],[*Excluded Simulator*],..fnn_exclude_single_simulator.flatten().slice(1,)
+    )
   ),
-  caption: "A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used as test dataset.",
+  caption: "Accuracy for the FNN. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used as testset.",
   kind: table,
-)
-
-#let svm_exclude_multiple_qcs = csv("data/svm_exclude_multiple_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*\# of Excluded QCs*],..svm_exclude_multiple_qcs.flatten().slice(1,)
-  ),
-  caption: "Excludes at least one and up to four quantum computers and uses exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated.",
-  kind: table,
-)
-
-#let svm_exclude_single_simulator = csv("data/svm_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*Excluded Simulator*],..svm_exclude_single_simulator.flatten().slice(1,)
-  ),
-  caption: "A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used for evaluating the accuracy.",
-  kind: table,
-)
-
-#let svm_exclude_multiple_simulators = csv("data/svm_exclude_multiple_simulators_vs_step_ranges_all_other_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*\# of Excluded Simulators*],..svm_exclude_multiple_simulators.flatten().slice(1,)
-  ),
-  caption: "Excludes at least one and up to four simulator backends and uses exclusively measurements generated by the excluded simulators for evaluating the accuracy. Every possible permutation of simulator backends gets excluded (the order is not taken into account) and the average of all runs is calculated.",
-  kind: table,
-)
-
-== Feedforward Neural Net <evaluation-ffnn>
-
-
-#let ann_exclude_multiple = csv("data/neural_net_exclude_multiple_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*\# of Excluded QCs*],..ann_exclude_multiple.flatten().slice(1,)
-  ),
-  caption: "Excludes at least one and up to four quantum computers and uses exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated.",
-  kind: table,
-)
-
-#let ann_exclude_single_simulator = csv("data/neural_net_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*Excluded Simulator*],..ann_exclude_single_simulator.flatten().slice(1,)
-  ),
-  caption: "A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used for evaluating the accuracy.",
-  kind: table,
-)
-
-#let ann_exclude_multiple_simulators = csv("data/neural_net_exclude_multiple_simulators_vs_step_ranges_all_other_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*\# of Excluded Simulators*],..ann_exclude_multiple_simulators.flatten().slice(1,)
-  ),
-  caption: "Excludes at least one and up to four simulator backends and uses exclusively measurements generated by the excluded simulators for evaluating the accuracy. Every possible permutation of simulator backends gets excluded (the order is not taken into account) and the average of all runs is calculated.",
-  kind: table,
-)
-
-== Convolutional Neural Net <evaluation-cnn>
-
-
-#let cnn_exclude_multiple = csv("data/cnn_exclude_multiple_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
-#figure(
-  tablex(
-    columns: 10,
-    align: center,
-      map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*\# of Excluded QCs*],..cnn_exclude_multiple.flatten().slice(1,)
-  ),
-  caption: "Excludes at least one and up to four quantum computers and uses exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated.",
-  kind: table,
-)
+) <fnn-single-simulator-excluded>
 
 #let cnn_exclude_single_simulator = csv("data/cnn_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
-  tablex(
-    columns: 10,
-    align: center,
+  text(
+    size: 9pt,
+    tablex(
+      columns: 10,
+      align: center,
       map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*Excluded Simulator*],..cnn_exclude_single_simulator.flatten().slice(1,)
+        if cell.x >= 1 and cell.y >= 2 {
+          cell.content = {
+            let value = float(cell.content.text)
+            let text-color = gradient.linear(red, green).sample(value * 100%)
+            return (..cell, fill: text-color)
+          }
+        }
+        return cell
+      },
+      [],colspanx(9)[*Step Ranges*],[*Excluded Simulator*],..cnn_exclude_single_simulator.flatten().slice(1,)
+    )
   ),
-  caption: "A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used for evaluating the accuracy.",
+  caption: "Accuracy for the CNN. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used for evaluating the accuracy.",
   kind: table,
-)
+) <cnn-single-simulator-excluded>
 
-#let cnn_exclude_multiple_simulators = csv("data/cnn_exclude_multiple_simulators_vs_step_ranges_all_other_backends_combined.csv")
+Excluding every possible combination of 4 simulators without considering the order in which they are excluded, shows that when taking measurement steps from 1 up to 4 into account, all models have an accuracy of over 99.3%.
+The accuracy at measurement steps from 1 up to 9 is 100% accross all models, see @exclude-four-simulators. 
+Therefore, the models have either better abstracted an general notion of simulator noise, or the simulators in the dataset were easier to classify compared to the quantum computers.
+
+#let exclude_4_simulators = csv("data/exclude_four_simulators_vs_step_range_all_models.csv")
 #figure(
-  tablex(
-    columns: 10,
-    align: center,
+  text(
+    size: 9pt,
+    tablex(
+      columns: 10,
+      align: center,
       map-cells: cell => {
-    if cell.x >= 1 and cell.y >= 2 {
-      cell.content = {
-        let value = float(cell.content.text)
-        let text-color = gradient.linear(red, green).sample(value * 100%)
-        return (..cell, fill: text-color)
-      }
-    }
-    return cell
-  },
-    [],colspanx(9)[*Step Ranges*],[*\# of Excluded Simulators*],..cnn_exclude_multiple_simulators.flatten().slice(1,)
+        if cell.x >= 1 and cell.y >= 2 {
+          cell.content = {
+            let value = float(cell.content.text)
+            let text-color = gradient.linear(red, green).sample(value * 100%)
+            return (..cell, fill: text-color)
+          }
+        }
+        return cell
+      },
+      [],colspanx(9)[*Step Ranges*],[*Model*],..exclude_4_simulators.flatten().slice(1,)
+    )
   ),
-  caption: "Excludes at least one and up to four simulator backends and uses exclusively measurements generated by the excluded simulators for evaluating the accuracy. Every possible permutation of simulator backends gets excluded (the order is not taken into account) and the average of all runs is calculated.",
+  caption: "Four simulators excluded.", //TODO:
   kind: table,
-)
+) <exclude-four-simulators>
+
 
 == Adversarial Machine Learning with Fast Gradient Sign Method <evaluation-fgsm>
-//TODO: "defense" against fgsm complicated, because distribution values actually approach real quantum computer values. Not even a human could correcly determin the class (im gegensatz su fgsm bei bildern).
+//TODO: "defense" against fgsm complicated, because distribution values actually approach real quantum computer values. Not even a human could correcly determin the class (im gegensatz zu fgsm bei bildern).
 By converting 1400 samples generated by simulators into adversarial samples in such a fasion that they are recognized as 'generated by a quantum computer'.
 The result can be seen in @adversarial-accuracy.
 When epsilon is zero the adversarial sample equals the original input sample.
@@ -1518,56 +1394,27 @@ The graph shows that with increased $epsilon$ values, the accuracy gets worse du
   kind: table,
 ) <adversarial-accuracy>
 
-// TODO: alle histogramme zeigen, oder nur eine Auswahl?
-#text(blue)[TODO: alle histogramme zeigen, oder nur eine Auswahl?]
-
-The histograms in @adversarial-samples-histogram-measurement-step-1 to  @adversarial-samples-histogram-measurement-step-8 visualize the probabilities for each measurement result at different measurement steps in the quantum circuit.
+The histograms in @adversarial-samples-histogram-measurement-step-1 to  @adversarial-samples-histogram-measurement-step-9 visualize the probabilities for each measurement result at different measurement steps in the quantum circuit.
 In most cases an increase of $epsilon$ leads to a probability distribution which is closer to the distribution of a quantum computer.
 
 #figure(
-  image("images/adversarial_samples_histogram/legend.svg"),
-  caption: "Legend for the following figures depicting histograms."
-) <adversarial-samples-histogram-legend>
-#figure(
   image("images/adversarial_samples_histogram/hist_walker_step_0_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the first measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+  caption: [Comparison of different epsilon values for the first measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well.]
 ) <adversarial-samples-histogram-measurement-step-1>
 #figure(
-  image("images/adversarial_samples_histogram/hist_walker_step_1_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the second measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
-) <adversarial-samples-histogram-measurement-step-2>
-#figure(
-  image("images/adversarial_samples_histogram/hist_walker_step_2_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the third measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
-) <adversarial-samples-histogram-measurement-step-3>
-#figure(
-  image("images/adversarial_samples_histogram/hist_walker_step_3_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the fourth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
-) <adversarial-samples-histogram-measurement-step-4>
-#figure(
-  image("images/adversarial_samples_histogram/hist_walker_step_4_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the fifth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
-) <adversarial-samples-histogram-measurement-step-5>
-#figure(
-  image("images/adversarial_samples_histogram/hist_walker_step_5_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the sixth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
-) <adversarial-samples-histogram-measurement-step-6>
-#figure(
-  image("images/adversarial_samples_histogram/hist_walker_step_6_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the seventh measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
-) <adversarial-samples-histogram-measurement-step-7>
-#figure(
-  image("images/adversarial_samples_histogram/hist_walker_step_7_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the eighth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
-) <adversarial-samples-histogram-measurement-step-8>
-#figure(
   image("images/adversarial_samples_histogram/hist_walker_step_8_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the ninth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well. For the legend see @adversarial-samples-histogram-legend]
+  caption: [Comparison of different epsilon values for the ninth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well.]
 ) <adversarial-samples-histogram-measurement-step-9>
 
 It is possible for a malevolent quantum cloud provider to perform such an adversarial attack.
 Even though, it is quite hard to pull off due to the fact, that FGSM is a white-box attack.
 As a result, the neural net which should differenciate between simulator and quantum computer has to be known by the malevorent quantum cloud provider.
+
+== Discussion
+//Overall for the classification part: the FNN seems to have a slight advantage compared to the CNN and SVM when classifying unknown quantum computers.
+// for unknown simulators, all three models perform equal with 100% accuracy.
+
+//TODO: discussion for fgsm.
 
 == Limitations <limitations>
 The main limitation of this work is, that classification can only be performed with the circuit from  @circuit.
