@@ -40,10 +40,11 @@
 //Optional: have a look, how well the adversarial samples perform on the two other classifiers
 //Optional: Perturbation Magnitude (e.g., L0, L2, or L∞ norms) 
 //Optional: Confidence Score Changes
+//Optional: exclude simulator AND QC.
 
 #align(center, text("Abstract", weight:"bold"))
 #pad(left: 1.1cm, right: 1.1cm, [
-  Cloud quantum computing is crucial for developing innovative quantum circuits, but it also presents a potential threat model when using cloud quantum computing services.
+  Cloud quantum computing is crucial for developing innovative quantum circuits but also presents a potential threat model when using cloud quantum computing services.
   In this scenario, the cloud quantum provider may act as an adversary by advertising the use of quantum computers to clients while using cheaper simulators to return results.
   This thesis demonstrates that it is possible to distinguish whether a quantum circuit has been executed by a simulator (possibly with noise) or a quantum computer with high accuracy.
   Three machine learning techniques are being utilized: a support vector machine, a feedforward neural net, and a convolutional neural net.
@@ -94,8 +95,8 @@ Finally, results are sent back to the user.
 In this cloud-based scenario, the user has to trust the cloud-based quantum provider to execute the quantum circuit on the advertised quantum hardware.
 An adversarial cloud provider could claim to have a quantum computer backend, but all circuits are just simulated on a classical computer.
 This scenario primarily affects small circuits up to 40 qubits due to the exponential growth in dimensions, rendering larger circuits impractical for computation with classical hardware.
-When utilizing a statevector for simulating a quantum circuit without any restrictions, $8 dot 2^n$ bytes are needed to store the statevector, $8$ because each amplitude can be stored as a complex float (4 bytes real and 4 bytes imaginary, single precision).
-See @memory-needed-for-simulating-n-qubits for a visualization of the exponential memory growth when simulationg a growing number of qubits.
+When utilizing a state vector for simulating a quantum circuit without any restrictions, $8 dot 2^n$ bytes are needed to store the state vector, $8$ because each amplitude can be stored as a complex float (4 bytes real and 4 bytes imaginary, single precision).
+See @memory-needed-for-simulating-n-qubits for a visualization of the exponential memory growth when simulating a growing number of qubits.
 
 #figure(
   cetz.canvas(length: 1cm, {
@@ -109,7 +110,7 @@ See @memory-needed-for-simulating-n-qubits for a visualization of the exponentia
       x-min: 1,
       y-tick-step: none, 
       y-ticks: ((0, 0), (5, [$2^5$]), (10, [$2^10$]), (15, [$2^15$]), (20, [$2^20$]), (25, [$2^25$]), (30, [$2^30$]), (35, [$2^35$]), (40, [$2^40$]), (45, [$2^45$]), (50, [$2^50$]), (55, [$2^55$])),
-      y-label: "Bytes to store statevector",
+      y-label: "Bytes to store state vector",
     {
       let number-of-qubits = range(1, 55)
       plot.add(domain: (1, 55), number-of-qubits.map((n) => (n, calc.log(8 * calc.pow(2, n), base: 2))))
@@ -122,64 +123,64 @@ See @memory-needed-for-simulating-n-qubits for a visualization of the exponentia
       plot.annotate({content((50, 52), [Petabyte])})
     })
   }),
-  caption: [Memory needed to store a statevector for 1 up to 55 qubits. The memory footprint is calculated on the assumption that $8 dot 2^n$ bytes are needed to store $n$ qubits.]
+  caption: [Memory needed to store a state vector for 1 up to 55 qubits. The memory footprint is calculated assuming that $8 dot 2^n$ bytes are needed to store $n$ qubits.]
 ) <memory-needed-for-simulating-n-qubits>
 The amount of memory needed for simulating a circuit depends on the simulator approach used.
-For a quantum circuit with depth 27 in a 2D lattice of $7 times 7$ qubits it was possible to simulate a circuit with only 4.5 Terabyte of RAM @pednaultParetoEfficientQuantumCircuit2020, compared to 8 Petabyte needed in previous simulation implementations @hanerPetabyteSimulation45Qubit2017.
+For a quantum circuit with depth 27 in a 2D lattice of $7 times 7$ qubits, it was possible to simulate a circuit with only 4.5 Terabyte of RAM @pednaultParetoEfficientQuantumCircuit2020, compared to 8 Petabyte needed in previous simulation implementations @hanerPetabyteSimulation45Qubit2017.
 
 In 2020, a research team led by scientist Jian-Wei Pan at the University of Science and Technology of China (USTC) achieved quantum supremacy using 76 photons for the Gaussian boson sampling algorithm @garistoLightBasedQuantumComputer2021.
 The samples generated in the study required 200 seconds, a task estimated to take a classical supercomputer 2.5 billion years to complete, as detailed in the paper @zhongQuantumComputationalAdvantage2020.
 Quantum supremacy marks the point at which quantum computers outperform classical computers in specific tasks.
 The majority of circuits demonstrating quantum supremacy are inherently not directly applicable to practical computational problems.
-These circuits primarily serve to exhibit quantum computational supremacy by performing specific tasks that are infeasible for classical computers within a reasonable timeframe, without necessarily providing practical computational benefits @caludeRoadQuantumComputational2019.
-Conversely, algorithms such as Shor's Algorithm, which have significant practical implications, especially in the field of cryptography, demand a higher number of qubits and lower levels of quantum noise for effective implementation.
-When passing a quantum circuit which has been used for demonstrating quantum supremacy or with a high number of qubits to a cloud quantum provider the returned results could be either from an actual quantum computer or a (randomly) fabricated distribution.
-Due to the fact that current quantum computers are noisy and simulating the correct result for a large circuit is infeasible, checking the result for correctness is challenging.
-Therefore these cases are out of the scope of this thesis.
+These circuits primarily serve to exhibit quantum computational supremacy by performing specific tasks that are infeasible for classical computers within a reasonable timeframe without necessarily providing practical computational benefits @caludeRoadQuantumComputational2019.
+Conversely, algorithms such as Shor's Algorithm, which have significant practical implications, especially in cryptography, demand more qubits and lower levels of quantum noise for effective implementation.
+When passing a quantum circuit used for demonstrating quantum supremacy or with a high number of qubits to a cloud quantum provider, the returned results could be either from an actual quantum computer or a (randomly) fabricated distribution.
+Because current quantum computers are noisy and simulating the correct result for a large circuit is infeasible, checking the result for correctness is challenging.
+Therefore, these cases are out of the scope of this thesis.
 
 However, apart from these highly specialized setups, it is still possible to simulate small quantum circuits.
 As of 2023, a rough cost estimate for a 9-qubit quantum computer from Rigetti stands at \$900,000 @mechanicRigettiLaunchesNovera2023.
 Conversely, simulators can execute small circuits on consumer hardware, drastically reducing the cost barrier for executing quantum computations.
-For example Amazon Braket charges between \$0.075 and \$0.275 per minute for simulator their cloud simulator service @AmazonBraketPricing.
+For example, Amazon Braket charges between \$0.075 and \$0.275 per minute for simulator their cloud simulator service @AmazonBraketPricing.
 When renting the IonQ Harmony quantum computer, Amazon Braket charges \$0.3 per task with an additional cost of \$0.01 per shot @AmazonBraketPricing.
-Simulating a quantum circuit with 4 qubits (which can be seen in @circuit-measurement-step-9) on consumer hardware took 0.2 seconds for 8000 shots when using the 'fake_athens_v2' backend which adds noise to the result.
+Simulating a quantum circuit with four qubits (see @circuit-measurement-step-9) on consumer hardware took 0.2 seconds for 8000 shots when using the 'Fake_Athens' backend, which adds noise to the result.
 Assuming Amazon Brakets most expensive simulator would take 1 second, this would result in a price of
 $ 1/60 "minute" dot (\$0.275)/"minute" = \$0.00458. $
-When executing the same quantum circuit on the IonQ Harmony quantum computer with 8000 shots it would cost
+When executing the same quantum circuit on the IonQ Harmony quantum computer with 8000 shots, it would cost
 $ \$0.3 + 8000 "shots" dot (\$0.01)/"shot" = \$80.3. $
-In this specific example executing the circuit on the quantum computer would cost more than 17,000 times as much. 
-Of course these numbers only hold true for such tiny circuits combined with a high number of shots.
+In this specific example, executing the circuit on the quantum computer would cost more than 17,000 times as much. 
+Of course, these numbers only hold for such tiny circuits combined with a high number of shots.
 Using more qubits and gates increases the simulator's hardware requirements and computation time.
-Overall, the price margin for Amazon Braket's services is especially large for small quantum circuits, which take a short amount of time for a simulator but have fixed costs when being run on the quantum computer.
+Overall, the price margin for Amazon Braket's services is huge for small quantum circuits, which take a short amount of time for a simulator but have fixed costs when running on a quantum computer.
 This cost consideration underscores the significance of the threat posed by cloud quantum providers employing simulators in scenarios where the users are unaware of this substitution.
 Therefore, mitigating strategies should be devised to ensure transparency and trust in quantum cloud services to safeguard against potential security breaches and ensure the integrity of quantum computations.
 
 This work provides a machine learning-based approach that allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer and not simulated on a classical computer.
-Additionally, in order to test the robustness of the feedforward neural net, its ressilience to the Fast Gradient Sign Method, an adversarial attack, is evaluated.
+Additionally, in order to test the robustness of the feedforward neural net, its resilience to the Fast Gradient Sign Method, an adversarial attack, is evaluated.
 
 == Related Work <related-work>
 Multiple approaches for fingerprinting different quantum computers already exist.
-After collecting data in different fashions these approaches create a fingerprint which is ideally unique for different quantum hardward.
-By using the fingerprint-information it is afterwards possible to differentiate between different quantum computers.
-One such work has shown that it is possible to generate a unique hardware fingerprint based on qubit frequencies.
+After collecting data in different fashions, these approaches create a fingerprint that is ideally unique for different quantum hardware.
+Therefore, such fingerprint information makes it possible to differentiate between quantum computers.
+One such work has shown that generating a unique hardware fingerprint based on qubit frequencies is possible.
 The fingerprint is based on quantum computer calibration data, which was made available by the cloud provider @smithFastFingerprintingCloudbased2022.
 A different research group has developed a Quantum Physically Unclonable Function (QuPUF).
 By utilizing the QuPUF, it is possible to identify the quantum computer the QuPUF was executed on @phalakQuantumPUFSecurity2021.
 Another approach uses a tomography-based fingerprinting method based on crosstalk-induced errors @miShortPaperDevice2021.
 
 Martina et al.'s paper "Noise fingerprints in quantum computers: Machine learning software tools" distinguishes which QC a specific quantum circuit has been executed by learning the error fingerprint using a support vector machine @martinaLearningNoiseFingerprint2022.
-Creating a dataset containing measurements from quantum circuits executed on different quantum computers is challenging to create due to the high cost of executing a circuit on a quantum computer many times.
-Additionally, a circuit has to be designed in order to ideally capture the noise generated by a quantum computer.
-Therefore the creation of such a dataset is out of the scope of this thesis.
+Creating a dataset containing measurements from quantum circuits executed on different quantum computers is challenging due to the high cost of executing a circuit on a quantum computer many times.
+Additionally, a circuit must be designed in order to ideally capture the noise generated by a quantum computer.
+Therefore, creating such a dataset is out of the scope of this thesis.
 As a result, the dataset containing quantum computer measurements and the circuits provided in @martinaLearningQuantumNoiseFingerprint2023 have been used in this thesis.
 
 This thesis takes a similar approach to "Noise fingerprints in quantum computers: Machine learning software tools" by Martina et al. @martinaLearningNoiseFingerprint2022 and utilizes the same quantum circuits.
 However, instead of differentiating between various quantum computers, this thesis creates machine learning models that distinguish whether a quantum circuit was executed by a QC or a simulator on a classical computer.
 
 == Structure
-@terms-and-definitions gives a short overview of the most important concepts of quantum computing and machine learning used in this thesis.
+@terms-and-definitions gives a short overview of essential concepts of quantum computing and machine learning used in this thesis.
 In @approach, an explanation for the dataset based on the circuit measurements is provided.
-These are used for training different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
+These are used to train different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
 Additionally, a white-box adversarial attack is performed.
 After that, in @evaluation, the accuracies of the different machine learning algorithms are compared, and the limitations of this work are discussed, specifically concerning the white-box adversarial attack.
 @future-work points out possible areas for further research.
@@ -189,49 +190,48 @@ At the end, @conclusion contains a short conclusion.
 
 
 = Terms and Definitions <terms-and-definitions>
-This section provides a concise overviews of theoretical concepts central to this thesis.
+This section provides a concise overview of theoretical concepts central to this thesis.
 It introduces the core fundamentals of quantum computing, which utilizes quantum mechanics for computational purposes.
-As second part, three different machine learning approaches, support vector machine, feedforward neural net, and convolutional neural net, 
-are detailed, highlighting their unique attributes and applicability, as well as motivating why these different approaches haven been chosen. 
-Additionally, the section delves into the basics of Adversarial Machine Learning, focusing on the Fast Gradient Sign Method, which illustrates vulnerabilities in machine learning models by intentionally causing them to missclassify specially prepared samples.
+In the second part, three different machine learning approaches, support vector machine, feedforward neural net, and convolutional neural net, are detailed, highlighting their unique attributes and applicability, motivating why these different approaches have been chosen. 
+Additionally, the section delves into the basics of adversarial machine learning, focusing on the fast gradient sign method, which illustrates vulnerabilities in machine learning models by intentionally causing them to misclassify specially prepared samples.
 
 == Quantum Computing
 Quantum computing emerges as a revolutionary approach to computation, leveraging the principles of quantum mechanics to significantly enhance computational capabilities beyond the scope of classical computing.
 This advanced computing paradigm utilizes fundamental quantum mechanical phenomena, such as superposition and entanglement, enabling quantum computers to surpass traditional computers in solving very specific problems @garistoLightBasedQuantumComputer2021 @zhongQuantumComputationalAdvantage2020.
 At the core of quantum computing lies the qubit, a quantum version of the classical binary bit.
 Quantum computers, essentially an assembly of one or more qubits, execute quantum algorithms through operations on these qubits, similar to how classical bits function in traditional computing.
-These operations are executed using quantum gates, which manipulate qubit states within a quantum circuit.
-To extract computation results, measurements are made on the qubits at the conclusion of the quantum circuit process, revealing the outcomes of quantum algorithms @nielsenQuantumComputationQuantum2010.
+These operations are executed using quantum gates, manipulating qubit states within a quantum circuit.
+The qubits are measured at the end of the quantum circuit to extract computation results, revealing the outcomes of quantum algorithms @nielsenQuantumComputationQuantum2010.
 
 === The qubit
 A quantum computer leverages quantum bits (qubits).
-Qubits have two basis states which are associated with the vectors
+Qubits have two basis states, which are associated with the vectors
 $ |0 angle.r = vec(1, 0) quad |1 angle.r = vec(0, 1). $
 The notation with '$| med angle.r$' is called Dirac notation.
 Classical bits are either 0 or 1.
 Conversely, qubits can be in states other than $|0 angle.r$ and $|1 angle.r$.
 A superposition is a linear combination of states, as in @eq1.
 $ |psi angle.r = alpha|0 angle.r + beta|1 angle.r $<eq1>
-In @eq1 $alpha$ and $beta$ are complex values describing probability amplitudes.
+In @eq1, $alpha$ and $beta$ are complex values describing probability amplitudes.
 The amplitudes must satisfy the normalization condition $ |alpha|^2 + |beta|^2 = 1. $
 
 === Quantum circuits
 It is possible to solve a specific selection of problems with reduced time and space complexity by leveraging quantum properties.
-Examples of such a quantum algorithm are Shor's algorithm @shorPolynomialTimeAlgorithmsPrime1997 and Grover's argorithm @groverFastQuantumMechanical1996.
+Examples of such a quantum algorithm are Shor's algorithm @shorPolynomialTimeAlgorithmsPrime1997 and Grover's algorithm @groverFastQuantumMechanical1996.
 These quantum algorithms, also called quantum circuits, are executed from left to right.
 Each line in the circuit represents one qubit.
 #figure(
   image("images/generic-circuit.svg"),
-  caption: [Quantum circuit with one qubit. Executing from left to right, two arbitrary gates get applied to the qubit before performing a measurement in the end.]
+  caption: [Quantum circuit with one qubit. Circuits get executed from left to right. Therefore, the two arbitrary gates are applied to the qubit before the qubit gets measured at the end.]
 )
-In equations however, gates are applied from right to left.
+In equations, however, gates are applied from right to left.
 The circuits used in this thesis consist of the Pauli-X gate, the Hadamard gate, the Controlled not gate (CNOT), and the Toffoli gate.
-The actions each of these gates perform on qubits can be described as a unitary matrix.
+The action each of these gates perform on qubits can be described as a unitary matrix.
 The matrix for the Pauli-X gate can be written as
 $ X = mat(0, 1; 1, 0). $
 Applying the gate to a single qubit performs a bit flip:
 $ X|0 angle.r = mat(0, 1; 1, 0) vec(1, 0) = vec(0,1) = |1 angle.r $
-Therefore, being the equivalent to the classical NOT gate.
+Therefore, it is the equivalent of the classical NOT gate.
 The circuit symbol for the Pauli-X gate looks like @pauli-x-gate.
 #figure(
   align(center, image("images/gates/pauli-x.svg", width: 13%)),
@@ -245,44 +245,44 @@ If the initial state of the qubit was $|0 angle.r$, the resulting state after ap
 $ H |0 angle.r = 1/sqrt(2) mat(1, 1; 1, -1) vec(1,0) =  (|0 angle.r + |1 angle.r)/sqrt(2)  $
 which is an equal superposition of the $|0 angle.r$ and $|1 angle.r$ states.
 When measuring a qubit in this state, the measurement returns $0$ or $1$ each $50%$ of the time.
-The Hadamard gate gets depicted by the circuit symbol in @hadamard-gate.
+The circuit symbol in @hadamard-gate depicts the Hadamard gate.
 #figure(
   align(center, image("images/gates/hadamard.svg", width: 13%)),
   caption: [Circuit symbol for the Hadamard gate.]
 ) <hadamard-gate>
 
 The CNOT gate is the first gate in this section which acts on two qubits.
-In case the controll qubit (first qubit) is in state $|1 angle.r$, it applies the Pauli-X gate to the target qubit (second qubit).
+In case the control qubit (first qubit) is in state $|1 angle.r$, it applies the Pauli-X gate to the target qubit (second qubit).
 This can be seen in the matrix of the CNOT gate. It contains the Pauli-X matrix in the lower right corner:
 $ "CNOT" = mat(1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 0, 1; 0, 0, 1, 0). $
 The circuit symbol for the CNOT gate looks like @cnot-gate.
 #figure(
   align(center, image("images/gates/cnot.svg", width: 11%)),
-  caption: [Circuit symbol for the CNOT gate. The upper qubit is the control qubit, the lower qubit is the target qubit.]
+  caption: [Circuit symbol for the CNOT gate. The upper qubit is the control qubit; the lower qubit is the target qubit.]
 ) <cnot-gate>
 
-Additionally, the circuits in this thesis make use of the Toffoli gate which is similar to the CNOT gate.
+
+Additionally, the circuits in this thesis use the Toffoli gate, which is similar to the CNOT gate.
 It has two control qubits and flips the target qubit only in case both control qubits are in state $|1 angle.r$.
 The circuit symbol for the Toffoli gate looks like @ccx-gate.
 #figure(
   align(center, image("images/gates/ccx.svg", width: 9%)),
-  caption: [Circuit symbol for the Toffoli gate. Both upper qubits are the control qubits, the lowest qubit is the target qubit.]
+  caption: [Circuit symbol for the Toffoli gate. Both upper qubits are the control qubits and the lowest qubit is the target qubit.]
 ) <ccx-gate>
 
-By utilizing the Hadamard gate and the CNOT gate together, it is possible, to entangle two qubits, see @enanglement-circuit.
+By utilizing the Hadamard gate and the CNOT gate together, it is possible to entangle two qubits, see @enanglement-circuit.
 #figure(
   align(center, image("images/entanglement-circuit.svg", width: 25%)),
   caption: [Circuit for entangling two qubits.]
 ) <enanglement-circuit>
 
-The concept of entanglement is one of the cornerstone principles of quantum mechanics, enabling phenomena that have no classical counterpart.
-One of the simplest examples of quantum entanglement is illustrated by the Bell state, which a quantum state of two qubits that represents a maximally entangled pair.
-The Bell stat can be mathmatically described as
+Entanglement is one of the cornerstone principles of quantum mechanics, enabling phenomena with no classical counterpart.
+One of the simplest examples of quantum entanglement is illustrated by the Bell state, a quantum state of two qubits representing a maximally entangled pair.
+The Bell stat can be mathematically described as
 $ |psi angle.r = (|00 angle.r + |11 angle.r)/sqrt(2). $
 If the first qubit returns $|1 angle.r$ when measured, the second qubit has to collapse to $|1 angle.r$ as well. The same holds true for $| 0 angle.r$.
 As a result, measurements of $|01 angle.r$ and $|10 angle.r$ are impossible for two qubits in the Bell state.
 //TODO: add more references!
-
 
 === Measurements and Shots
 In quantum computing, measuring a qubit yields a binary outcome: either a $0$ (for $|0 angle.r$) or a $1$ (for $|1 angle.r$).
@@ -301,30 +301,29 @@ This statistical approach is crucial due to the probabilistic nature of quantum 
 Different approaches exist for building physical quantum computers.
 QCs built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
 Other architectures include trapped ions, photonics, and nuclear magnetic resonance @laddQuantumComputers2010.
-One of the main issues for todays NISQ devices is the presence of noise, drastically reducing the accuracy with which the QCs compute, hindering the implementation of larger quantum circuits.
+One of the main issues for today's NISQ devices is the presence of noise, drastically reducing the accuracy with which the QCs compute, hindering the implementation of larger quantum circuits.
 Current quantum chips mainly suffer from decoherence, gate errors, readout errors, and crosstalk.
 For a qubit, the decoherence time refers to how long the qubit can contain information.
 Decoherence can occur, for example, when a qubit interacts with the environment.
-Gate error refers to malfunction of a gate, causing the qubit to deviate from its intended states.
-These errors can occur due to imperfections in the physical system that implements the gate, environmental noise, or inaccuracies in the control mechanisms
-Readout errors take place during the measurement process of qubits, resulting in a incorrect measurement.
+Gate error refers to the malfunction of a gate, causing the qubit to deviate from its intended state.
+These errors can occur due to imperfections in the physical system that implements the gate, environmental noise, or inaccuracies in the control mechanisms.
+Readout errors occur during the qubits' measurement process, resulting in an incorrect measurement.
 When quantum computers are constructed from multiple qubits, unwanted interactions between these qubits are called crosstalk.
 
 == Machine Learning
-In this thesis, a classifiers, implemented with three different classical machine learning techniques, get compared.
-These machine learning techniqes are support vector machine, feedforward neural net, and convolutional neural net.
+This thesis compares classifiers based on three different classical machine learning techniques.
+These machine learning techniques are support vector machine, feedforward neural net, and convolutional neural net.
 The support vector machine is one of the standard classification algorithms.
-It tries to seperate datapoints into two classes by dividing them with a hyperplane.
-The feedforward neural net is based on the notion that combining multiple simple perceptrons into layers results in a more powerful and complex model capable of handling nonlinear relationships between inputs and outputs.
-The combination of these layers enables the model to effectively perform classification by capturing the underlying patterns in the data.
-The convolutional neural net is especially potent when it comes to recognizing sequential data.
-This is due to the use of filters sliding over the data and recognizing low level patterns.
-After these filters a feedforward neural net is appended for performing the classification.
+It tries to separate data points into two classes by dividing them with a hyperplane.
+The feedforward neural net is based on the notion that combining multiple simple perceptrons into layers results in a complex model capable of handling nonlinear relationships between inputs and outputs.
+Combining these layers enables the model to effectively perform classification by capturing the underlying patterns in the data.
+The convolutional neural net is incredibly potent when recognizing sequential data due to filters sliding over the data and recognizing low-level patterns.
+After these filters, a feedforward neural net is appended to perform the classification.
 
 === Support Vector Machine
 A support vector machine (SVM) is a machine learning algorithm primarily used for classification and regression tasks.
-Therefore, a SVM is being utilized in this thesis in order to classify whether a quantum circuit has been executed on a quantum computer or a simulator based on the measurement results.
-Additionally, a SVM has already been used for successfully fingerprinting quantum computers @martinaLearningNoiseFingerprint2022.
+Therefore, an SVM is utilized in this thesis to classify whether a quantum circuit has been executed on a quantum computer or a simulator based on the measurement results.
+Additionally, an SVM has already been used to successfully fingerprint quantum computers @martinaLearningNoiseFingerprint2022.
 The SVM operates by constructing an optimal hyperplane in a high-dimensional space that separates different classes of data points.
 This optimal hyperplane is determined by the data points, referred to as support vectors, that lie closest to the decision boundary, see @svm.
 The hyperplane divides the input features into two distinct classes.
@@ -333,7 +332,7 @@ This approach ensures the best possible separation between classes and enhances 
 However, real-world data is often not linearly separable.
 To overcome this limitation, SVMs employ a technique known as the kernel trick.
 A linear decision boundary can be found by mapping the input features into a higher dimensional feature space.
-The kernel trick allows SVMs to construct a non-linear decision boundary in the input space, thereby enabling the classification of complex datasets.
+The kernel trick allows SVMs to construct a nonlinear decision boundary in the input space, thereby enabling the classification of complex datasets.
 As a result, SVMs are computationally efficient and particularly suited for handling high-dimensional data.
 See @cristianiniIntroductionSupportVector2000 for additional details.
 
@@ -374,7 +373,7 @@ See @cristianiniIntroductionSupportVector2000 for additional details.
       }
   })
 }),
-caption: [A SVM model demonstrating the separation of two classes of data (red dots and green crosses) with a linear hyperplane in 2D space based on features $x_1$ and $x_2$. The blue dashed lines represent the margins, and the points on these margins (highlighted in yellow) are the support vectors, which are pivotal in defining the hyperplane and its orientation.]
+caption: [An SVM model demonstrates the separation of two classes of data (red dots and green crosses) with a linear hyperplane in 2D space based on features $x_1$ and $x_2$. The blue dashed lines represent the margins, and the points on these margins (highlighted in yellow) are the support vectors, which are pivotal in defining the hyperplane and its orientation.]
 ) <svm>
 
 === Feedforward Neural Network
@@ -390,6 +389,10 @@ The first layer, the input layer, receives the initial input data.
 After the input layer, subsequent layers are known as hidden layers, where complex transformations of the input data occur.
 Finally, the results are taken from the last layer, the output layer, which provides the network's final output.
 See @feedforward-net for a visualization.
+
+// layer allow for learning of nonlinear zusammenhängen.
+// very flexible design, can be adapted for different usecases
+// -> good fit for being used as classifier in this thesis.
 
 #figure(
   image("images/feedforward-neural-network.png", height: 25%),
@@ -981,7 +984,7 @@ All 9 measurements were included to achieve the highest accuracy and robustness 
 1400 input samples were converted into adversarial samples.
 The attack itself was performed by taking the gradient of the loss for each of the input samples.
 In order to keep the perturbation small, $epsilon$ ranged from 0 (no change in the input sample) to 0.07 with a step size of 0.005. 
-A comparison of the original input and adversarial samples can be seen in //TODO: add reference to results/histograms.
+A comparison of the original input and adversarial samples can be seen in @adversarial-samples-histogram-measurement-step-1 and @adversarial-samples-histogram-measurement-step-9.
 The probability values in the adversarial sapmles get clipped, such that only valid values between 0 and 1 remain.
 Additionally, subsequent packs of four values each get normalized to sum up to 1, making sure they represent valid probabilistic distributions.
 This means, that an input 
@@ -995,6 +998,9 @@ See @evaluation-fgsm for a detailed evaluation.
 #pagebreak(weak: true)
 
 = Evaluation <evaluation>
+
+//The evaluation section provides a comprehensive analysis of how the window size and measurement step range impact the performance of three distinct machine learning models applied to quantum computing classification tasks.
+
 Three different evaluations have been performed:
 1. an accuracy comparison for different window size and measurement step ranges.
 2. the impact of excluding one quantum computer and using only the excluded quantum computer as test data.
@@ -1004,15 +1010,7 @@ Three different evaluations have been performed:
 // 2. exclude quantum computers / simulators -> real world scenario, classifying unknown qc or simulator.
 // exclude single one to show different effects.
 
-//TODO: if time: exclude simulator AND QC.
-
-// exclude only single simulator -> either bad (similar noise fingerprint to quantum computer in the dataset), or good (easy to distingush, no similar fingerprint).
-// or the simulator had similar noise fingerprint to another simulator (z.B. aersimulator returns "perfect" results, without noise -> classification harder when not trained on.)
-// have a look: did simulators with noise profiles based on quantum computers used lead to worse classification mistakes?
-
-// increasing the window size increases the accuracy accross all models, until around 2000.
 //TODO: add 8000 window size to graphs.
-// smaller window size -> to few shots accumulated -> too volatile, can't correctly predict.
 
 == Compare window size vs measurement step range
 This section evaluates the effects of window size and measurement step range on the three machine learning approaches.
@@ -1039,9 +1037,11 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
         let window_size_50 = ((1, 0.597), (2, 0.621),(3, 0.845), (4, 0.933), (5, 0.944), (6, 0.954), (7, 0.958), (8, 0.974), (9, 0.980))
         let window_size_100 = ((1, 0.623), (2, 0.648), (3, 0.904), (4, 0.974), (5, 0.981), (6, 0.986),(7, 0.988), (8, 0.994), (9, 0.996))
         let window_size_2000 = ((1, 0.694), (2, 0.815), (3, 0.997), (4, 1.000), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
+        let window_size_8000 = ((1, 0.693), (2, 0.879), (3, 0.997), (4, 1.000), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
 
-        plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
-          x-min: 0, x-max: 9,
+
+        plot.plot(size: (5.5,4.5), x-tick-step: 1, y-tick-step: none, 
+          x-min: 0.5, x-max: 9,
           x-label: "Measurement steps",
           y-min: 0.45, y-max: 1.05,
           y-ticks: (0, 0.25, 0.5, 0.7, 0.9, 1),
@@ -1051,6 +1051,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
           plot.add(window_size_50, label: [w = 50])
           plot.add(window_size_100, label: [w = 100])
           plot.add(window_size_2000, label: [w = 2000])
+          plot.add(window_size_8000, label: [w = 8000])
         })
       }),
       caption: [SVM], //TODO: improve (mention no w=5, took too long)
@@ -1065,9 +1066,10 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
         let window_size_50 = ((1, 0.586), (2, 0.642), (3, 0.848), (4, 0.941), (5, 0.955), (6, 0.961),(7, 0.963), (8, 0.978), (9, 0.982))
         let window_size_100 = ((1, 0.629), (2, 0.679), (3, 0.897), (4, 0.978), (5, 0.986), (6, 0.987), (7, 0.986), (8, 0.995), (9, 0.996))
         let window_size_2000 = ((1, 0.773), (2, 0.868), (3, 0.993), (4, 0.999), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
+        let window_size_8000 = ((1, 0.671), (2, 0.937), (3, 0.999), (4, 1.000), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
 
-        plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
-          x-min: 0, x-max: 9,
+        plot.plot(size: (5.5,4.5), x-tick-step: 1, y-tick-step: none, 
+          x-min: 0.5, x-max: 9,
           x-label: "Measurement steps",
           y-min: 0.45, y-max: 1.05,
           y-ticks: (0, 0.25, 0.5, 0.7, 0.9, 1),
@@ -1078,6 +1080,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
           plot.add(window_size_50, label: [w = 50])
           plot.add(window_size_100, label: [w = 100])
           plot.add(window_size_2000, label: [w = 2000])
+          plot.add(window_size_8000, label: [w = 8000])
         })
       }),
       caption: [FNN] //TODO: improve
@@ -1093,9 +1096,10 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
       let window_size_50 = ((1, 0.558), (2, 0.642), (3, 0.848), (4, 0.937), (5, 0.953), (6, 0.958), (7, 0.965), (8, 0.977), (9, 0.980))
       let window_size_100 = ((1, 0.639), (2, 0.682), (3, 0.903), (4, 0.979), (5, 0.984), (6, 0.983), (7, 0.990), (8, 0.995), (9, 0.997))
       let window_size_2000 = ((1, 0.642), (2, 0.856), (3, 0.990), (4, 0.999), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
+      let window_size_8000 = ((1, 0.627), (2, 0.817), (3, 0.989), (4, 1.000), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
 
-      plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
-        x-min: 0, x-max: 9,
+      plot.plot(size: (5.5,4.5), x-tick-step: 1, y-tick-step: none, 
+        x-min: 0.5, x-max: 9,
         x-label: "Measurement steps",
         y-min: 0.45, y-max: 1.05,
         y-ticks: (0, 0.25, 0.5, 0.7, 0.9, 1),
@@ -1106,6 +1110,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
         plot.add(window_size_50, label: [w = 50])
         plot.add(window_size_100, label: [w = 100])
         plot.add(window_size_2000, label: [w = 2000])
+        plot.add(window_size_8000, label: [w = 8000])
       })
     }),
     caption: [CNN] //TODO: improve
@@ -1124,7 +1129,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
     let svm_window_size_2000 = ((1, 0.694), (2, 0.815), (3, 0.997), (4, 1.000), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
 
     plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
-      x-min: 0, x-max: 9,
+      x-min: 0.5, x-max: 9,
       x-label: "Measurement steps",
       y-min: 0.55, y-max: 1.05,
       y-ticks: (0, 0.25, 0.5, 0.7, 0.9, 1),
@@ -1137,7 +1142,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
     })
   }),
   caption: [] //TODO: improve
-) <comparison-measurement-steps-w-2000>,
+) <comparison-measurement-steps-w-2000>
 
 == Exclude quantum computer or simulator from training dataset
 This section evaluates the accuracy of the different models in case they encounter quantum comuters or simulators, which were not in the training dataset.
@@ -1370,8 +1375,8 @@ Therefore, the models have either better abstracted an general notion of simulat
 //TODO: "defense" against fgsm complicated, because distribution values actually approach real quantum computer values. Not even a human could correcly determin the class (im gegensatz zu fgsm bei bildern).
 By converting 1400 samples generated by simulators into adversarial samples in such a fasion that they are recognized as 'generated by a quantum computer'.
 The result can be seen in @adversarial-accuracy.
-When epsilon is zero the adversarial sample equals the original input sample.
-The graph shows that with increased $epsilon$ values, the accuracy gets worse due to the increased perturbation in the adversarial sample.
+When epsilon is zero the sample equals the original input sample.
+The graph shows that with increasing $epsilon$ values, the accuracy gets worse due to the increased perturbation in the adversarial sample.
 
 #figure(
   cetz.canvas(length: 1cm, {
