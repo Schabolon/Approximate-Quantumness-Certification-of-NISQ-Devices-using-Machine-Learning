@@ -19,17 +19,6 @@
 )
 #set math.equation(numbering: "(1)")
 
-//TODO: übergänge zwischen den einzelnen sektionen, sollte am stück gelesen werden können?
-
-//TODO: Deckblatt hinzufügen (+ check margin am rand)
-
-//Optional: bei graphen die Ticks nach außen richten?
-
-//TODO: note: idea is to classify noise model of simulator vs noise model of quantum computer (in a general fashion)
-
-//Optional: perform Feature importance visualization??
-//Optional: add confustion matrix?
-
 #show outline.entry.where(
   level: 1
 ): it => {
@@ -37,24 +26,55 @@
   strong(it)
 }
 
-//TODO: add pagebreaks before next "large" heading (new chapter)
-//TODO: add more margin for abstract
-#align(center, text("Abstract", weight:"bold"))
-//TODO: add abstract
+//TODO: übergänge zwischen den einzelnen sektionen, sollte am stück gelesen werden können?
 
-#v(30pt)
+//TODO: Deckblatt hinzufügen (+ check margin am rand)
+
+//Optional: bei graphen die Ticks nach außen richten?
+// Let ticks point outwards by giving them negative length
+//    set-style(axes: (tick: (length: -.1)))
+
+//Optional: perform Feature importance visualization??
+//Optional: add confustion matrix?
+//Optional: additionally add training curves to trainings performance of fnn and cnn.
+
+#align(center, text("Abstract", weight:"bold"))
+#pad(left: 1.1cm, right: 1.1cm, [
+  Cloud quantum computing is crucial for developing innovative quantum circuits, but it also presents a potential threat model when using cloud quantum computing services.
+  In this scenario, the cloud quantum provider may act as an adversary by advertising the use of quantum computers to clients while using cheaper simulators to return results.
+  This thesis demonstrates that it is possible to distinguish whether a quantum circuit has been executed by a simulator (possibly with noise) or a quantum computer with high accuracy.
+  Three machine learning techniques are being utilized: a support vector machine, a feedforward neural net, and a convolutional neural net.
+  Additionally, an adversarial attack has been used to test the resilience of the feedforward neural net.
+  The results of the tests showed that the model is vulnerable to adversarial samples, reducing the model's accuracy.
+  The machine learning techniques learn the noise fingerprint, and the results of this work are consistent with previous studies, indicating that it is feasible to differentiate between various quantum computers by their noise fingerprint.
+  All three machine learning techniques used in this thesis can distinguish between quantum computers and simulators with an accuracy of over 99.9%.
+  Even for previously unseen quantum computers and simulators, these models classify with at least 80% accuracy (the best model has at least 92% accuracy).
+])
+
+#v(40pt)
 
 #align(center, text("Zusammenfassung", weight:"bold"))
-//TODO: add zusammenfassung
+#pad(left: 1.1cm, right: 1.1cm, [
+  Cloud-Quantencomputing ist für die Entwicklung innovativer Quantenschaltungen von entscheidender Bedeutung, stellt aber auch ein potenzielles Bedrohungsmodell bei der Nutzung von Cloud-Quantencomputing-Diensten dar.
+  In diesem Szenario kann der Anbieter von Cloud-Quantencomputern als Betrüger auftreten, indem er den Kunden die Nutzung von Quantencomputern anpreist jedoch tatsächlich billigere Simulatoren verwendet, um Ergebnisse zu berechnen.
+  In dieser Arbeit wird gezeigt, dass es möglich ist, mit hoher Genauigkeit zu unterscheiden, ob ein Quantenschaltkreis von einem Simulator (möglicherweise mit hinzugefügtem Rauschen) oder einem Quantencomputer ausgeführt wurde.
+  Es werden drei Machine Learning Techniken eingesetzt: eine Support-Vektor-Maschine, ein Feedforward Neural Net und ein Convolutional Neraul Net.
+  Darüber hinaus wurde die Widerstandsfähigkeit des Feedforward Neural Nets mit Hilfe einer Adversarial Attack getestet.
+  Die Ergebnisse der Tests zeigten, dass das Modell anfällig für Adversarial Samples ist, welche die Genauigkeit des Modells verringert.
+  Die Machine Learning Techniken lernen den Rausch-Fingerabdruck.
+  Die Ergebnisse dieser Arbeit stimmen mit früheren Studien überein, welche darauf hindeuten, dass es möglich ist, verschiedene Quantencomputer anhand ihres Rausch-Fingerabdrucks voneinander zu unterscheiden.
+  Alle drei in dieser Arbeit verwendeten Machine Learning Techniken können zwischen Quantencomputern und Simulatoren mit einer Genauigkeit von über 99,9 % unterscheiden.
+  Selbst bei den Modellen unbekannten Quantencomputern und Simulatoren klassifizieren diese Modelle mit einer Genauigkeit von mindestens 80 % (das beste Modell hat eine Genauigkeit von mindestens 92 %).
+])
 
-#pagebreak()
+#pagebreak(weak: true)
 
 #outline(indent: auto)
 
 #pagebreak()
 
 = Introduction and Motivation
-// Quantum computing is an emerging field, gaining attention.
+Quantum computing is a rapidly growing field that is gaining attention. 
 Experts expect the quantum computing market to grow from USD 866 million in 2023 to USD 4.375 million in 2030 @QuantumComputingMarket2023.
 Quantum computing is especially promising in the fields of simulations, drug development, and cybersecurity @emilioCurrentStatusNext2022.
 Despite these optimistic prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
@@ -78,9 +98,6 @@ See @memory-needed-for-simulating-n-qubits for a visualization of the exponentia
   cetz.canvas(length: 1cm, {
     import cetz.draw: *
     import cetz.plot
-
-    // Let ticks point outwards by giving them negative length
-    set-style(axes: (tick: (length: -.1)))
 
     plot.plot(size: (12,6), 
       x-tick-step: 5, 
@@ -124,18 +141,16 @@ For example Amazon Braket charges between \$0.075 and \$0.275 per minute for sim
 When renting the IonQ Harmony quantum computer, Amazon Braket charges \$0.3 per task with an additional cost of \$0.01 per shot @AmazonBraketPricing.
 Simulating a quantum circuit with 4 qubits (which can be seen in @circuit-measurement-step-9) on consumer hardware took 0.2 seconds for 8000 shots when using the 'fake_athens_v2' backend which adds noise to the result.
 Assuming Amazon Brakets most expensive simulator would take 1 second, this would result in a price of
-//TODO: punkt am Ende des Satzes? (bzw. am Ende der Gleichung?)
-$ 1/60 "minute" dot (\$0.275)/"minute" = \$0.005 $
+$ 1/60 "minute" dot (\$0.275)/"minute" = \$0.00458. $
 When executing the same quantum circuit on the IonQ Harmony quantum computer with 8000 shots it would cost
-$ \$0.3 + 8000 "shots" dot (\$0.01)/"shot" = \$80.3 $
-In this specific example executing the circuit on the quantum computer would cost more than 16,000 times as much. 
+$ \$0.3 + 8000 "shots" dot (\$0.01)/"shot" = \$80.3. $
+In this specific example executing the circuit on the quantum computer would cost more than 17,000 times as much. 
 Of course these numbers only hold true for such tiny circuits combined with a high number of shots.
-//TODO: mention that simulating circuits with more gates takes longer.
-Overall, the price margin is especially large for small quantum circuits, which take a short amount of time for a simulator but have fixed costs when being run on the quantum computer.
+Using more qubits and gates increases the simulator's hardware requirements and computation time.
+Overall, the price margin for Amazon Braket's services is especially large for small quantum circuits, which take a short amount of time for a simulator but have fixed costs when being run on the quantum computer.
 This cost consideration underscores the significance of the threat posed by cloud quantum providers employing simulators in scenarios where the users are unaware of this substitution.
 Therefore, mitigating strategies should be devised to ensure transparency and trust in quantum cloud services to safeguard against potential security breaches and ensure the integrity of quantum computations.
 
-//TODO: note that no noise reconstruction only classification?
 This work provides a machine learning-based approach that allows the users of cloud-based QCs to verify with high certainty that their quantum circuit has been executed on a quantum computer and not simulated on a classical computer.
 Additionally, in order to test the robustness of the feedforward neural net, its ressilience to the Fast Gradient Sign Method, an adversarial attack, is evaluated.
 
@@ -152,7 +167,6 @@ Another approach uses a tomography-based fingerprinting method based on crosstal
 Martina et al.'s paper "Noise fingerprints in quantum computers: Machine learning software tools" distinguishes which QC a specific quantum circuit has been executed by learning the error fingerprint using a support vector machine @martinaLearningNoiseFingerprint2022.
 Creating a dataset containing measurements from quantum circuits executed on different quantum computers is challenging to create due to the high cost of executing a circuit on a quantum computer many times.
 Additionally, a circuit has to be designed in order to ideally capture the noise generated by a quantum computer.
-On top of that, in order to get measurements with consistent noise, the circuit has to be executed on a quantum computer without being disturbed by recallibration of the QC.
 Therefore the creation of such a dataset is out of the scope of this thesis.
 As a result, the dataset containing quantum computer measurements and the circuits provided in @martinaLearningQuantumNoiseFingerprint2023 have been used in this thesis.
 
@@ -168,6 +182,8 @@ After that, in @evaluation, the accuracies of the different machine learning alg
 @future-work points out possible areas for further research.
 At the end, @conclusion contains a short conclusion.
 
+#pagebreak(weak: true)
+
 
 = Terms and Definitions <terms-and-definitions>
 This section provides a concise overviews of theoretical concepts central to this thesis.
@@ -177,10 +193,14 @@ are detailed, highlighting their unique attributes and applicability, as well as
 Additionally, the section delves into the basics of Adversarial Machine Learning, focusing on the Fast Gradient Sign Method, which illustrates vulnerabilities in machine learning models by intentionally causing them to missclassify specially prepared samples.
 
 == Quantum Computing
-//TODO: subdivide into sections:
-//=== The qubit
-//=== Quantum circuits
-// maybe === Quantum computers???
+Quantum computing emerges as a revolutionary approach to computation, leveraging the principles of quantum mechanics to significantly enhance computational capabilities beyond the scope of classical computing.
+This advanced computing paradigm utilizes fundamental quantum mechanical phenomena, such as superposition and entanglement, enabling quantum computers to surpass traditional computers in solving very specific problems @garistoLightBasedQuantumComputer2021 @zhongQuantumComputationalAdvantage2020.
+At the core of quantum computing lies the qubit, a quantum version of the classical binary bit.
+Quantum computers, essentially an assembly of one or more qubits, execute quantum algorithms through operations on these qubits, similar to how classical bits function in traditional computing.
+These operations are executed using quantum gates, which manipulate qubit states within a quantum circuit.
+To extract computation results, measurements are made on the qubits at the conclusion of the quantum circuit process, revealing the outcomes of quantum algorithms @nielsenQuantumComputationQuantum2010.
+
+=== The qubit
 A quantum computer leverages quantum bits (qubits).
 Qubits have two basis states which are associated with the vectors
 $ |0 angle.r = vec(1, 0) quad |1 angle.r = vec(0, 1). $
@@ -191,51 +211,104 @@ A superposition is a linear combination of states, as in @eq1.
 $ |psi angle.r = alpha|0 angle.r + beta|1 angle.r $<eq1>
 In @eq1 $alpha$ and $beta$ are complex values describing probability amplitudes.
 The amplitudes must satisfy the normalization condition $ |alpha|^2 + |beta|^2 = 1. $
-It is possible to solve a specific selection of problems with reduced time and space complexity by leveraging quantum properties such as superposition, interference, and entanglement.
+
+=== Quantum circuits
+It is possible to solve a specific selection of problems with reduced time and space complexity by leveraging quantum properties.
 Examples of such a quantum algorithm are Shor's algorithm @shorPolynomialTimeAlgorithmsPrime1997 and Grover's argorithm @groverFastQuantumMechanical1996.
-//TODO: add that circuits are evaluated from left to right.
-The circuits used in this thesis consist of the Pauli-X gate, the Hadamard gate, the Controlled not gate (CNOT), and the Toffoli gate.
-Their respective circuit representation can be seen in @quantum-gates.
-The Pauli-X gate performs a bit flip on a single qubit.
-The CNOT gate performs a bit flip on the target qubit, depending on the state of the control qubit.
-//TODO: mathmatically show what circuits do?
-Similarly, the Toffoli gate has two control qubits, influencing whether the target qubit gets flipped.
+These quantum algorithms, also called quantum circuits, are executed from left to right.
+Each line in the circuit represents one qubit.
 #figure(
-  grid(
-    columns: 4,
-    align(horizon, image("images/gates/pauli-x.svg", width: 50%)),
-    align(horizon, image("images/gates/hadamard.svg", width: 50%)),
-    align(horizon, image("images/gates/cnot.svg", width: 40%)),
-    align(horizon, image("images/gates/ccx.svg", width: 30%))
-  ),
-  caption: "Quantum gates (from left to right): Pauli-X gate, Hadamard gate, Controlled not gate, and Toffoli gate."
-) <quantum-gates>
-In quantum computing, measuring a qubit yields a binary outcome: either a $0$ or a $1$.
-//TODO: add image of measurement-circuit part.
-//TODO: explain bell state (used in circuit).
+  image("images/generic-circuit.svg"),
+  caption: [Quantum circuit with one qubit. Executing from left to right, two arbitrary gates get applied to the qubit before performing a measurement in the end.]
+)
+In equations however, gates are applied from right to left.
+The circuits used in this thesis consist of the Pauli-X gate, the Hadamard gate, the Controlled not gate (CNOT), and the Toffoli gate.
+The actions each of these gates perform on qubits can be described as a unitary matrix.
+The matrix for the Pauli-X gate can be written as
+$ X = mat(0, 1; 1, 0). $
+Applying the gate to a single qubit performs a bit flip:
+$ X|0 angle.r = mat(0, 1; 1, 0) vec(1, 0) = vec(0,1) = |1 angle.r $
+Therefore, being the equivalent to the classical NOT gate.
+The circuit symbol for the Pauli-X gate looks like @pauli-x-gate.
+#figure(
+  align(center, image("images/gates/pauli-x.svg", width: 13%)),
+  caption: [Circuit symbol for the Pauli-X gate.]
+) <pauli-x-gate>
+
+The matrix for the Hadamard gate can be written as
+$ H = 1/sqrt(2) mat(1, 1; 1, -1). $
+After applying the Hadamard gate to a qubit, the qubit is in a superposition of its basis states.
+If the initial state of the qubit was $|0 angle.r$, the resulting state after applying the Hadamard gate will be
+$ H |0 angle.r = 1/sqrt(2) mat(1, 1; 1, -1) vec(1,0) =  (|0 angle.r + |1 angle.r)/sqrt(2)  $
+which is an equal superposition of the $|0 angle.r$ and $|1 angle.r$ states.
+When measuring a qubit in this state, the measurement returns $0$ or $1$ each $50%$ of the time.
+The Hadamard gate gets depicted by the circuit symbol in @hadamard-gate.
+#figure(
+  align(center, image("images/gates/hadamard.svg", width: 13%)),
+  caption: [Circuit symbol for the Hadamard gate.]
+) <hadamard-gate>
+
+The CNOT gate is the first gate in this section which acts on two qubits.
+In case the controll qubit (first qubit) is in state $|1 angle.r$, it applies the Pauli-X gate to the target qubit (second qubit).
+This can be seen in the matrix of the CNOT gate. It contains the Pauli-X matrix in the lower right corner:
+$ "CNOT" = mat(1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 0, 1; 0, 0, 1, 0). $
+The circuit symbol for the CNOT gate looks like @cnot-gate.
+#figure(
+  align(center, image("images/gates/cnot.svg", width: 11%)),
+  caption: [Circuit symbol for the CNOT gate. The upper qubit is the control qubit, the lower qubit is the target qubit.]
+) <cnot-gate>
+
+Additionally, the circuits in this thesis make use of the Toffoli gate which is similar to the CNOT gate.
+It has two control qubits and flips the target qubit only in case both control qubits are in state $|1 angle.r$.
+The circuit symbol for the Toffoli gate looks like @ccx-gate.
+#figure(
+  align(center, image("images/gates/ccx.svg", width: 9%)),
+  caption: [Circuit symbol for the Toffoli gate. Both upper qubits are the control qubits, the lowest qubit is the target qubit.]
+) <ccx-gate>
+
+By utilizing the Hadamard gate and the CNOT gate together, it is possible, to entangle two qubits, see @enanglement-circuit.
+#figure(
+  align(center, image("images/entanglement-circuit.svg", width: 25%)),
+  caption: [Circuit for entangling two qubits.]
+) <enanglement-circuit>
+
+The concept of entanglement is one of the cornerstone principles of quantum mechanics, enabling phenomena that have no classical counterpart.
+One of the simplest examples of quantum entanglement is illustrated by the Bell state, which a quantum state of two qubits that represents a maximally entangled pair.
+The Bell stat can be mathmatically described as
+$ |psi angle.r = (|00 angle.r + |11 angle.r)/sqrt(2). $
+If the first qubit returns $|1 angle.r$ when measured, the second qubit has to collapse to $|1 angle.r$ as well. The same holds true for $| 0 angle.r$.
+As a result, measurements of $|01 angle.r$ and $|10 angle.r$ are impossible for two qubits in the Bell state.
+//TODO: add more references!
+
+
+=== Measurements and Shots
+In quantum computing, measuring a qubit yields a binary outcome: either a $0$ (for $|0 angle.r$) or a $1$ (for $|1 angle.r$).
 This measurement process is a critical operation that leads to the collapse of the qubit's wave function, situating it into a definitive state of either $|0 angle.r$ or $|1 angle.r$, depending on the measured value.
+#figure(
+  align(center, image("images/gates/measurement.svg", width: 15%)),
+  caption: [Circuit symbol for a qubit measurement.]
+) <measurement-symbol-circuit>
 This collapse is a direct consequence of the quantum mechanical principle of wave function collapse, where measurement forces a quantum system to 'choose' a state from among the probabilities described by its wave function prior to measurement.
-Additionally, the concept of "shots" in quantum computing refers to the number of times a quantum algorithm is executed and measured.
+
+Additionally, the concept of shots in quantum computing refers to the number of times a quantum algorithm is executed and measured.
 The rationale behind multiple shots is to compile a statistical distribution of outcomes, which is instrumental in approximating the quantum state prior to measurement.
 This statistical approach is crucial due to the probabilistic nature of quantum measurements, where repeated executions help accurately estimate the likelihood of each possible outcome, thereby providing insight into the quantum system's behavior before measurement @nielsenQuantumComputationQuantum2010.
 
+=== Quantum computers
 Different approaches exist for building physical quantum computers.
 QCs built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
 Other architectures include trapped ions, photonics, and nuclear magnetic resonance @laddQuantumComputers2010.
-//the main issue to be still solved is the unavoidable presence of external noise sources that dramatically
-// limit the accuracy of quantum computations, as well as the large-scale realization of quantum circuits and algorithms.
-//TODO: mention NISQ? (reference to introduction?)
-
-//TODO: explain that computers can have different topologies?
+One of the main issues for todays NISQ devices is the presence of noise, drastically reducing the accuracy with which the QCs compute, hindering the implementation of larger quantum circuits.
 Current quantum chips mainly suffer from decoherence, gate errors, readout errors, and crosstalk.
-//TODO: explain errors better and more in detail T1 and T2 Times, Readout Error, ...
-// readout error and gate error relevant for simulator. 
 For a qubit, the decoherence time refers to how long the qubit can contain information.
 Decoherence can occur, for example, when a qubit interacts with the environment.
+Gate error refers to malfunction of a gate, causing the qubit to deviate from its intended states.
+These errors can occur due to imperfections in the physical system that implements the gate, environmental noise, or inaccuracies in the control mechanisms
+Readout errors take place during the measurement process of qubits, resulting in a incorrect measurement.
 When quantum computers are constructed from multiple qubits, unwanted interactions between these qubits are called crosstalk.
 
 == Machine Learning
-In this thesis, approaches based on three different supervised machine learning techniques get compared.
+In this thesis, a classifiers, implemented with three different classical machine learning techniques, get compared.
 These machine learning techniqes are support vector machine, feedforward neural net, and convolutional neural net.
 The support vector machine is one of the standard classification algorithms.
 It tries to seperate datapoints into two classes by dividing them with a hyperplane.
@@ -246,6 +319,21 @@ This is due to the use of filters sliding over the data and recognizing low leve
 After these filters a feedforward neural net is appended for performing the classification.
 
 === Support Vector Machine
+A support vector machine (SVM) is a machine learning algorithm primarily used for classification and regression tasks.
+Therefore, a SVM is being utilized in this thesis in order to classify whether a quantum circuit has been executed on a quantum computer or a simulator based on the measurement results.
+Additionally, a SVM has already been used for successfully fingerprinting quantum computers @martinaLearningNoiseFingerprint2022.
+The SVM operates by constructing an optimal hyperplane in a high-dimensional space that separates different classes of data points.
+This optimal hyperplane is determined by the data points, referred to as support vectors, that lie closest to the decision boundary, see @svm.
+The hyperplane divides the input features into two distinct classes.
+Its position and orientation are determined to maximize the distance between the hyperplane and the nearest data point from either class.
+This approach ensures the best possible separation between classes and enhances the algorithm's generalization capabilities.
+However, real-world data is often not linearly separable.
+To overcome this limitation, SVMs employ a technique known as the kernel trick.
+A linear decision boundary can be found by mapping the input features into a higher dimensional feature space.
+The kernel trick allows SVMs to construct a non-linear decision boundary in the input space, thereby enabling the classification of complex datasets.
+As a result, SVMs are computationally efficient and particularly suited for handling high-dimensional data.
+See @cristianiniIntroductionSupportVector2000 for additional details.
+
 #figure(
   cetz.canvas(length: 1cm, {
   import cetz.draw: *
@@ -271,7 +359,7 @@ After these filters a feedforward neural net is appended for performing the clas
         plot.add(((p_1, p_2),), mark: "o", mark-style: (stroke: red, fill: red), mark-size: .2)
       }
 
-      let points_below = ((2, 1), (7, 6), (5, 4), (2.5, 0.5), (4, 1), (3, 1.5), (5, 2), (6, 4), (6, 1), (7, 3), (8, 1))
+      let points_below = ((2, 1), (7, 6), (5, 4), (2.5, 0.5), (4, 1), (3, 1.2), (5, 2), (6, 4), (6, 1), (7, 3), (8, 1), (9, 5), (9.5, 2))
       for (p_1, p_2) in points_below {
         plot.add(((p_1, p_2),), mark: "x", mark-style: (stroke: green, fill: green), mark-size: .2)
       }
@@ -279,29 +367,16 @@ After these filters a feedforward neural net is appended for performing the clas
       // Support Vectors, add circle around (where touching upper or lower margins).
       let support_vectors = ((2, 1), (7, 6), (5, 4), (1, 4), (4, 7))
       for (p_1, p_2) in support_vectors {
-        plot.add(((p_1, p_2),), mark: "o", mark-style: (stroke: yellow, fill: none), mark-size: .3)
+        plot.add(((p_1, p_2),), mark: "o", mark-style: (stroke: orange, fill: none), mark-size: .3)
       }
   })
 }),
 caption: [A SVM model demonstrating the separation of two classes of data (red dots and green crosses) with a linear hyperplane in 2D space based on features $x_1$ and $x_2$. The blue dashed lines represent the margins, and the points on these margins (highlighted in yellow) are the support vectors, which are pivotal in defining the hyperplane and its orientation.]
 ) <svm>
-A support vector machine (SVM) is a machine learning algorithm primarily used for classification and regression tasks.
-Therefore, a SVM is being utilized in this thesis in order to classify whether a quantum circuit has been executed on a quantum computer or a simulator based on the measurement results.
-// Additionally, previous work has successfully used SVMs for fingerprinting quantum computers @martinaLearningNoiseFingerprint2022 ??
-The SVM operates by constructing an optimal hyperplane in a high-dimensional space that separates different classes of data points.
-This optimal hyperplane is determined by the data points, referred to as support vectors, that lie closest to the decision boundary, see @svm.
-The hyperplane divides the input features into two distinct classes.
-Its position and orientation are determined to maximize the distance between the hyperplane and the nearest data point from either class.
-This approach ensures the best possible separation between classes and enhances the algorithm's generalization capabilities.
-However, real-world data is often not linearly separable.
-To overcome this limitation, SVMs employ a technique known as the kernel trick.
-A linear decision boundary can be found by mapping the input features into a higher dimensional feature space.
-The kernel trick allows SVMs to construct a non-linear decision boundary in the input space, thereby enabling the classification of complex datasets.
-As a result, SVMs are computationally efficient and particularly suited for handling high-dimensional data.
-See @cristianiniIntroductionSupportVector2000 for additional details.
 
 === Feedforward Neural Network
 // TODO: short motivation, why did I use it?
+// It has great performance when classifying (small) inputs (add classification of MNIST dataset?)
 A feedforward neural network (FNN) is an artificial neural network commonly used for classification tasks, regression, and pattern recognition.
 It passes input data through a series of interconnected layers of nodes, known as neurons or perceptrons, where each neuron performs a weighted sum of its inputs combined with a bias and applies an activation function to produce an output.
 This can mathmatically be written as 
@@ -314,37 +389,38 @@ Finally, the results are taken from the last layer, the output layer, which prov
 See @feedforward-net for a visualization.
 
 #figure(
-  image("images/feedforward-neural-network.svg", height: 25%), //TODO: adujust image colors, maybe: #72be90, #6a6ca4, #ea9397
+  image("images/feedforward-neural-network.png", height: 25%),
   caption: [Feedforward neural net consisting of input layer, hidden layer and output layer. When evaluating, the value for each neuron gets calculated by @perceptron-math.]
 ) <feedforward-net>
 
 During training, the network adjusts the weights of connections between neurons to minimize the loss function, which quantifies the difference between predicted outputs and actual targets.
-//TODO: add that in this paper binary crossentropy loss was used + formula?
-//TODO: add more mathmatically, what a loss function is?
 This process often involves techniques such as backpropagation and gradient descent to iteratively reduce the loss.
 By doing so, FNNs can learn complex patterns and relationships within data, enabling them to perform a wide range of tasks with high accuracy.
 For additional information, see @russellArtificialIntelligenceModern2021.
 
 === Convolutional Neural Network
-// TODO: motivation, why did I use it?
-// 1D kernels for time series, sequential data -> motivation why it is considered in my thesis.
 A convolutional neural network (CNN) is a specialized artificial neural network employing convolutional layers that automatically learn hierarchical patterns and features from inputs.
-
-These convolutional layers consist of filters with a specific kernel size that slide across the input, performing convolutions to extract local features.
-CNNs typically consist of multiple layers, including convolutional, pooling, and fully connected layers.
-The convolutional layers detect low-level features, while subsequent layers combine these features to recognize higher-level patterns.
+These convolutional layers consist of filters sliding across the input, performing convolutions to extract local features.
+In this thesis, sequantial data (an array of measurements) should be classified.
+Therefore, the CNN has been chosen due to its ability to process time series and sequential data with one dimensional filters.
+These filters detect low-level patterns in the sequential data, while subsequent layers combine these features to recognize higher-level patterns.
+The CNN in this thesis consists of convolutional, max pooling, and fully connected layers.
 Pooling layers downsample the feature maps, reducing the spatial dimensions of the data and increasing computational efficiency.
-Finally, fully connected layers process the extracted features to make predictions or classifications.
+Fully connected layers process the extracted features to make the classification.
+
+#figure(
+  image("images/typical-cnn-architecture.png"),
+  caption: [Typical architecture for a CNN. Source: @kumarDifferentTypesCNN2023]
+)
+
 During training, CNNs adjust the parameters of the filters through backpropagation, optimizing them to minimize the difference between predicted outputs and ground truth labels.
 This process enables CNNs to effectively learn and generalize from large datasets.
-Their ability to learn relevant features from raw input data and their hierarchical architecture make them well-suited for handling complex tasks.
 For additional information see @russellArtificialIntelligenceModern2021.
 
 === Adversarial Machine Learning using Fast Gradient Sign Method <terms-and-definitions-fgsm>
-//TODO: hinführung verbessern? (machine learning wird in vielen verschiedenen bereichen verwendet, adversarial machine learning zeigt probleme/"verteidigungstaktiken"??)
-Adversarial machine learning is an area of research investigating how machine learning models can be compromised by inputs designed to cause the model to make a mistake.
-These inputs are known as adversarial examples.
-The goal of adversarial machine learning is to understand machine learning models' vulnerabilities and develop techniques to make them more robust against such attacks.
+Machine learning is employed across a domains, highlighting its versatility.
+However, adversarial machine learning emerges as a critical area of research, focusing on the investigation of how machine learning models can be undermined by specially crafted inputs.
+These adversarial inputs are designed to trick the model into making errors, revealing potential vulnerabilities and guiding the development of defensive strategies to enhance model robustness.
 Various machine learning techniques are tailored to address particular problem sets based on the premise that the training and test data share the same statistical distribution.
 However, in practical situations, this belief can prove to be misguided.
 In particular, when users intentionally submit erroneous data, it can considerably impact the reliability and effectiveness of machine learning models.
@@ -363,57 +439,51 @@ An example where the FGSM attack has been used for generating adversarial sample
   image("images/adversarial-example-panda.png"),
   caption: [Initially, the image $bold(x)$ gets correctly classified as "panda" with a confidence of $57.7%$. After multiplying noise, which was generated by the FGSM attack, with $epsilon$ of $0.007$ and adding this perturbation to the original image, the altered image gets classified as "gibbon" with a confidence of $99.3%$.
   #linebreak()
-  Image from Goodfellow et al. in _Explaining and Harnessing Adversarial Examples_, p.3, 2015.]
+  Source: @goodfellowExplainingHarnessingAdversarial2015.]
 ) <adversarial-example-panda>
 
 The FGSM is designed to be fast and computationally efficient, making it not only a powerful tool for analyzing the robustness of neural networks but also a significant concern for applications reliant on machine learning for security-sensitive tasks.
 
-= Approach <approach>
-The methods mentioned in @related-work are used for fingerprinting, meaning they can predict which results originate from which quantum computer, but most of them cannot distinguish between a QC or a simulator with a noise model.
-//TODO: is "most of them" correct? hedging needed, maybe formulate in another way?
-This work attempts to develop an approach that performs this differentiation.
-In order to achieve this, only the measurement results of the quantum circuits are considered.
-Therefore, this thesis uses machine learning techniques to decide whether a quantum circuit was run on a quantum computer or simulated on a classical computer based on the circuit's measurement results.
+#pagebreak(weak: true)
 
-As a threat model, we assume the adversary cloud provider is interested in making a profit and therefore accepts circuits with one up to 35 qubits, needing up to approximately 256 GB of RAM (see @memory-needed-for-simulating-n-qubits for visualization).
+= Approach <approach>
+The methods mentioned in @related-work were used for fingerprinting quantum computers.
+In contrast, the goal of this thesis is to provide a mechanism for distinguishing between simulators (possibly with noise model) and quantum computers for one specific circuit, see @circuit for information about the circuit.
+In order to achieve this, only the measurement results of the quantum circuit are considered.
+It is not possible to prove, on which backend a quantum algorithm has been run just based on the measurement results due to the inherent noise of current NISQ devices and the statistical nature of quantum computation.
+Therefore, machine learning based approach has been chosen, because it does not require quantum noise modeling or controlling the quantum circuit with time-dependent pulses @mullerInformationTheoreticalLimits2022.
+This aspect makes using machine learning techniques an appropriate approach for the task at hand, providing a "black-box" capable of classifying based on the outcomes of measurements without delving into the complex specifics of the processes involved.
+This thesis only aims at classifying based on noise, whether the circuit has been executed on a quantum or a simulator backend, but not to reconstruct the noise.
+
+As a threat model, we assume the adversary cloud provider is interested in making profit and therefore accepts circuits with one up to 35 qubits, needing up to approximately 256 GB of RAM (see @memory-needed-for-simulating-n-qubits for visualization).
 Allowing for quantum circuits with more qubits would require exponentially more RAM and increased amounts of computing power, which would, in turn, reduce profit.
 When a user sends a quantum circuit to a quantum cloud provider for execution, the user cannot easily validate that the circuit runs on the advertised quantum hardware.
 This is due to the fact that the cloud provider can shedule the circuit on any hardware without giving notice to the client.
 This is an inherent problem to cloud infrastructure not limited to quantum computing. //TODO: add source?
-
-
-// user has no influence over "sheduling", no access to hardware (cloud computing). only passing a different circuit to the cloud quantum provider.
-// -> use circuit to detect whether quantum backend or simulator has been used.
-
-// not provable, on which backend software was run due to inherent noise + every backend should ideally return the same result.
-
-// use machine learning for learning the inherent noise model of different simulators + quantum computers.
-// black-box models
-
-//TODO: Threat model, assumptions about infrastructure (#qubits, capabilities of adversary)
-//TODO: capabilities of user/"defender"/"center" -> can choose circuits that will be executed.
-//TODO: motivate approach -> why not exactly provable? verification?
-//TODO: why ml?
-//TODO: what is the motivation in @martinaLearningQuantumNoiseFingerprint2023 for picking these circuits?
-// Why this specific quantum circuit has been chosen is being detailed in @circuit.
+The client, on the other hand, has no access to the quantum hardware and therefore can't enforce that the circuit should run on the correct backend.
+In this scenario we assume, that the adversarial quantum provider does not tamper with the circuit provided by the client.
+Therefore, this thesis provides a way of determining, whether an actual quantum backend or a simulator was used for executing a specific circuit.
+The circuit gets executed multiple times and measured at different points for each run in order to be able to consistently classify the type of backend used.
+In the following sections, more information on the circuits used, the preparation of the dataset, and the three machine learning models is provided.
 
 == Data for Training
-The measurement outcomes obtained from quantum computational operations are derived from the dataset provided by @martinaLearningQuantumNoiseFingerprint2023.
-As mentioned in @related-work, the main reasons for this choice were high costs for running the circuit on multiple quantum computers, and designing a specific circuit with the capability of creating measurements that allow for classification based on the noise in the measurements.
-//TODO: challenging to perform measurement with in qc calibration -> out of scope (is calibration even important?)
-The QC measumerent data has been obtained by running the circuit described in @circuit on 7 different IBM quantum machines (Athens, Santiago, Casablanca, Yorktown, Bogota, Quito, Lima).
+As previously mentioned in @related-work, the decision to utilize an existing quantum computer measurement dataset was based on several factors.
+First and foremost, generating a dataset that includes measurements from various quantum computers can be a costly endeavor, requiring multiple circuit executions.
+Additionally, the design of a circuit that accurately captures quantum computer-generated noise adds another layer of complexity.
+For these reasons, the creation of a new dataset was beyond the scope of this thesis.
+As a practical solution, the dataset and circuits made available by @martinaLearningQuantumNoiseFingerprint2023 were utilized in this thesis.
+The QC measumerent dataset was obtained by running the circuit described in @circuit on 7 different IBM quantum machines (Athens, Santiago, Casablanca, Yorktown, Bogota, Quito, Lima).
 The quantum chips vary in their connectivity between qubits, from linear topology to a star topology @martinaLearningQuantumNoiseFingerprint2023.
-The chips vary primarily in their qubit architecture, from simple linear to complex star topologies, and in their quantum volume (8, 16, 32 in our tests), which measures the largest circuit size they can efficiently run and reflects device noise.
 Each quantum machine has different noise parameters for their qubits (T1, T2 error, readout error), and quantum gates.
 The noise fingerprint learned by the machine learning model is based on these differences.
-
 Each circuit measurement in the dataset can be traced back to the quantum computer it was executed on.
 The simulation data for this work was created by simulating the identical quantum circuits from @martinaLearningQuantumNoiseFingerprint2023 both with and without noise.
 The simulators provided by the Qiskit SDK @Qiskit2024 were used.
+More details on the measurements generated by simulators can be found in @executions-on-simulator.
 
 === Circuit <circuit>
 //The circuits used in this thesis are taken from Martina et al. in _Noise Fingerprints in Quantum Computers_, 2022. 
-The circuit designs implemented within this thesis are derived from the work of Martina et al., as documented in their 2022 publication, "Noise Fingerprints in Quantum Computers".//TODO: correct citation?
+The circuit designs implemented in this thesis are derived from the work of Martina et al., as documented in their 2022 publication, "Noise Fingerprints in Quantum Computers" @martinaLearningNoiseFingerprint2022.//TODO: correct citation?
 The different circuits get generated by the algorithm described in @circuit-algorithm.
 The idea behind the quantum circuit is to simulate quantum transport dynamics in a quantum computer.
 A quantum particle is initiated in state $|0000 angle.r$ and "flows" through the circuit via the influence of various quantum gates, including CNOT and Toffoli gates @martinaLearningQuantumNoiseFingerprint2023.
@@ -423,7 +493,7 @@ They can return binary pairs of $00_2$, $01_2$, $10_2$, and $11_2$ first bit cor
 Qubits $q_0$ and $q_1$ are ancilla qubits, with the only purpose of controlling the other qubits.
 
 #algorithm(
-  caption: [Generation of quantum circuts for different measurement steps. Code for circuit generation stems from Martina et al. in _Noise Fingerprints in Quantum Computers_, 2022], //TODO: correctly cited?
+  caption: [Generation of quantum circuts for different measurement steps. Code for circuit generation adapted from Martina et al. in _Noise Fingerprints in Quantum Computers_, 2022 @martinaLearningNoiseFingerprint2022], //TODO: correctly cited?
   pseudocode(
     line-numbering: false,
     [*Ensure:* $|0 angle.r_i forall i in 0,...,3$], ind,
@@ -449,7 +519,8 @@ Qubits $q_0$ and $q_1$ are ancilla qubits, with the only purpose of controlling 
 In order to measure the circuit at different points, @circuit-algorithm is executed with $k=1$ up to $k=9$, which results in 9 measurement points for this ciruit.
 The circuit corresponding to the first measurement step can be seen in @circuit-measurement-step-1. 
 The entire circuit, corresponding to measurement step 9, is depicted in @circuit-measurement-step-9.
-Measurements are performed by applying the Pauli Z operator on qubits $q_2$ and $q_3$ after each execution, see the end section of @circuit-algorithm.
+All circuits for measurement steps in between are in the appendix (see @appendix).
+Measurements are performed by applying the Pauli Z operator on qubits $q_2$ and $q_3$ after each execution, see the last lines of @circuit-algorithm.
 Due to the wavefunction collapse, the circuit has to be regenerated, reexecuted, and measured for each measurement step $k$.
 Consequently, this approach does not employ repeated measurements as utilized in a quantum monitoring protocol or within the framework of Zeno quantum dynamics @gherardiniErgodicityRandomlyPerturbed2017 @fischerObservationQuantumZeno2001 @schaferExperimentalRealizationQuantum2014.
 For a single measurement step with $k=1$, all four qubits ($q_0$, $q_1$, $q_2$, and $q_3$) are each initialized in state $|0 angle.r$.
@@ -460,9 +531,9 @@ Subsequently, the measurement of qubit $q_2$ yields a binary outcome of 0 or 1 w
 Of course, these results will only occur under ideal circumstances.
 On current NISQ devices noise falsifies these measurement outcomes.
 The goal of the approach in this thesis is to make use of this noise in order to distinguish between quantum computers and simulators based on their noise profile.
-With an increasing number of gates, the amount of noise slowly accumulates. //TODO: add more information? this is one of the reasons, why we measure at different steps in the circuit.
+Each circuit run has been performed with 8000 shots.
+The data gathered from measuring one circuit run at 9 different steps with 8000 shots look like @measurement-data-table.
 
-All circuits for measurement steps in between are in the appendix (see @appendix).
 #figure(
   image("images/walker-step-1.svg", height: 20%),
   caption: "Circuit which corresponds to measurement step 1."
@@ -473,8 +544,6 @@ All circuits for measurement steps in between are in the appendix (see @appendix
   caption: "Circuit which corresponds to measurement step 9. Complete circuit with four qubits. Only the lower two qubits are being measured at the end. Grey separators mark points at which measurements can take place."
 ) <circuit-measurement-step-9>
 #v(10pt)
-Each circuit run has been performed with 8000 shots.
-The data gathered from measuring one circuit run at 9 different steps with 8000 shots look like @measurement-data-table.
 
 #figure(
   table(
@@ -486,10 +555,10 @@ The data gathered from measuring one circuit run at 9 different steps with 8000 
     [...], [...], [...], [...], [...], [...],
     [8000], [$01_2$], [$00_2$], [$00_2$], [...], [$10_2$]
   ), 
-  caption: "Measurement examples for one run with 8000 shots. There exist 250 measurement tables for each quantum computer and simulator used in this thesis." //TODO: improve caption
+  caption: "Measurement examples for one run with 8000 shots. The table contains data for all measurement steps from one up to measurement step 9. There exist 250 measurement tables for each quantum computer and simulator used in this thesis."
 ) <measurement-data-table>
 
-=== Executions on Simulator
+=== Executions on Simulator <executions-on-simulator>
 Seven different Qiskit simulators are utilized to obtain the simulated data.
 Only one backend calculates a noise-free result because different simulator implementations without noise deliver similar results.
 In order to obtain a comparable order of magnitude of simulated data to that of QC-generated data, six additional simulators with noise are used.
@@ -561,12 +630,11 @@ The error rates of the CNOT gate for each simulator are listed in @simulator-cno
 ) <simulator-cnot-error-rate>
 
 All these different errors accumulate when simulating a quantum circuit.
-Due to the fact, that these error rates stem from the calibration data of actual quantum computers, the overall noise-model is quite complex, but within the error range of real quantum computers. //TODO: is this last sentence good?
+Due to the fact, that these error rates are based on calibration data of actual quantum computers, the overall noise-model is quite complex, but within the error range of real quantum computers.
 
 == Machine Learning Approaches <machine-learning-approaches>
-Machine learning stands out as the preferred approach for distinguishing between simulators and quantum computers primarily because it does not necessitate quantum noise modeling nor the control of the quantum circuit with time-dependent pulses @mullerInformationTheoreticalLimits2022.
-This characteristic makes machine learning approaches exceptionally well suited for this task, offering a "black-box" model that can effectively classify based on measurement results without intricate details of the underlying processes.
-Quantum systems have already been succesfully analyzed by machine learning methods .
+Machine learning stands out as the preferred approach for distinguishing between simulators and quantum computers primarily because it does not necessitate quantum noise modeling or controlling the quantum circuit with time-dependent pulses @mullerInformationTheoreticalLimits2022.
+This characteristic makes machine learning approaches well suited for this task, offering a "black-box" model that can effectively classify based on measurement results without intricate details of the underlying processes.
 Machine learning has already been succesfully utilized to analyze quantum systems @youssryQuantumNoiseSpectroscopy2020 and to efficiently learn quantum noise @harperEfficientLearningQuantum2020.
 
 The three machine learning methods used in this thesis are used as classifiers
@@ -574,7 +642,8 @@ $ "Classifier" f: X -> C $
 where $f$ is the machine learning method used.
 The output $C$ consists of two different classes:
 $ C = {0, 1} = {`"Quantum Computer"`, `"Simulator"`} $
-The input data $X$ has been preprocessed to contain the probability distributions per step for the four possible measurement result values ($0$, $1$, $2$, $3$). //TODO: use 00_2, 01_2, ... as measurement results?
+The input data $X$ has been preprocessed to contain the probability distributions per step for the four possible measurement result values ($00_2, 01_2, 10_2, 11_2$).
+In the following, especially for the example, we will be using the corresponding decimal numbers to improve readability ($0$, $1$, $2$, $3$).
 How exactly the input $X$ gets prepared is detailed in the following:
 Three different variables influence the input data, the number of shots $s in NN$ (in this thesis $s = 8000$), the measurement step $k = [1, 9]$, and the window size $w in {t in NN | s mod t = 0}$.
 The measurement step $k$ corresponds with the measurements taken on the $k^"th"$ circuit (for $k=1$, see @circuit-measurement-step-1, etc.) //TODO: etc. ok?
@@ -588,8 +657,9 @@ Elements in $D$ are ordered tuples consisting of four elements:
 $ d_(i,j) = (c_1, c_2, c_3, c_4) $
 where $c_q$ represents, how often the measurement result $q$ has been counted.
 $ "For" d_(i,j) in.rev c_q = sum_(l = i)^(i + w) bb(1)_q (m_(l,j)) $
-where $bb(1)_q$ is the indicatior function with $bb(1)_q (n) = 1$ and otherwise $bb(1)_q = 0$.
-Afterwards, every value in $D$ gets divided by $w$ for normalization which improves the training of the feedforward neural net and the convolutional neural net due to the smaller numbers: //TODO: improve + add reference?
+where $bb(1)_q$ is the indicatior function with $bb(1)_q (n) = 1$ for $n = q$ and $bb(1)_q (n) = 0$ for $n eq.not q$.
+Afterwards, every value in $D$ gets divided by $w$ for normalization.
+By normalizing, all input values are kept between 0 and 1, which improves the learning process for the machine learning techniqes.
 $ d_(i,j) = (c_1/w, c_2/w, c_3/w, c_4/w) $
 As last step, each row in the matrix $D$ gets converted into a ordered tuple and added to $X$, the set of inputs:
 $ X = {(d_(i,1), d_(i,2), dots , d_(i,k)) | 1 <= i <= s} $
@@ -607,27 +677,30 @@ For $k=3$, each ordered tuple $x in X$ would contain 3 different sub-tuples such
 $X$ can contain the probability distribution-data accumulated from multiple runs from different quantum computers or simulators.
 
 In the following machine learning approaches, in case no window size is mentioned, these models where trained and evaluated with data preprocessed with a window size of 2000.
-This value has been taken from @evaluation because it shows a high accuracy even with a low amount of measurement steps accross models, allowing for an easier comparison. //TODO reference to @evaluation good/correct?
-
-//TODO: grid with 3 different charts, each depicting the step size vs window size (only 5 window sizes each)
+The window size of 2000 results in high accuracy even with a low amount of measurement steps accross models as described in @evaluation.
 
 === Support Vector Machine
-
-To optimize the selection of the support vector machine algorithm for training, 20% of the dataset is allocated for preliminary evaluation.
-This evaluation process involves comparing the performance, specifically accuracy, of multiple potential SVM algorithms: linear, polynomial, and radial basis function.
+To optimize the selection of the support vector machine algorithm for training, 20% of the dataset is allocated for a preliminary evaluation.
+This evaluation process involves comparing the classification accuracy of multiple potential SVM algorithms: linear, polynomial, and radial basis function.
 During this phase, the algorithm demonstrating superior accuracy is then selected for further training.
 This makes it possible to achieve high accuracies even for complicated input data while trying to keep the computational cost low.
 The chosen algorithm undergoes training on 60% of the input data, and its performance is subsequently assessed using the remaining 20% of the data to ensure its efficacy and reliability.
-The selection process for the SVM algorithm is similar to @martinaLearningNoiseFingerprint2022.
+The selection process for the SVM algorithm is based on @martinaLearningNoiseFingerprint2022.
 
 === Feedforward Neural Net <approach-ffnn>
-//TODO: add architecture diagram
-//TODO: add training curves.
-//TODO: mention keras + tensorflow used
 The feedforward neural net was trained on 80% of the dataset, 20% were used for evaluationg the accuracy of the model.
-The input layer of the neural network was designed to be variable, accommodating between 4 to 36 neurons, depending on the number of measurement steps that are included in the dataset.
-This flexibility was needed to be able to compare different amounts of measurement steps, see @evaluation. //TODO: is this reference usefull?
-The architecture included two dense hidden layers containing 45 and 20 neurons, respectively, utilizing the hyperbolic tangent (tanh) activation function.
+The input layer of the neural network was designed to be variable, accommodating between 4 to 36 inputs, depending on the number of measurement steps that are included in the dataset.
+When using measurement step 1 up to $k$, $4 dot k$ inputs are required.
+This flexibility was needed to be able to compare different amounts of measurement steps in @evaluation.
+The architecture included two dense hidden layers containing 45 and 20 neurons, respectively, both utilizing the hyperbolic tangent (tanh) activation function.
+For hyperparameter tuning, the KerasTuner @omalley2019kerastuner, specifically employing the Hyperband algorithm, was utilized.
+This method optimizes for validation accuracy by exploring various configurations for the number of neurons in each layer and the activation function used.
+For the first layer, the number of neurons could range from 1 to 100, with a step size of 5, while for the second layer, the range was from 1 to 50 neurons, also with a step size of 5.
+The activation functions tested were rectified linear unit (ReLU), sigmoid, and tanh.
+The choice of the tanh activation function was based on its performance, which yielded higher accuracy compared to ReLU and sigmoid when tested with the KerasTuner.
+The final number of neurons for each layer were determined through a combination of using the KerasTuner and manual trial and error.
+The output layer was constructed with a single neuron, employing a sigmoid activation function to produce a probability output between 0 and 1, indicative of the data source being a quantum computer or simulator, respectively.
+See @fnn-architecture-diagram for an overview of the models architecture.
 
 #figure(
   raw-render(
@@ -638,10 +711,10 @@ The architecture included two dense hidden layers containing 45 and 20 neurons, 
       rankdir=TD;
       
       // Define nodes
-      input [label=<{<B>Input Layer</B>| Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
-      hidden1 [label=<{<B>Hidden Dense Layer 1</B>| Output shape: (45) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
-      hidden2 [label=<{<B>Hidden Dense Layer 2</B>| Output shape: (20) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
-      output [label=<{<B>Output Layer</B>| Output shape: (1) | Activation function: sigmoid}>, fillcolor="#ea9397", style=filled];
+      input [label=<{<B>Input</B>| Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
+      hidden1 [label=<{<B>Dense Layer 1</B>| Output shape: (45) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
+      hidden2 [label=<{<B>Dense Layer 2</B>| Output shape: (20) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
+      output [label=<{<B>Dense Output Layer</B>| Output shape: (1) | Activation function: Sigmoid}>, fillcolor="#ea9397", style=filled];
       
       // Define connections
       input -> hidden1;
@@ -656,15 +729,17 @@ The architecture included two dense hidden layers containing 45 and 20 neurons, 
 
     ```
   ),
-  caption: [Architecture diagram for feedforward neural net. In the input layer, $k$ refers to the measurement step.] //TODO: improve
-)
-
-//TODO: used relu function because it yielded higher accuracy when comparing between relu, sigmoid and than with keras tuner.
-Increasing the amount of neurons didn't yield any noticable increase in accuracy, the number of neurons was determined by utilizing the keras tuner and manual trial and error afterwards.
-The output layer was constructed with a single neuron, employing a sigmoid activation function to produce a probability output between 0 and 1, indicative of the data source being a simulator or a quantum computer, respectively.
+  caption: [Architecture diagram for the feedforward neural net. In the input layer, $k$ refers to the measurement step.]
+) <fnn-architecture-diagram>
 
 For the training process, the Adam optimizer was selected.
 The loss during training was quantified using binary cross-entropy, the standard choice for binary classification problems.
+Training was conducted over a maximum of 100 epochs with a batch size of 32.
+In order to reduce training time, after 5 consecutive epochs with no improvement for the validation loss, further epochs were skipped, balancing computational efficiency and the model's ability to learn from the training data.
+Especially when training with measurement steps $k >= 3$, this early stopping was important, because the highest accuracy has been reached almost after the first epoch, see @fnn-training-step-5.
+Extending the training beyond 100 epochs did not significantly improve accuracy as can be seen in @fnn-training-step-1.
+After training, the model's accuracy was evaluated by using the previously unseen test data.
+This configuration led to the model's successful differentiation between the two backend types, see @evaluation-ffnn.
 
 #figure(
   grid(
@@ -677,10 +752,10 @@ The loss during training was quantified using binary cross-entropy, the standard
       let fnn_val_acc = csv("data/training_history/history_fnn_step_1_val_accuracy.csv")
 
       plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
-        x-min: -5,
-        x-label: "Epoch no.",
+        x-min: -5, x-max: 200,
+        x-label: "Epoch",
         y-min: 0.4, y-max: 1.05,
-        y-ticks: (0, 0.25, 0.5, 0.75, 0.9, 1),
+        y-ticks: (0, 0.25, 0.5, 0.6, 0.7, 0.8, 0.9, 1),
         y-label: "Accuraccy",
       {
         plot.add(fnn_val_acc.map(((epoch,acc)) => (int(epoch), float(acc))))
@@ -694,8 +769,8 @@ The loss during training was quantified using binary cross-entropy, the standard
       let fnn_val_acc = csv("data/training_history/history_fnn_step_1_val_loss.csv")
 
       plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
-        x-min: -5,
-        x-label: "Epoch no.",
+        x-min: -5, x-max: 200,
+        x-label: "Epoch",
         y-min: 0.25, y-max: 0.75,
         y-ticks: (0, 0.25, 0.5, 0.75, 0.9, 1),
         y-label: "Loss",
@@ -704,11 +779,10 @@ The loss during training was quantified using binary cross-entropy, the standard
       })
     }),
   ),
-  caption: [Validation acc (left), Validation loss (right). Only Trained on measurement step 1 (window size 2000).] //TODO: ausarbeiten
-)
+  caption: [Training history for the feedforward neural net. The dataset used was a combination of all measurement data generated by all available quantum computers and simulators. Only data from measurement step 1 has been used for training with a window size of 2000. These charts show, that validation accuracy (left graph) and validation loss (right graph) don't improve significantly after 100 epochs of training.]
+) <fnn-training-step-1>
 
-//TODO: mention early stop (after epoch 5 when acc over 99.9%)
-//TODO: mention early stop after no improvement in val_loss for 3 epochs
+#v(15pt)
 
 #figure(
   grid(
@@ -721,8 +795,8 @@ The loss during training was quantified using binary cross-entropy, the standard
       let fnn_val_acc = csv("data/training_history/history_fnn_step_5_val_accuracy.csv")
 
       plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
-        x-min: -5,
-        x-label: "Epoch no.",
+        x-min: -5, x-max:200,
+        x-label: "Epoch",
         y-min: 0.9, y-max: 1.05,
         y-ticks: (0, 0.25, 0.5, 0.75, 0.9, 1),
         y-label: "Accuraccy",
@@ -738,8 +812,8 @@ The loss during training was quantified using binary cross-entropy, the standard
       let fnn_val_acc = csv("data/training_history/history_fnn_step_5_val_loss.csv")
 
       plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: 0.01, 
-        x-min: -5,
-        x-label: "Epoch no.",
+        x-min: -5, x-max:200,
+        x-label: "Epoch",
         y-min: -0.003, y-max: 0.04,
         y-label: "Loss",
       {
@@ -747,30 +821,70 @@ The loss during training was quantified using binary cross-entropy, the standard
       })
     }),
   ),
-  caption: [Validation acc (left), Validation loss (right). Only Trained on measurement steps 1 up to (including) 5 combined  (window size 2000).] //TODO: ausarbeiten
-)
-
-Training was conducted over five epochs with a batch size of 32, balancing computational efficiency and the model's ability to learn from the training data.
-Observations indicated that extending the training beyond five epochs did not significantly improve accuracy, suggesting an optimal learning plateau had been reached within the given epoch span.
-After training, the model's accuracy was evaluated by using the previously unseen test data.
-This configuration led to the model's successful differentiation between the two data sources, see @evaluation-ffnn.
+  caption: [Training history for the feedforward neural net. The dataset used was a combination of all measurement data generated by all available quantum computers and simulators. Data from measurement steps 1 up to (and including) measurement step 5 have been used for training with a window size of 2000. These charts show, that validation accuracy (left graph) and validation loss (right graph) almost imediately reach their best values after training starts.]
+) <fnn-training-step-5>
 
 === Convolutional Neural Net
-A convolutional neural network model was developed, utilizing a dataset divided into 80% for training and 20% for testing.
+A convolutional neural network model was trained, utilizing a dataset divided into 80% for training and 20% for validation.
 The input layer of the model was designed to be adaptable, accommodating a variable number of neurons ranging from 4 to 36, depending on the number of measurement steps incorporated in the dataset, similar to @approach-ffnn.
-The first layer contains 30 1-dimensional convolutional filters, each with a kernel size of 3, using the Rectified Linear Unit (ReLU) activation function.
-//TODO: used relu function because it yielded higher accuracy when comparing between relu, sigmoid and than with keras tuner.
-//TODO: better explain, how the keras tuner was used.
+When using measurement step 1 up to $k$, $4 dot k$ inputs are required.
+The first convolutional layer contains 40 1-dimensional filters, each with a kernel size of 3, using the ReLU activation function.
 Following the convolutional layer, a 1-dimensional max pooling operation was applied, reducing the dimensionality of the data.
 After the max pooling, the network architecture includes a flattening step, transforming the pooled feature maps into a single, linear vector.
 This flattened vector was then fed into two additional hidden layers, comprising 64 and 32 neurons, each employing the ReLU activation function to further process and refine the features extracted from the input data.
-Increasing the amount of neurons or the number of convolutional filters didn't result in a noticable increase in accuracy.
-For finding a general structure, the keras tuner was utilized.
-Afterwards the values where finally adjusted by hand per trial and error.
-The final stage of the model was an output layer consisting of a single neuron utilizing a sigmoid activation function.
-This setup is particularly suited for binary classification tasks, as it produces a probability output in the range of 0 to 1, indicative of the class membership of the input data.
+For hyperparameter tuning the CNN, the KerasTuner @omalley2019kerastuner with the Hyperband algorithm, was utilized.
+Optimization took place with respect to the validation accuracy by exploring various configurations for the number of filters, size of the filters, the number of neurons in each layer, and the activation function used.
+For the convolutional layer, the number of filters could range from 1 to 50, with filter sizes between 2 and 4.
+Optimization for the feedforward neural net part was similar to @approach-ffnn.
+For the first dense layer, the number of neurons could range from 1 to 100, for the second dense layer, the range was from 1 to 50 neurons, both with a step size of 5.
+The activation functions tested were rectified linear unit (ReLU), sigmoid, and tanh.
+The choice of the ReLU activation function was based on its performance, which yielded higher accuracy with the KerasTuner.
+The final number of filters, their size and the number of neurons for each layer were determined through a combination of using the KerasTuner and manual trial and error.
+The output layer consists of a single neuron utilizing a sigmoid activation function.
+This setup is particularly suited for binary classification tasks, as it produces an output in the range of 0 to 1, indicative of the class membership of the input data.
+See @cnn-architecture-diagram for an overview of the models architecture.
 
-//TODO: add accuracy and loss for trainings-data as well? (inside same chart, different color).
+#figure(
+  raw-render(
+    width: 30%,
+    ```dot
+    digraph CNN {
+      node [shape=record];
+      rankdir=TD;
+      
+      // Define nodes
+      input [label=<{<B>Input Layer</B>| Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
+      conv1 [label=<{<B>Convolutional Layer</B>| Kernel size: 1 x 3 | No. of filters: 40}>, fillcolor="#6a6ca4", style=filled];
+      pooling [label=<{<B>1D Max Pooling Layer</B>}>, fillcolor="#6a6ca4", style=filled];
+      hidden1 [label=<{<B>Dense Layer 1</B>| Output shape: (64) | Activaton function: ReLU}>, fillcolor="#6a6ca4", style=filled];
+      hidden2 [label=<{<B>Dense Layer 2</B>| Output shape: (32) | Activaton function: ReLU}>, fillcolor="#6a6ca4", style=filled];
+      output [label=<{<B>Dense Output Layer</B>| Output shape: (1) | Activation function: Sigmoid}>, fillcolor="#ea9397", style=filled];
+      
+      // Define connections
+      input -> conv1;
+      conv1 -> pooling;
+      pooling -> hidden1;
+      hidden1 -> hidden2;
+      hidden2 -> output;
+      
+      // Additional styling
+      edge [color=gray];
+      ranksep="0.3";
+      nodesep="0.4";
+    }
+
+    ```
+  ),
+  caption: [Architecture diagram for the convolutional neural net. In the input layer, $k$ refers to the measurement step.]
+) <cnn-architecture-diagram>
+
+The Adam optimizer and binary cross-entropy were employed for optimization and loss calculation, respectively.
+Binary cross-entropy is a standard loss function used for binary classification problems, measuring the difference between predicted probabilities and actual class labels.
+The model was trained for a maximum of 100 epochs, with further epochs skipped after five consecutive epochs with no improvement for the validation loss to balance computational efficiency and the model's ability to learn from the training data.
+Early stopping was essential when training with measurement steps $k >= 3$, as the highest accuracy was usually achieved after the first epoch, see @cnn-training-step-5.
+Extending training beyond 100 epochs did not significantly improve accuracy, see @cnn-training-step-1.
+After training, the model's accuracy was assessed using previously unseen validation data.
+This setup enabled successful differentiation between the two backend types, as described in @evaluation-cnn.
 
 #figure(
   grid(
@@ -783,10 +897,10 @@ This setup is particularly suited for binary classification tasks, as it produce
       let fnn_val_acc = csv("data/training_history/history_cnn_step_1_val_accuracy.csv")
 
       plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
-        x-min: -5,
-        x-label: "Epoch no.",
+        x-min: -5, x-max: 200,
+        x-label: "Epoch",
         y-min: 0.4, y-max: 1.05,
-        y-ticks: (0, 0.25, 0.5, 0.75, 0.9, 1),
+        y-ticks: (0.5, 0.6, 0.7, 0.8, 0.9, 1),
         y-label: "Accuraccy",
       {
         plot.add(fnn_val_acc.map(((epoch,acc)) => (int(epoch), float(acc))))
@@ -800,8 +914,8 @@ This setup is particularly suited for binary classification tasks, as it produce
       let fnn_val_acc = csv("data/training_history/history_cnn_step_1_val_loss.csv")
 
       plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
-        x-min: -5,
-        x-label: "Epoch no.",
+        x-min: -5, x-max: 200,
+        x-label: "Epoch",
         y-min: 0.25, y-max: 0.75,
         y-ticks: (0, 0.25, 0.5, 0.75, 0.9, 1),
         y-label: "Loss",
@@ -810,11 +924,10 @@ This setup is particularly suited for binary classification tasks, as it produce
       })
     }),
   ),
-  caption: [Validation acc (left), Validation loss (right). Only Trained on measurement step 1 (window size 2000).] //TODO: ausarbeiten
-)
+  caption: [Training history for the CNN. The dataset used was a combination of all measurement data generated by all available quantum computers and simulators. Only data from measurement step 1 has been used for training with a window size of 2000. These charts show, that validation accuracy (left graph) and validation loss (right graph) don't improve significantly after 50 to 100 epochs of training.]
+) <cnn-training-step-1>
 
-//TODO: mention early stop (after epoch 5 when acc over 99.9%)
-//TODO: mention early stop after no improvement in val_loss for 3 epochs
+#v(15pt)
 
 #figure(
   grid(
@@ -827,8 +940,8 @@ This setup is particularly suited for binary classification tasks, as it produce
       let fnn_val_acc = csv("data/training_history/history_cnn_step_5_val_accuracy.csv")
 
       plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: none, 
-        x-min: -5,
-        x-label: "Epoch no.",
+        x-min: -5, x-max: 200,
+        x-label: "Epoch",
         y-min: 0.9, y-max: 1.05,
         y-ticks: (0, 0.25, 0.5, 0.75, 0.9, 1),
         y-label: "Accuraccy",
@@ -843,30 +956,22 @@ This setup is particularly suited for binary classification tasks, as it produce
 
       let fnn_val_acc = csv("data/training_history/history_cnn_step_5_val_loss.csv")
 
-      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: 0.01, 
-        x-min: -5,
-        x-label: "Epoch no.",
-        y-min: -0.003, y-max: 0.04,
+      plot.plot(size: (5,4), x-tick-step: 50, y-tick-step: 0.002, 
+        x-min: -5, x-max: 200,
+        x-label: "Epoch",
+        y-min: -0.0003, y-max: 0.004,
         y-label: "Loss",
+        y-decimals: 5,
       {
         plot.add(fnn_val_acc.map(((epoch,loss)) => (int(epoch), float(loss))))
       })
     }),
   ),
-  caption: [Validation acc (left), Validation loss (right). Only Trained on measurement steps 1 up to (including) 5 combined  (window size 2000).] //TODO: ausarbeiten
-)
-
-//TODO: mention that 100 epochs is not the optimum, but the best balance for computational cost vs accuracy.
-
-The Adam optimizer and binary cross-entropy were employed for optimization and loss calculation, respectively.
-Binary cross-entropy is a standard loss function for binary classification problems, measuring the discrepancy between the predicted probabilities and the actual class labels.
-The model underwent training in five epochs, with observations indicating that further extending the training duration beyond this period did not yield significant improvements in model accuracy.
-This suggests the model reached an optimal learning plateau within the specified epoch count.
-Post-training, the model's performance was evaluated using the previously unseen test data to measure its generalization capability, see @evaluation-cnn.
-
+  caption: [Training history for the CNN. The dataset used was a combination of all measurement data generated by all available quantum computers and simulators. Data from measurement steps 1 up to (and including) measurement step 5 have been used for training with a window size of 2000. These charts show, that validation accuracy (left graph) and validation loss (right graph) almost imediately reach their optimal values after training starts.]
+) <cnn-training-step-5>
 
 == Adversarial Machine Learning with Fast Gradient Sign Method
-For the adversarial attack the goal is to measurements from a simulator, perform the Fast Gradient Sign Method on them and show that they are classified as 'has been run on a quantum computer' afterwards.
+For the adversarial attack the goal is to measurements from a simulator, perform the Fast Gradient Sign Attack on them and show that they are classified as 'has been run on a quantum computer' afterwards.
 The model used was a feedforward neural net (as described in @approach-ffnn) which has been trained on 80% of all available simulator and quantum computer data, containing all 9 measurement steps.
 The remaining 20% were used for measuring the model accuracy beforehand.
 All 9 measurements were included to achieve the highest accuracy and robustness against unknown quantum computer inputs (see @adversarial-accuracy). 
@@ -877,6 +982,8 @@ In order to produce valid values, the adversarial sample gets clipped such that 
 Additionally, subsequent packs of four values each get normalized to sum up to 1, making sure they represent valid probabilistic distributions.
 Through this attack it was possible to get the model to label measurements generated by a simulator as quantum computer generated.
 See @evaluation-fgsm for a detailed evaluation.
+
+#pagebreak(weak: true)
 
 = Evaluation <evaluation>
 For each model, three different evaluations have been performed:
@@ -1346,6 +1453,9 @@ One way to prevent such a white-box adversarial attack is to keep the trained ne
 //TODO: only one source of simulators (qiskit)
 //TODO: future work: compare different quantum computer architectures + simulators?
 
+#pagebreak(weak: true)
+
+//TODO: combine future work and conclusion?
 = Future Work <future-work>
 One possible improvement would be to showcase that this approach can distinguish between simulators and quantum computers for other quantum circuits than the one used in this work (@circuit).
 Moreover it would be interesting to explore how adding additional samples from different (and possibly more modern) quantum computers would influence the accuracy.
@@ -1357,7 +1467,7 @@ The machine learning models proposed in this thesis can not generalize to other 
 Despite that, it is probably possible to use the proposed approach in this thesis for classifying the results from different quantum circuits (see @future-work).
 When taking the limitations shown in @limitations into account, this approach can be used as a usefull indicator for validating that the correct backend types has been used for executing a quantum circuit. 
 
-#pagebreak()
+#pagebreak(weak: true)
 
 = Appendix <appendix>
 #figure(
@@ -1396,6 +1506,6 @@ When taking the limitations shown in @limitations into account, this approach ca
 ) <circuit-measurement-step-8>
 #v(10pt)
 
-#pagebreak()
+#pagebreak(weak: true)
 
 #bibliography("Sources.bib")
