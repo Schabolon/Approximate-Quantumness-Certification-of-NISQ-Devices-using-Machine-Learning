@@ -183,8 +183,7 @@ In @approach, an explanation for the dataset based on the circuit measurements i
 These are used to train different machine learning algorithms in order to differentiate whether a quantum circuit has been executed by a quantum computer or simulated by a classical computer.
 Additionally, a white-box adversarial attack is performed.
 After that, in @evaluation, the accuracies of the different machine learning algorithms are compared, and the limitations of this work are discussed, specifically concerning the white-box adversarial attack.
-@future-work points out possible areas for further research.
-At the end, @conclusion contains a short conclusion.
+@future-work-and-conclusion points out possible areas for further research and ends wih a short conclusion.
 
 #pagebreak(weak: true)
 
@@ -427,6 +426,8 @@ These adversarial inputs are designed to trick the model into making errors, rev
 Various machine learning techniques are tailored to address particular problem sets based on the premise that the training and test data share the same statistical distribution.
 However, in practical situations, this belief can prove to be misguided.
 In particular, when users intentionally submit erroneous data, it can considerably impact the reliability and effectiveness of machine learning models.
+It is possible to attack a neural network in the training or the inference phase @josephAdversarialMachineLearning2017.
+In this thesis, only the iinference phase is being targeted.
 One simple and fast method of generating adversarial examples is called 
 Fast Gradient Sign Method (FGSM), which is a white-box adversarial attack.
 White-box adversarial attacks on neural networks operate under the premise that the attacker has complete knowledge of the model's architecture and weights.
@@ -996,19 +997,9 @@ See @evaluation-fgsm for a detailed evaluation.
 #pagebreak(weak: true)
 
 = Evaluation <evaluation>
-
-//The evaluation section provides a comprehensive analysis of how the window size and measurement step range impact the performance of three distinct machine learning models applied to quantum computing classification tasks.
-
-Three different evaluations have been performed:
-1. an accuracy comparison for different window size and measurement step ranges.
-2. the impact of excluding one quantum computer and using only the excluded quantum computer as test data.
-3. excluding at least one and up to four quantum computers and using exclusively the excluded quantum computers for evaluating the accuracy. Every possible permutation of quantum computers gets excluded (the order is not taken into account) and the average of all training runs is calculated.
-
-// 1. show that classification is generally possible + find out good/best window size
-// 2. exclude quantum computers / simulators -> real world scenario, classifying unknown qc or simulator.
-// exclude single one to show different effects.
-
-//TODO: add 8000 window size to graphs.
+The evaluation section shows, that distinguishing what type of backend the circuit was executed on is possible with up to 100% accuracy.
+Additionally it shows that an increasing window size and taking more measurement steps into account both increases accuracy.
+Furthermore, single and multiple quantum computers and simulators are being excluded from the training set and used as test set, showing that the models can even classify unknown backends with an accuracy of at least 90% when using all 9 measurement steps.
 
 == Compare window size vs measurement step range
 This section evaluates the effects of window size and measurement step range on the three machine learning approaches.
@@ -1046,13 +1037,13 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
           y-label: "Accuraccy",
           legend: "legend.inner-south-east",
         {
-          plot.add(window_size_50, label: [w = 50])
-          plot.add(window_size_100, label: [w = 100])
-          plot.add(window_size_2000, label: [w = 2000])
-          plot.add(window_size_8000, label: [w = 8000])
+          plot.add(window_size_50, label: [w = 50], mark: "x", mark-size: 0.10)
+          plot.add(window_size_100, label: [w = 100], mark: "x", mark-size: 0.10)
+          plot.add(window_size_2000, label: [w = 2000], mark: "x", mark-size: 0.10)
+          plot.add(window_size_8000, label: [w = 8000], mark: "x", mark-size: 0.10)
         })
       }),
-      caption: [SVM], //TODO: improve (mention no w=5, took too long)
+      caption: [Accuracy for the SVM, trained on the dataset containing all quantum computer and all simulator data. A window size of $w = 5$ has been omitted, because the training time for such a high number of inputs was not feasible.],
     ),
 
     figure(
@@ -1074,14 +1065,14 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
           y-label: "Accuraccy",
           legend: "legend.inner-south-east",
         {
-          plot.add(window_size_5, label: [w = 5])
-          plot.add(window_size_50, label: [w = 50])
-          plot.add(window_size_100, label: [w = 100])
-          plot.add(window_size_2000, label: [w = 2000])
-          plot.add(window_size_8000, label: [w = 8000])
+          plot.add(window_size_5, label: [w = 5], mark: "x", mark-size: 0.10)
+          plot.add(window_size_50, label: [w = 50], mark: "x", mark-size: 0.10)
+          plot.add(window_size_100, label: [w = 100], mark: "x", mark-size: 0.10)
+          plot.add(window_size_2000, label: [w = 2000], mark: "x", mark-size: 0.10)
+          plot.add(window_size_8000, label: [w = 8000], mark: "x", mark-size: 0.10)
         })
       }),
-      caption: [FNN] //TODO: improve
+      caption: [Accuracy for the FNN, trained on the dataset containing all quantum computer and all simulator data.]
     ),
   ),
 
@@ -1104,14 +1095,14 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
         y-label: "Accuraccy",
         legend: "legend.inner-south-east",
       {
-        plot.add(window_size_5, label: [w = 5])
-        plot.add(window_size_50, label: [w = 50])
-        plot.add(window_size_100, label: [w = 100])
-        plot.add(window_size_2000, label: [w = 2000])
-        plot.add(window_size_8000, label: [w = 8000])
+        plot.add(window_size_5, label: [w = 5], mark: "x", mark-size: 0.10)
+        plot.add(window_size_50, label: [w = 50], mark: "x", mark-size: 0.10)
+        plot.add(window_size_100, label: [w = 100], mark: "x", mark-size: 0.10)
+        plot.add(window_size_2000, label: [w = 2000], mark: "x", mark-size: 0.10)
+        plot.add(window_size_8000, label: [w = 8000], mark: "x", mark-size: 0.10)
       })
     }),
-    caption: [CNN] //TODO: improve
+    caption: [Accuracy for the CNN, trained on the dataset containing all quantum computer and all simulator data.]
   ),
 ) <window-size-vs-step-ranges-plots>
 
@@ -1134,12 +1125,12 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
       y-label: "Accuraccy",
       legend: "legend.inner-south-east",
     {
-      plot.add(svm_window_size_2000, label: [SVM])
-      plot.add(fnn_window_size_2000, label: [FNN])
-      plot.add(cnn_window_size_2000, label: [CNN])
+      plot.add(svm_window_size_2000, label: [SVM], mark: "x", mark-size: 0.10)
+      plot.add(fnn_window_size_2000, label: [FNN], mark: "x", mark-size: 0.10)
+      plot.add(cnn_window_size_2000, label: [CNN], mark: "x", mark-size: 0.10)
     })
   }),
-  caption: [] //TODO: improve
+  caption: [Accuracy comparison between SVM, FNN and CNN. All three models were trained on the dataset containing all quantum computer and all simulator data.]
 ) <comparison-measurement-steps-w-2000>
 
 == Exclude quantum computer or simulator from training dataset
@@ -1253,9 +1244,9 @@ This high level of accuracy, despite the exclusion of multiple QCs, underscores 
       y-label: "Accuraccy",
       legend: "legend.south-east",
     {
-      plot.add(svm, label: [SVM])
-      plot.add(fnn, label: [FNN])
-      plot.add(cnn, label: [CNN])
+      plot.add(svm, label: [SVM], mark: "x", mark-size: 0.10)
+      plot.add(fnn, label: [FNN], mark: "x", mark-size: 0.10)
+      plot.add(cnn, label: [CNN], mark: "x", mark-size: 0.10)
     })
   }),
   caption: [Dataset with the given number of QCs excluded. Only the measurements from the excluded QCs were used as testset. The accuracy depicted is for models trained on data consisting of all 9 measurement steps.]
@@ -1364,7 +1355,7 @@ Therefore, the models have either better abstracted an general notion of simulat
       [],colspanx(9)[*Step Ranges*],[*Model*],..exclude_4_simulators.flatten().slice(1,)
     )
   ),
-  caption: "Four simulators excluded.", //TODO:
+  caption: [Comparing the accuracy of the SVM, FNN, and CNN. This table contains the average accuracy of all training runs excluding every possible combination of four simulators. Only the data generated by the excluded simulators was used as testset each time.],
   kind: table,
 ) <exclude-four-simulators>
 
@@ -1390,7 +1381,7 @@ The graph shows that with increasing $epsilon$ values, the accuracy gets worse d
     {
       let adversarial_accuracy_data = csv("data/walker_adversarial_attack_simulator_to_quantum.csv")
 
-      plot.add(adversarial_accuracy_data.map(((epsilon,acc)) => (float(epsilon), float(acc))))
+      plot.add(adversarial_accuracy_data.map(((epsilon,acc)) => (float(epsilon), float(acc))), mark: "x", mark-size: 0.10)
     })
   }),
   caption: "Comparison of the models accuracy on adversarial samples with different epsilon values. 1400 samples were converted to adversarial samples for this graph. The larger the epsilon value gets, the larger the perturbation in the adversarial sample.",
@@ -1429,25 +1420,21 @@ It would be possible for the quantum cloud provider to recognize this specific c
 To prevent this, the circuit could be embedded into the circuit which the user wants to execute.
 
 Additionally, as shown in @evaluation-fgsm, it is possible to forge adversarial samples which get classified with the incorrect label.
-One way to prevent such a white-box adversarial attack is to keep the trained neural net hidden.
+Despite keeping the model hidden to try to prevent such a white-box adversarial attack, it could be possible to generate adversarial samples despite the precautions by using the transferability of adversarial samples @szegedyIntriguingPropertiesNeural2013.
 
-//TODO: only trained with quantum computer date from ibm (only one quantum computer architecture)
-//TODO: only one source of simulators (qiskit)
-//TODO: future work: compare different quantum computer architectures + simulators?
+Furthermore, only measurement data from IBM quantum computers was available for training the machine learning models in this thesis.
+The generalization capability of the models has not been tested when confronted with a quantum computer from another manufacturer or based on another technology than superconducting qubits.
 
 #pagebreak(weak: true)
 
-//TODO: combine future work and conclusion?
-= Future Work <future-work>
-One possible improvement would be to showcase that this approach can distinguish between simulators and quantum computers for other quantum circuits than the one used in this work (@circuit).
+= Future Work and Conclusion <future-work-and-conclusion>
+This thesis demonstrates that it is possible, with current machine learning algorithms, to predict with a high probability whether an existing quantum circuit was executed by a quantum computer or by a simulator backend.
+While the machine learning models proposed in this thesis cannot generalize to other arbitrary quantum circuits, they can still potentially be retrained and adapted for classifying results from different quantum circuits.
+Therefore, it would be interesting to test if this approach can distinguish between simulators and quantum computers for other quantum circuits beyond the one used in this thesis.
 Moreover it would be interesting to explore how adding additional samples from different (and possibly more modern) quantum computers would influence the accuracy.
-Also, it could be interesting to perform further, more advanced adversarial attacks on the neural net, such as a trying to perform a adversarial patch attack @brownAdversarialPatch2018.
-
-= Conclusion <conclusion>
-This thesis goes to show that it is possible, with current machine learning algorithms, to predict with a high probability for an existing quantum circuit whether it was executed by a quantum computer or by a simulator backend.
-The machine learning models proposed in this thesis can not generalize to other arbitrary quantum circuits.
-Despite that, it is probably possible to use the proposed approach in this thesis for classifying the results from different quantum circuits (see @future-work).
+Also, it could be interesting to perform further, more advanced adversarial attacks on the neural net, such as a trying to utilize the basic iterative method @kurakinAdversarialExamplesPhysical2017.
 When taking the limitations shown in @limitations into account, this approach can be used as a usefull indicator for validating that the correct backend types has been used for executing a quantum circuit. 
+//TODO: add more text
 
 #pagebreak(weak: true)
 
