@@ -44,13 +44,14 @@
 
 #align(center, text("Abstract", weight:"bold"))
 #pad(left: 1.1cm, right: 1.1cm, [
-  Cloud quantum computing is crucial for developing innovative quantum circuits but also presents a potential threat model when using cloud quantum computing services.
+  Cloud quantum computing is crucial for developing innovative quantum circuits but also presents a potential threat model when using quantum computing as a cloud service.
+  //TODO: remove "in this scenario"
   In this scenario, the cloud quantum provider may act as an adversary by advertising the use of quantum computers to clients while using cheaper simulators to return results.
   This thesis demonstrates that it is possible to distinguish whether a quantum circuit has been executed by a simulator (possibly with noise) or a quantum computer with high accuracy.
   Three machine learning techniques are being utilized: a support vector machine, a feedforward neural net, and a convolutional neural net.
   Additionally, an adversarial attack has been used to test the resilience of the feedforward neural net.
   The results of the tests showed that the model is vulnerable to adversarial samples, reducing the model's accuracy.
-  The machine learning techniques learn the noise fingerprint, and the results of this work are consistent with previous studies, indicating that it is feasible to differentiate between various quantum computers by their noise fingerprint.
+  The machine learning techniques learn the noise fingerprint, and the results of this work are consistent with previous papers, indicating that it is feasible to differentiate between various quantum computers by their noise fingerprint.
   All three machine learning techniques used in this thesis can distinguish between quantum computers and simulators with an accuracy of over 99.9%.
   Even for previously unseen quantum computers and simulators, these models classify with at least 80% accuracy (the best model has at least 92% accuracy).
 ])
@@ -59,10 +60,10 @@
 
 #align(center, text("Zusammenfassung", weight:"bold"))
 #pad(left: 1.1cm, right: 1.1cm, [
-  Cloud-Quantencomputing ist für die Entwicklung innovativer Quantenschaltungen von entscheidender Bedeutung, stellt aber auch ein potenzielles Bedrohungsmodell bei der Nutzung von Cloud-Quantencomputing-Diensten dar.
-  In diesem Szenario kann der Anbieter von Cloud-Quantencomputern als Betrüger auftreten, indem er den Kunden die Nutzung von Quantencomputern anpreist jedoch tatsächlich billigere Simulatoren verwendet, um Ergebnisse zu berechnen.
+  Cloud-Quantencomputing spielt eine entscheidende Rolle in der Entwicklung innovativer Quantenschaltkreise, birgt jedoch auch potenzielle Risiken im Zusammenhang mit der Nutzung von Cloud-Diensten für Quantencomputing.
+  Eine mögliche Bedrohung besteht darin, dass Anbieter von Cloud-Quantencomputern betrügerisch handeln könnten, indem sie Kunden die Nutzung echter Quantencomputer versprechen, stattdessen jedoch kostengünstigere Simulatoren einsetzen, um Berechnungen durchzuführen.
   In dieser Arbeit wird gezeigt, dass es möglich ist, mit hoher Genauigkeit zu unterscheiden, ob ein Quantenschaltkreis von einem Simulator (möglicherweise mit hinzugefügtem Rauschen) oder einem Quantencomputer ausgeführt wurde.
-  Es werden drei Machine Learning Techniken eingesetzt: eine Support-Vektor-Maschine, ein Feedforward Neural Net und ein Convolutional Neraul Net.
+  Es werden drei Machine Learning Techniken eingesetzt: eine Support-Vektor-Maschine, ein Feedforward Neural Net und ein Convolutional Neural Net.
   Darüber hinaus wurde die Widerstandsfähigkeit des Feedforward Neural Nets mit Hilfe einer Adversarial Attack getestet.
   Die Ergebnisse der Tests zeigten, dass das Modell anfällig für Adversarial Samples ist, welche die Genauigkeit des Modells verringert.
   Die Machine Learning Techniken lernen den Rausch-Fingerabdruck.
@@ -82,7 +83,7 @@ Quantum computing is a rapidly growing field that is gaining attention.
 Experts expect the quantum computing market to grow from USD 866 million in 2023 to USD 4.375 million in 2030 @QuantumComputingMarket2023.
 Quantum computing is especially promising in the fields of simulations, drug development, and cybersecurity @emilioCurrentStatusNext2022.
 Despite these optimistic prognoses, current quantum computers are still called Noisy Intermediate-Scale Quantum (NISQ) devices due to the high error and noise rates @preskillQuantumComputingNISQ2018.
-Current quantum computers (QCs) are provided as cloud-based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @CompareQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @CloudQuantumComputing2024.
+Current quantum computers (QCs) are provided as cloud-based services to the user by startups such as Rigetti @RigettiQuantumComputing2024 or IonQ @IonQQuantumSystems2024 and tech giants like IBM @IBMQuantum2024, Microsoft @AzureQuantumQuantum2024 or Amazon @AmazonBraketCloud2024.
 These services are mainly aimed at academics and researchers.
 As a first step, a user must register an account to use such a cloud-based quantum computer.
 Afterward, the user develops the quantum circuit (e.g., in IBM's Qiskit @Qiskit2024), uploads the quantum circuit, and can choose a backend to execute the circuit on.
@@ -141,7 +142,7 @@ Therefore, these cases are out of the scope of this thesis.
 However, apart from these highly specialized setups, it is still possible to simulate small quantum circuits.
 As of 2023, a rough cost estimate for a 9-qubit quantum computer from Rigetti stands at \$900,000 @mechanicRigettiLaunchesNovera2023.
 Conversely, simulators can execute small circuits on consumer hardware, drastically reducing the cost barrier for executing quantum computations.
-For example, Amazon Braket charges between \$0.075 and \$0.275 per minute for simulator their cloud simulator service @AmazonBraketPricing.
+For example, Amazon Braket charges between \$0.075 and \$0.275 per minute for using their cloud simulator service @AmazonBraketPricing.
 When renting the IonQ Harmony quantum computer, Amazon Braket charges \$0.3 per task with an additional cost of \$0.01 per shot @AmazonBraketPricing.
 Simulating a quantum circuit with four qubits (see @circuit-measurement-step-9) on consumer hardware took 0.2 seconds for 8000 shots when using the 'Fake_Athens' backend, which adds noise to the result.
 Assuming Amazon Brakets most expensive simulator would take 1 second, this would result in a price of
@@ -279,7 +280,7 @@ Entanglement is one of the cornerstone principles of quantum mechanics, enabling
 One of the simplest examples of quantum entanglement is illustrated by the Bell state, a quantum state of two qubits representing a maximally entangled pair.
 The Bell stat can be mathematically described as
 $ |psi angle.r = (|00 angle.r + |11 angle.r)/sqrt(2). $
-If the first qubit returns $|1 angle.r$ when measured, the second qubit has to collapse to $|1 angle.r$ as well. The same holds true for $| 0 angle.r$.
+If the first qubit returns $|1 angle.r$ when measured, the second qubit has to collapse to $|1 angle.r$ as well. The same holds true for $|0 angle.r$.
 As a result, measurements of $|01 angle.r$ and $|10 angle.r$ are impossible for two qubits in the Bell state.
 //TODO: add more references!
 
@@ -298,7 +299,7 @@ This statistical approach is crucial due to the probabilistic nature of quantum 
 
 === Quantum computers
 Different approaches exist for building physical quantum computers.
-QCs built by IBM are based on superconducting qubit technology @QuantumSystemInformation.
+QCs built by IBM are based on superconducting qubit technology @IBMQuantumSystem.
 Other architectures include trapped ions, photonics, and nuclear magnetic resonance @laddQuantumComputers2010.
 One of the main issues for today's NISQ devices is the presence of noise, drastically reducing the accuracy with which the QCs compute, hindering the implementation of larger quantum circuits.
 Current quantum chips mainly suffer from decoherence, gate errors, readout errors, and crosstalk.
@@ -487,18 +488,11 @@ The simulators provided by the Qiskit SDK @Qiskit2024 were used.
 More details on the measurements generated by simulators can be found in @executions-on-simulator.
 
 === Circuit <circuit>
-//The circuits used in this thesis are taken from Martina et al. in _Noise Fingerprints in Quantum Computers_, 2022. 
-The circuit designs implemented in this thesis are derived from the work of Martina et al., as documented in their 2022 publication, "Noise Fingerprints in Quantum Computers" @martinaLearningNoiseFingerprint2022.//TODO: correct citation?
+The circuit designs implemented in this thesis are derived from the work of Martina et al., as documented in their 2022 publication, "Noise Fingerprints in Quantum Computers" @martinaLearningNoiseFingerprint2022.
 The different circuits are generated by the algorithm described in @circuit-algorithm.
-The idea behind the quantum circuit is to simulate quantum transport dynamics in a quantum computer.
-A quantum particle is initiated in state $|0000 angle.r$ and "flows" through the circuit via the influence of various quantum gates, including CNOT and Toffoli gates @martinaLearningQuantumNoiseFingerprint2023.
-After the first two Hadamard gates and the CNOT gate, qubits $q_0$ and $q_2$ are entangled in the bell state.
-Qubits $q_2$ and $q_3$ are used to track the particle's position.
-They can return binary pairs of $00_2$, $01_2$, $10_2$, and $11_2$ first bit corresponding to $q_2$ and second bit to $q_3$ when measured. //TODO: use 00_2 or (0,0)?
-Qubits $q_0$ and $q_1$ are ancilla qubits, with the only purpose of controlling the other qubits.
 
 #algorithm(
-  caption: [Generation of quantum circuits for different measurement steps. Code for circuit generation adapted from Martina et al. in _Noise Fingerprints in Quantum Computers_, 2022 @martinaLearningNoiseFingerprint2022], //TODO: correctly cited?
+  caption: [Generation of quantum circuits for different measurement steps. Source: based on code from @martinaLearningNoiseFingerprint2022.],
   pseudocode(
     line-numbering: false,
     [*Ensure:* $|0 angle.r_i forall i in 0,...,3$], ind,
@@ -521,6 +515,12 @@ Qubits $q_0$ and $q_1$ are ancilla qubits, with the only purpose of controlling 
   )
 ) <circuit-algorithm>
 
+The idea behind the quantum circuit is to simulate quantum transport dynamics in a quantum computer.
+A quantum particle is initiated in state $|0000 angle.r$ and "flows" through the circuit via the influence of various quantum gates, including CNOT and Toffoli gates @martinaLearningQuantumNoiseFingerprint2023.
+After the first two Hadamard gates and the CNOT gate, qubits $q_0$ and $q_2$ are entangled in the bell state.
+Qubits $q_2$ and $q_3$ are used to track the particle's position.
+They can return binary pairs of $00_2$, $01_2$, $10_2$, and $11_2$ first bit corresponding to $q_2$ and second bit to $q_3$ when measured.
+Qubits $q_0$ and $q_1$ are ancilla qubits, with the only purpose of controlling the other qubits.
 In order to measure the circuit at different points, @circuit-algorithm is executed with $k=1$ up to $k=9$, which results in 9 measurement points for this circuit.
 The circuit corresponding to the first measurement step can be seen in @circuit-measurement-step-1. 
 The entire circuit, corresponding to measurement step 9, is depicted in @circuit-measurement-step-9.
@@ -567,7 +567,7 @@ The data gathered from measuring one circuit run at 9 different steps with 8000 
 Seven different Qiskit simulators are utilized to obtain the simulated data.
 Only one backend calculates a noise-free result because different simulator implementations without noise deliver similar results.
 In order to obtain a comparable order of magnitude of simulated data to that of QC-generated data, six additional simulators with noise are used.
-All six backends utilize a different noise model based on calibration data collected from real IBM quantum computers @Fake_provider.
+All six backends utilize a different noise model based on calibration data collected from real IBM quantum computers @QiskitFake_provider.
 The following fake backends were used: Fake_Vigo, Fake_Athens, Fake_Santiago, Fake_Lima, Fake_Belem, and Fake_Cairo.
 Three of these fake backends are based on configurations of quantum computers, which were used for creating training data to account for an adversarial cloud provider trying to mimic some specific quantum computer.
 The noise introduced in these simulators accumulates from different factors.
@@ -652,8 +652,8 @@ In the following, especially for the example, we will use the corresponding deci
 The following describes how the input data, represented by $X$, is prepared.
 Three variables affect the input data: the number of shots taken, denoted by $s$ (in this thesis, $s = 8000$), the measurement step, denoted by $k$ (ranging from 1 to 9), and the window size $w in {t in NN | s mod t = 0}$ ($w$ is a positive integer that evenly divides $s$).
 The measurement step $k$ corresponds with the measurements taken on the $k^"th"$ circuit (for $k=1$, see @circuit-measurement-step-1, up to @circuit-measurement-step-9 for $k=9$).
-Initially, the preliminary input data consists of a matrix $M$ containing all measurements at specific measurement steps (for one quantum computer/simulator with all measurement steps from 1 up to $k$ performed).
-The matrix row accounts for the shots and the column for the measurement step $k$.
+Initially, the preliminary input data consists of a matrix $M$ with elements $m_i,j$ containing all measurements at specific measurement steps (for one quantum computer/simulator with all measurement steps from 1 up to $k$ performed).
+Each row of the matrix holds the measurement for one shot, and each column corresponds to a measurement step $k$.
 Therefore, the matrix $M$ has dimension $s times k$.
 The window size $w$ defines how many rows of $M$ get aggregated into one row.
 Aggregation is performed by counting how often each value of $m_(i,j)$ occurs in $w$ rows.
@@ -662,12 +662,12 @@ Elements in $D$ are ordered tuples consisting of four elements:
 $ d_(i,j) = (c_1, c_2, c_3, c_4) $
 where $c_q$ represents, how often the measurement result $q$ has been counted.
 $ "For" d_(i,j) in.rev c_q = sum_(l = i)^(i + w) bb(1)_q (m_(l,j)) $
-where $bb(1)_q$ is the indicatior function with $bb(1)_q (n) = 1$ for $n = q$ and $bb(1)_q (n) = 0$ for $n eq.not q$.
+where $bb(1)_q$ is the indicator function with $bb(1)_q (n) = 1$ for $n = q$ and $bb(1)_q (n) = 0$ for $n eq.not q$.
 Afterwards, every value in $D$ gets divided by $w$ for normalization.
 By normalizing, all input values are kept between 0 and 1, which improves the learning process for the machine learning techniques.
 $ d_(i,j) = (c_1/w, c_2/w, c_3/w, c_4/w) $
 As the last step, each row in the matrix $D$ gets converted into an ordered tuple and added to $X$, the set of inputs:
-$ X = {(d_(i,1), d_(i,2), dots , d_(i,k)) | 1 <= i <= s} $
+$ X = {(d_(i,1), d_(i,2), dots , d_(i,k)) | 1 <= i <= s/w} $
 Therefore, $X$ is a set of ordered tuples, each consisting of 1 up to 9 ordered tuples with four values each.
 
 The following example with $s = 6$ and $k = 2$ depicts the complete conversion from initial measurement data ($M$) to the input data for the classifier ($X$):
@@ -678,7 +678,10 @@ In the tuple $d_(1,1) = (0, 2/3, 0, 1/3)$, the first $0$ means "zero of the firs
 This results in:
 $ X = {((0, 2/3, 0, 1/3), (0, 1/3, 1/3, 1/3)), ((0, 1, 0, 0), (1/3, 1/3, 1/3, 0))} $
 
+//TODO: input samples always consist of 1..k measurement steps.
+
 For $k=3$, each ordered tuple $x in X$ would contain 3 different sub-tuples such that $x = (x_1, x_2, x_3)$.
+//TODO: besser erklären, dass der vorgang für viele Ms wiederholt wird und alle in ein X accumuliert werden.
 $X$ can contain the probability distribution data accumulated from multiple runs from different quantum computers or simulators.
 
 In the following machine learning approaches, if no window size is mentioned, these models were trained and evaluated with data preprocessed with a window size of 2000.
@@ -709,17 +712,17 @@ See @fnn-architecture-diagram for an overview of the model's architecture.
 
 #figure(
   raw-render(
-    width: 30%,
+    width: 100%,
     ```dot
     digraph NeuralNetwork {
       node [shape=record];
-      rankdir=TD;
+      rankdir=LR;
       
       // Define nodes
-      input [label=<{<B>Input</B>| Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
-      hidden1 [label=<{<B>Dense Layer 1</B>| Output shape: (45) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
-      hidden2 [label=<{<B>Dense Layer 2</B>| Output shape: (20) | Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
-      output [label=<{<B>Dense Output Layer</B>| Output shape: (1) | Activation function: Sigmoid}>, fillcolor="#ea9397", style=filled];
+      input [label=<{<B>Input</B>}|{ Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
+      hidden1 [label=<{<B>Dense Layer 1</B>}|{ Output shape: (45) }|{ Activaton function: tanh}>, fillcolor="#6a6cb4", style=filled];
+      hidden2 [label=<{<B>Dense Layer 2</B>}|{ Output shape: (20) }|{ Activaton function: tanh}>, fillcolor="#6a6ca4", style=filled];
+      output [label=<{<B>Dense Output Layer</B>}|{ Output shape: (1) }|{ Activation function: Sigmoid}>, fillcolor="#ea9397", style=filled];
       
       // Define connections
       input -> hidden1;
@@ -728,13 +731,13 @@ See @fnn-architecture-diagram for an overview of the model's architecture.
       
       // Additional styling
       edge [color=gray];
-      ranksep="0.5 equally";
+      ranksep="0.5";
       nodesep="0.5";
     }
 
     ```
   ),
-  caption: [Architecture diagram for the feedforward neural net. In the input layer, $k$ refers to the measurement step.]
+  caption: [Architecture diagram for the feedforward neural net. In the input, $k$ refers to the measurement step.]
 ) <fnn-architecture-diagram>
 
 For the training process, the Adam optimizer was selected.
@@ -851,27 +854,29 @@ See @cnn-architecture-diagram for an overview of the model's architecture.
 
 #figure(
   raw-render(
-    width: 30%,
+    width: 60%,
     ```dot
     digraph CNN {
       node [shape=record];
-      rankdir=TD;
+      rankdir=LR;
       
       // Define nodes
-      input [label=<{<B>Input Layer</B>| Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
-      conv1 [label=<{<B>Convolutional Layer</B>| Kernel size: 1 x 3 | No. of filters: 40}>, fillcolor="#6a6ca4", style=filled];
+      input [label=<{<B>Input</B>}|{ Input shape: (4 * k)}>, fillcolor="#72be90", style=filled];
+      conv1 [label=<{<B>Convolutional Layer</B>}|{ Kernel size: 1 x 3 }|{ No. of filters: 40}>, fillcolor="#6a6ca4", style=filled];
       pooling [label=<{<B>1D Max Pooling Layer</B>}>, fillcolor="#6a6ca4", style=filled];
-      hidden1 [label=<{<B>Dense Layer 1</B>| Output shape: (64) | Activaton function: ReLU}>, fillcolor="#6a6ca4", style=filled];
-      hidden2 [label=<{<B>Dense Layer 2</B>| Output shape: (32) | Activaton function: ReLU}>, fillcolor="#6a6ca4", style=filled];
-      output [label=<{<B>Dense Output Layer</B>| Output shape: (1) | Activation function: Sigmoid}>, fillcolor="#ea9397", style=filled];
+      hidden1 [label=<{<B>Dense Layer 1</B>}|{ Output shape: (64) }|{ Activaton function: ReLU}>, fillcolor="#6a6ca4", style=filled];
+      hidden2 [label=<{<B>Dense Layer 2</B>}|{ Output shape: (32) }|{ Activaton function: ReLU}>, fillcolor="#6a6ca4", style=filled];
+      output [label=<{<B>Dense Output Layer</B>}|{ Output shape: (1) }|{ Activation function: Sigmoid}>, fillcolor="#ea9397", style=filled];
       
+
       // Define connections
       input -> conv1;
-      conv1 -> pooling;
+      conv1 -> pooling [constraint=false];
       pooling -> hidden1;
-      hidden1 -> hidden2;
+      hidden1 -> hidden2 [constraint=false];
       hidden2 -> output;
-      
+
+
       // Additional styling
       edge [color=gray];
       ranksep="0.3";
@@ -880,7 +885,7 @@ See @cnn-architecture-diagram for an overview of the model's architecture.
 
     ```
   ),
-  caption: [Architecture diagram for the convolutional neural net. In the input layer, $k$ refers to the measurement step.]
+  caption: [Architecture diagram for the convolutional neural net. In the input, $k$ refers to the measurement step.]
 ) <cnn-architecture-diagram>
 
 The Adam optimizer and binary cross-entropy were employed for optimization and loss calculation, respectively.
@@ -975,7 +980,7 @@ This setup enabled successful differentiation between the two backend types, as 
   caption: [Training history for the CNN. The dataset used was a combination of all measurement data generated by all available quantum computers and simulators. Data from measurement steps 1 up to (including) measurement step 5 have been used for training with a window size of 2000. These charts show that validation accuracy (left graph) and validation loss (right graph) almost immediately reach their optimal values after training starts.]
 ) <cnn-training-step-5>
 
-== Adversarial Machine Learning with Fast Gradient Sign Method
+== Adversarial Machine Learning with Fast Gradient Sign Method <approach-fgsm>
 For the adversarial attack, the goal is to take measurements from a simulator, perform the Fast Gradient Sign Attack on them, and show that they are classified as 'has been run on a quantum computer' afterward.
 The model attacked was the feedforward neural net (as described in @approach-ffnn), which has been trained on 80% of all available simulator and quantum computer data, containing all 9 measurement steps.
 The remaining 20% were used for measuring the model accuracy beforehand.
@@ -997,20 +1002,20 @@ See @evaluation-fgsm for a detailed evaluation.
 #pagebreak(weak: true)
 
 = Evaluation <evaluation>
-The evaluation section shows, that distinguishing what type of backend the circuit was executed on is possible with up to 100% accuracy.
-Additionally it shows that an increasing window size and taking more measurement steps into account both increases accuracy.
-Furthermore, single and multiple quantum computers and simulators are being excluded from the training set and used as test set, showing that the models can even classify unknown backends with an accuracy of at least 90% when using all 9 measurement steps.
+The evaluation shows that distinguishing what type of backend the circuit was executed on is possible with up to 100% accuracy.
+Additionally, it shows that an increasing window size and taking more measurement steps into account both increases accuracy.
+Furthermore, single and multiple quantum computers and simulators are excluded from the training set and used as the test set, showing that the models can even classify unknown backends with an accuracy of at least 90% when using all 9 measurement steps.
 
 == Compare window size vs measurement step range
 This section evaluates the effects of window size and measurement step range on the three machine learning approaches.
-It has been included to show that the classification of quantum computer or simulator is possible.
-The dataset used for this evaluation contains every quantum computer and every simulator with 20% of the data used for validaton.
-By choosing a larger window size, the accuracy accross models increases drastically.
+It has been included to show that it is generally possible for the models to distinguish between measurements from a quantum computer or a simulator and how window size and the number of included measurement steps influence the models' accuracy.
+The dataset used for this evaluation contains every quantum computer and simulator used in this thesis; 20% of the data were used for validation.
+By choosing a larger window size, the accuracy across models increases drastically.
 Especially when compared to small window sizes such as $w = 5$. //TODO: reference figure
-This is due to the fact that more measurements get included into the calculated probability distribution, capturing the noise produced by the backend more relaibly.
-From a winodw size of $w = 2000$ and upward, the accuracy gain is neglegible.
+This is due to the fact that more measurements get included in the calculated probability distribution, capturing the noise produced by the backend more reliably.
+The accuracy gain is negligible from a window size of $w = 2000$ and upward.
 Especially when training only on a combination of the first three measurement steps and using window sizes of 2000, every model is able to reach an accuracy of 98% or above.
-Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visible, with a small accuracy advantage for the feedforward neural net, see @comparison-measurement-steps-w-2000.
+Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visible, with a slight accuracy advantage for the feedforward neural net, see @comparison-measurement-steps-w-2000.
 
 //TODO: adjust colors for graphs (same window size should have same color accross graphs)
 #grid(
@@ -1043,7 +1048,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
           plot.add(window_size_8000, label: [w = 8000], mark: "x", mark-size: 0.10)
         })
       }),
-      caption: [Accuracy for the SVM, trained on the dataset containing all quantum computer and all simulator data. A window size of $w = 5$ has been omitted, because the training time for such a high number of inputs was not feasible.],
+      caption: [Accuracy for the SVM, trained on the dataset containing all quantum computer and all simulator data. A window size of $w = 5$ has been omitted because the training time for such a high number of inputs was not feasible.],
     ),
 
     figure(
@@ -1072,7 +1077,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
           plot.add(window_size_8000, label: [w = 8000], mark: "x", mark-size: 0.10)
         })
       }),
-      caption: [Accuracy for the FNN, trained on the dataset containing all quantum computer and all simulator data.]
+      caption: [Accuracy for the FNN, which was trained on the dataset containing measurement data for every quantum computer and simulator used in this thesis.]
     ),
   ),
 
@@ -1102,7 +1107,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
         plot.add(window_size_8000, label: [w = 8000], mark: "x", mark-size: 0.10)
       })
     }),
-    caption: [Accuracy for the CNN, trained on the dataset containing all quantum computer and all simulator data.]
+    caption: [Accuracy for the CNN, which was trained on the dataset containing measurement data for every quantum computer and simulator used in this thesis.]
   ),
 ) <window-size-vs-step-ranges-plots>
 
@@ -1117,7 +1122,7 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
 
     let svm_window_size_2000 = ((1, 0.694), (2, 0.815), (3, 0.997), (4, 1.000), (5, 1.000), (6, 1.000), (7, 1.000), (8, 1.000), (9, 1.000))
 
-    plot.plot(size: (5.5,4), x-tick-step: 1, y-tick-step: none, 
+    plot.plot(size: (5.5,4.5), x-tick-step: 1, y-tick-step: none, 
       x-min: 0.5, x-max: 9,
       x-label: "Measurement steps",
       y-min: 0.55, y-max: 1.05,
@@ -1130,24 +1135,24 @@ Only for a small number of measurement steps $k=1$ or $k=2$ a difference is visi
       plot.add(cnn_window_size_2000, label: [CNN], mark: "x", mark-size: 0.10)
     })
   }),
-  caption: [Accuracy comparison between SVM, FNN and CNN. All three models were trained on the dataset containing all quantum computer and all simulator data.]
+  caption: [Accuracy comparison between SVM, FNN, and CNN. All three models were trained on the dataset containing all quantum computers and all simulators used in this thesis with a window size of $w=2000$.]
 ) <comparison-measurement-steps-w-2000>
 
 == Exclude quantum computer or simulator from training dataset
-This section evaluates the accuracy of the different models in case they encounter quantum comuters or simulators, which were not in the training dataset.
-This is interesting insofar as that this would be the real world scenario for the classifiers, because they should be able to correctly classify the measurement results even if the backend is unknown to the model.
-When excluding only a single quantum computer from the training dataset and using exclusively the measurements generated by the excluded quantum computer as testset, the performance for only the first measurement step is highly variable ranging from 0 up to 0.921. 
-All three models have a slightly decresed accuracy for classification when the quantum computer Athens or Santiago was excluded.
-This could be due to the fact, that simulators with noise models based on Athens and Santiago were used for generating simulator measurements with noise.
-However, they had higher accuracy when Lima was excluded, even though a simulator with a noise model which was based on Lima has been used as well.
-This could be due to the fact that the noise model could have been generated a few years back @Fake_provider, not matching the calibration used for the Lima QC in this dataset.
+This section evaluates the accuracy of the different models in case they encounter quantum computers or simulators that were not in the training dataset.
+This is interesting insofar as this would be the real-world scenario for the classifiers because they should be able to correctly classify the measurement results even if the backend is unknown to the model.
+When excluding only a single quantum computer from the training dataset and using exclusively the measurements generated by the excluded quantum computer as the test set, the performance for only the first measurement step is highly variable ranging from 0 up to 0.921. 
+All three models have a slightly decreased accuracy for classification when the quantum computer Athens or Santiago was excluded.
+This could be due to the fact that simulators with noise models based on Athens and Santiago were used to generate simulator measurements with noise.
+However, they had higher accuracy when Lima was excluded, even though a simulator with a noise model that was based on Lima has been used as well.
+This could be due to the fact that the noise model could have been generated a few years back @QiskitFake_provider, potentially not matching the calibration data used by the Lima QC in this dataset.
 Overall, all three models reach high accuracies when using all 9 measurement steps (@svm-single-qc-excluded, @fnn-single-qc-excluded, @cnn-single-qc-excluded).
 
 #text(size: 10pt, [])
 #let svm_exclude_single_qc = csv("data/svm_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 9pt,
+    size: 10pt,
     tablex(
       columns: 10,
       align: center,
@@ -1164,14 +1169,14 @@ Overall, all three models reach high accuracies when using all 9 measurement ste
       [],colspanx(9)[*Measurement Step Ranges*],[*Excluded QC*],..svm_exclude_single_qc.flatten().slice(1,)
     )
   ),
-  caption: "Accuracy for the SVM. A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used as testset.",
+  caption: "Accuracy for the SVM. A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used as the test set.",
   kind: table,
 ) <svm-single-qc-excluded>
 
 #let ann_exclude_single = csv("data/neural_net_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 9pt,
+    size: 10pt,
     tablex(
       columns: 10,
       align: center,
@@ -1188,14 +1193,14 @@ Overall, all three models reach high accuracies when using all 9 measurement ste
       [],colspanx(9)[*Measurement Step Ranges*],[*Excluded QC*],..ann_exclude_single.flatten().slice(1,)
     )
   ),
-  caption: "Accuracy for the feedforward neural net. A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used as testset.",
+  caption: "Accuracy for the feedforward neural net. A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used as the test set.",
   kind: table,
 ) <fnn-single-qc-excluded>
 
 #let cnn_exclude_single = csv("data/cnn_excluded_quantum_computer_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 9pt,
+    size: 10pt,
     tablex(
       columns: 10,
       align: center,
@@ -1212,14 +1217,14 @@ Overall, all three models reach high accuracies when using all 9 measurement ste
       [],colspanx(9)[*Measurement Step Ranges*],[*Excluded QC*],..cnn_exclude_single.flatten().slice(1,)
     )
   ),
-  caption: "Accuracy for the CNN. A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used as testset.",
+  caption: "Accuracy for the CNN. A single quantum computer is excluded from the training dataset. Only this excluded quantum computer is used as the test set.",
   kind: table,
 ) <cnn-single-qc-excluded>
 
 Building on the analysis of excluding single quantum computers, a more complex evaluation approach involves excluding every possible combination of up to 4 quantum computers without considering the order in which they are excluded.
 In this testing scenario, only the measurement data originating from the excluded QCs serve as the test set.
-This approach ensures that the models face scenarios where they must generalize well beyond the specific characteristics of any single QC.
-In the dataset, all 9 measurement steps were used, in order to achieve the highest possible accuracy, which would be a critical factor for real-world applications.
+This approach ensures that the models face scenarios in which they must generalize well beyond the specific characteristics of any single QC.
+All 9 measurement steps in the dataset were used to achieve the highest possible accuracy, which would be a critical factor for real-world applications.
 Averaging the accuracy across each number of excluded QCs provides a comprehensive view of how well each model adapts to varying levels of information scarcity.
 Among the three models, the FNN exhibits superior performance.
 As depicted in @accuracy-multiple-excluded-qcs, the FNN achieves an average accuracy of 96.6% when four quantum computers are excluded.
@@ -1249,20 +1254,20 @@ This high level of accuracy, despite the exclusion of multiple QCs, underscores 
       plot.add(cnn, label: [CNN], mark: "x", mark-size: 0.10)
     })
   }),
-  caption: [Dataset with the given number of QCs excluded. Only the measurements from the excluded QCs were used as testset. The accuracy depicted is for models trained on data consisting of all 9 measurement steps.]
+  caption: [Dataset with the given number of QCs excluded. Only the measurements from the excluded QCs were used as the test set. The accuracy depicted is for models trained on data consisting of all 9 measurement steps.]
 ) <accuracy-multiple-excluded-qcs>
 
-When excluding only a single simulator from the training dataset and using exclusively the measurements generated by the excluded simulator as testset, the performance for only the first measurement step is highly variable, similar to the exclusion of one quantum computer. 
-The Aer Simulator, Fake Santiago, and Fake Cairo get misclassified when using only one measurement step accross all three models.
-This could be because these simulators have a small (or in case of the Aer Simulator no) noise perturbation.
-The Fake Santiago and Fake Cairo simulators for example have quite low qubit readout errors (see @simulator-readout-error).
+When excluding only a single simulator from the training dataset and using the measurements generated by the excluded simulator exclusively as the test set, the performance for only the first measurement step is highly variable, similar to the exclusion of one quantum computer. 
+The Aer Simulator, Fake Santiago, and Fake Cairo get misclassified when using only one measurement step across all three models.
+This could be because these simulators have a small (or, in the case of the Aer Simulator, no) noise perturbation.
+The Fake Santiago and Fake Cairo simulators, for example, have quite low qubit readout errors (see @simulator-readout-error).
 The models have an almost perfect accuracy when using the first four measurement steps or more.
 Overall, all three models reach perfect accuracies of 1.0 when using all 9 measurement steps (@svm-single-simulator-excluded, @fnn-single-simulator-excluded, @cnn-single-simulator-excluded).
 
 #let svm_exclude_single_simulator = csv("data/svm_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 9pt,
+    size: 10pt,
     tablex(
       columns: 10,
       align: center,
@@ -1279,14 +1284,14 @@ Overall, all three models reach perfect accuracies of 1.0 when using all 9 measu
       [],colspanx(9)[*Measurement Step Ranges*],[*Excluded Simulator*],..svm_exclude_single_simulator.flatten().slice(1,)
     )
   ),
-  caption: "Accuracy for the SVM. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used as testset.",
+  caption: "Accuracy for the SVM. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used as the test set.",
   kind: table,
 ) <svm-single-simulator-excluded>
 
 #let fnn_exclude_single_simulator = csv("data/neural_net_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 9pt,
+    size: 10pt,
     tablex(
       columns: 10,
       align: center,
@@ -1303,14 +1308,14 @@ Overall, all three models reach perfect accuracies of 1.0 when using all 9 measu
     [],colspanx(9)[*Measurement Step Ranges*],[*Excluded Simulator*],..fnn_exclude_single_simulator.flatten().slice(1,)
     )
   ),
-  caption: "Accuracy for the FNN. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used as testset.",
+  caption: "Accuracy for the FNN. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used as the test set.",
   kind: table,
 ) <fnn-single-simulator-excluded>
 
 #let cnn_exclude_single_simulator = csv("data/cnn_excluded_simulator_vs_step_ranges_all_other_backends_combined.csv")
 #figure(
   text(
-    size: 9pt,
+    size: 10pt,
     tablex(
       columns: 10,
       align: center,
@@ -1327,18 +1332,18 @@ Overall, all three models reach perfect accuracies of 1.0 when using all 9 measu
       [],colspanx(9)[*Step Ranges*],[*Excluded Simulator*],..cnn_exclude_single_simulator.flatten().slice(1,)
     )
   ),
-  caption: "Accuracy for the CNN. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used for evaluating the accuracy.",
+  caption: "Accuracy for the CNN. A single simulator backend is excluded from the training dataset. Only measurement data generated by this excluded simulator is used as the test set.",
   kind: table,
 ) <cnn-single-simulator-excluded>
 
-Excluding every possible combination of 4 simulators without considering the order in which they are excluded, shows that when taking measurement steps from 1 up to 4 into account, all models have an accuracy of over 99.3%.
-The accuracy at measurement steps from 1 up to 9 is 100% accross all models, see @exclude-four-simulators. 
-Therefore, the models have either better abstracted an general notion of simulator noise, or the simulators in the dataset were easier to classify compared to the quantum computers.
+Excluding every possible combination of 4 simulators without considering the order in which they are excluded shows that when taking measurement steps from 1 up to 4 into account, all models have an accuracy of over 99.3%.
+The accuracy at measurement steps from 1 up to 9 is 100% across all models, see @exclude-four-simulators. 
+Therefore, the models have either better abstracted a general notion of simulator noise or the simulators in the dataset were easier to classify than the quantum computers.
 
 #let exclude_4_simulators = csv("data/exclude_four_simulators_vs_step_range_all_models.csv")
 #figure(
   text(
-    size: 9pt,
+    size: 10pt,
     tablex(
       columns: 10,
       align: center,
@@ -1355,17 +1360,17 @@ Therefore, the models have either better abstracted an general notion of simulat
       [],colspanx(9)[*Step Ranges*],[*Model*],..exclude_4_simulators.flatten().slice(1,)
     )
   ),
-  caption: [Comparing the accuracy of the SVM, FNN, and CNN. This table contains the average accuracy of all training runs excluding every possible combination of four simulators. Only the data generated by the excluded simulators was used as testset each time.],
+  caption: [Comparing the accuracy of the SVM, FNN, and CNN. This table contains the average accuracy of all training runs, excluding every possible combination of four simulators. Only the data generated by the excluded simulators was used as the test set each time.],
   kind: table,
 ) <exclude-four-simulators>
 
 
 == Adversarial Machine Learning with Fast Gradient Sign Method <evaluation-fgsm>
-//TODO: "defense" against fgsm complicated, because distribution values actually approach real quantum computer values. Not even a human could correcly determin the class (im gegensatz zu fgsm bei bildern).
-By converting 1400 samples generated by simulators into adversarial samples in such a fasion that they are recognized as 'generated by a quantum computer'.
-The result can be seen in @adversarial-accuracy.
-When epsilon is zero the sample equals the original input sample.
-The graph shows that with increasing $epsilon$ values, the accuracy gets worse due to the increased perturbation in the adversarial sample.
+By converting 1400 samples generated by simulators into adversarial samples in such a fashion that they are recognized as 'generated by a quantum computer'.
+Each sample consists of 9 (number of measurement steps used) different probability distributions, each containing the probabilities for 4 different measurement results.
+By creating an adversarial sample, these probabilities get adjusted according to the constraints detailed in @approach-fgsm.
+When epsilon is zero, the sample equals the original input sample.
+The graph in @adversarial-accuracy shows that the accuracy worsens with increasing $epsilon$ values due to the increased perturbation in the adversarial samples.
 
 #figure(
   cetz.canvas(length: 1cm, {
@@ -1384,56 +1389,71 @@ The graph shows that with increasing $epsilon$ values, the accuracy gets worse d
       plot.add(adversarial_accuracy_data.map(((epsilon,acc)) => (float(epsilon), float(acc))), mark: "x", mark-size: 0.10)
     })
   }),
-  caption: "Comparison of the models accuracy on adversarial samples with different epsilon values. 1400 samples were converted to adversarial samples for this graph. The larger the epsilon value gets, the larger the perturbation in the adversarial sample.",
+  caption: "Comparison of the model's accuracy on adversarial samples with different epsilon values. 1400 samples were converted to adversarial samples for this graph. The larger the epsilon value gets, the larger the perturbation in the adversarial sample.",
   kind: table,
 ) <adversarial-accuracy>
 
-The histograms in @adversarial-samples-histogram-measurement-step-1 to  @adversarial-samples-histogram-measurement-step-9 visualize the probabilities for each measurement result at different measurement steps in the quantum circuit.
-In most cases an increase of $epsilon$ leads to a probability distribution which is closer to the distribution of a quantum computer.
+Histograms were used to visualize parts of one input sample in order to demonstrate how much these adversarial changes nudge the probabilities and if it is possible for a human to recognize an adversarial sample.
+Each histogram contains four groups of bars corresponding to the probability to measure $00_2$, $01_2$, $10_2$, or $11_2$, respectively, with each histogram containing measurements for one specific measurement step $k$ of the input sample.
+Only histograms in @adversarial-samples-histogram-measurement-step-1 and @adversarial-samples-histogram-measurement-step-9 were included, visualizing the probabilities for measurement steps 1 and 9, respectively.
+These two histograms are representative and help demonstrate the typical effects of adversarial changes on sample probabilities since the patterns are similar across all steps.
+Both histograms visualize data from the same input sample.
+Due to the somewhat abstract nature of the measurement distributions, the inherent noise of the quantum computers, and the statistical nature of quantum computation, the histograms show that the adversarial samples are more or less indistinguishable by a human.
+In most cases, an increase of $epsilon$ leads to a probability distribution closer to a quantum computer's distribution, possibly because only two labeled classes exist.
+This makes defending against these adversarial samples complex because it involves distinguishing subtle probability distribution shifts that might not significantly deviate from those produced under normal quantum computation processes.
+One of the most effective ways of defending against adversarial examples is to include them in the model's training data (adversarial training @goodfellowExplainingHarnessingAdversarial2015).
+However, because the adversarial samples are, in most cases, quite similar to the samples generated by real quantum computers, adversarial training could lower the model's accuracy. 
 
 #figure(
   image("images/adversarial_samples_histogram/hist_walker_step_0_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the first measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well.]
+  caption: [Comparison of different epsilon values for the first measurement step ($k=1$). \ The average of all quantum computer outcomes as probability distributions is included as a reference.]
 ) <adversarial-samples-histogram-measurement-step-1>
 #figure(
   image("images/adversarial_samples_histogram/hist_walker_step_8_adversarial.svg"),
-  caption: [Comparison of different epsilon values for the ninth measurement step. As a refference, the average of all quantum computer probability distributions is plotted as well.]
+  caption: [Comparison of different epsilon values for only the data from the ninth measurement step ($k=9$). The average of all quantum computer outcomes as probability distributions is included as a reference.]
 ) <adversarial-samples-histogram-measurement-step-9>
 
-It is possible for a malevolent quantum cloud provider to perform such an adversarial attack.
-Even though, it is quite hard to pull off due to the fact, that FGSM is a white-box attack.
-As a result, the neural net which should differenciate between simulator and quantum computer has to be known by the malevorent quantum cloud provider.
-
 == Discussion
-//Overall for the classification part: the FNN seems to have a slight advantage compared to the CNN and SVM when classifying unknown quantum computers.
-// for unknown simulators, all three models perform equal with 100% accuracy.
+Overall, the models achieved very high accuracies for their classification task, similar to the classification performance for noise-fingerprinting different quantum computers in @martinaLearningNoiseFingerprint2022.
+Increasing the window size past $w=2000$ yields diminishing returns regarding classifier accuracy.
+This could be due to the fact, that an increase in in winodw size, shrinks the overall number of inputs used for training and testing.
+At some point (around $w=2000$), it is not profitable to aggregate more shots into a single input at the cost of decreasing the number of input samples.
+Increasing the number of measurement steps for classification can improve the accuracy of models, but this may result in higher circuit execution costs when evaluating a cloud quantum provider.
+Especially in real-world scenarios, a balance between the number of measurement steps and the desired accuracy has to be struck.
+Increasing the number of measurement steps increases the accuracy because each input or test sample contains 4 additional values per additional measurement step.
+Therefore, it makes learning and recognizing the noise pattern easier for the models.
+All three models perform with 100% accuracy for unknown simulators when all 9 measurement steps are used.
+This suggests that the simulators used in this thesis have a similar noise fingerprint, which is easier to detect than the noise fingerprint of an arbitrary quantum computer.
 
-//TODO: discussion for fgsm.
+By using the FGSM attack to generate adversarial samples, the FNN's accuracy could be drastically reduced without making the changes in the input samples obvious to a human.
+The linear behavior of networks (ReLU, sigmoid around 0) is responsible for their susceptibility to adversarial samples @goodfellowExplainingHarnessingAdversarial2015.
+The FNN in this thesis did not use the ReLU activation function (tanh was used instead), but the sigmoid activation function is used in the output layer.
+Therefore, the success of the adversarial attack is no surprise.
 
 == Limitations <limitations>
-The main limitation of this work is, that classification can only be performed with the circuit from  @circuit.
-This is due to the fact, that different quantum circuits result in different distributions of measurement results.
+The main limitation of this work is that classification can only be performed with the circuit from  @circuit.
+This is due to the fact that different quantum circuits result in different distributions of measurement results.
 Despite this limitation, it is possible to utilize this approach for simulator detection.
 In order to achieve this, the circuit from @circuit gets sent to the (possibly adversarial) quantum cloud provider.
-The results get classified in order to determine whether the circuit has been run on a quantum computer or simulated on a classical computer.
-It would be possible for the quantum cloud provider to recognize this specific circuit, route the circuit to a legit quantum computer provider, and forward the results to the end user.
-To prevent this, the circuit could be embedded into the circuit which the user wants to execute.
+The results are classified to determine whether the circuit has been run on a quantum computer or simulated on a classical computer.
+It would be possible for the quantum cloud provider to recognize this specific circuit, route the circuit to a legitimate quantum computer provider, and forward the results to the end user.
+To prevent this, the circuit could be embedded into the circuit that the user wants to execute.
 
-Additionally, as shown in @evaluation-fgsm, it is possible to forge adversarial samples which get classified with the incorrect label.
+Additionally, as shown in @evaluation-fgsm, it is possible to forge adversarial samples that get classified with the incorrect label.
 Despite keeping the model hidden to try to prevent such a white-box adversarial attack, it could be possible to generate adversarial samples despite the precautions by using the transferability of adversarial samples @szegedyIntriguingPropertiesNeural2013.
 
 Furthermore, only measurement data from IBM quantum computers was available for training the machine learning models in this thesis.
-The generalization capability of the models has not been tested when confronted with a quantum computer from another manufacturer or based on another technology than superconducting qubits.
+The generalization capability of the models has yet to be tested when confronted with a quantum computer from another manufacturer or based on technology other than superconducting qubits.
 
 #pagebreak(weak: true)
 
 = Future Work and Conclusion <future-work-and-conclusion>
 This thesis demonstrates that it is possible, with current machine learning algorithms, to predict with a high probability whether an existing quantum circuit was executed by a quantum computer or by a simulator backend.
-While the machine learning models proposed in this thesis cannot generalize to other arbitrary quantum circuits, they can still potentially be retrained and adapted for classifying results from different quantum circuits.
+While the machine learning models proposed in this thesis cannot generalize to other arbitrary quantum circuits, they can potentially be re-trained and adapted for classifying results from different quantum circuits.
 Therefore, it would be interesting to test if this approach can distinguish between simulators and quantum computers for other quantum circuits beyond the one used in this thesis.
-Moreover it would be interesting to explore how adding additional samples from different (and possibly more modern) quantum computers would influence the accuracy.
-Also, it could be interesting to perform further, more advanced adversarial attacks on the neural net, such as a trying to utilize the basic iterative method @kurakinAdversarialExamplesPhysical2017.
-When taking the limitations shown in @limitations into account, this approach can be used as a usefull indicator for validating that the correct backend types has been used for executing a quantum circuit. 
+Moreover, it would be interesting to explore how adding additional samples from different (and possibly more modern) quantum computers would influence the accuracy.
+Also, it could be interesting to perform further, more advanced adversarial attacks on the neural net, such as trying to utilize the basic iterative method @kurakinAdversarialExamplesPhysical2017.
+Considering the limitations shown in @limitations, this approach can be used as a valuable indicator to validate that the correct backend type has been used for executing a quantum circuit. 
 //TODO: add more text
 
 #pagebreak(weak: true)
@@ -1477,4 +1497,4 @@ When taking the limitations shown in @limitations into account, this approach ca
 
 #pagebreak(weak: true)
 
-#bibliography("Sources.bib")
+#bibliography("Sources.bib", style: "ieee")
